@@ -6,7 +6,7 @@
 
 - 日期：2026-09-11
 - 当前阶段：Day 0
-- 状态：项目仓库初始化中
+- 状态：项目仓库初始化完成，尚未开始业务开发
 - 第一阶段产品：初一英语单词个性化学习 Agent
 - 主要求职方向：AI 前端工程师 / Agent 前端工程师
 - 附带方向：AI 全栈（前端侧重）
@@ -21,6 +21,10 @@
 - 确定核心项目 StudyMate / 学伴 Agent
 - 确定第一月只完成英语单词个性化学习闭环
 - 建立 GitHub 仓库与文档体系
+- 建立 frontend / backend / docs 基础目录
+- 建立 backend/app 下 api、models、schemas、services、agents、tools 目录
+- 建立 tests 目录和 .gitignore
+- 尚未提前生成 React / FastAPI 业务代码，保留给 Day 1 亲手学习实现
 
 ## 当前未开始
 
