@@ -31,6 +31,7 @@
 - Day 1：FastAPI 最小应用、路由、装饰器、异步函数、Python 字典返回 JSON
 - Day 1：Query 查询参数、默认值、类型标注与数值/字符串校验
 - Day 1：Python list 切片（slice）常见写法
+- Day 1：POST 请求体、Pydantic BaseModel / Field、422 校验错误
 
 ---
 
@@ -317,3 +318,93 @@ Python 切片语法是 `sequence[start:stop:step]`，可以用于 list、字符�
 - Stop：结束位置
 - Step：步长
 - Negative Index：负数索引
+
+---
+
+## 知识：POST 请求体、Pydantic 与 422 校验错误
+
+### 一句话本质
+
+Pydantic `BaseModel` 用来定义“请求 JSON 应该长什么样”，FastAPI 会在进入业务函数前自动校验，不合法时通常返回 422。
+
+### 大白话解释
+
+```python
+class AnswerSubmit(BaseModel):
+    question_id: int = Field(gt=0)
+    answer: str = Field(min_length=2, max_length=2000)
+```
+
+表示提交答案时必须有 `question_id` 和 `answer`，并且它们要满足指定规则。
+
+在 Swagger 的 `Schemas` 区域：
+
+- `AnswerSubmit`：我们自己定义的请求数据结构。
+- `HTTPValidationError`：FastAPI 自动生成的“请求校验失败”响应结构。
+- `ValidationError`：其中每一条具体字段错误的结构。
+
+422 表示服务器能读懂请求格式，但请求数据不符合接口声明的规则。例如 `question_id=0` 不满足 `gt=0`，或 `answer='a'` 不满足 `min_length=2`。
+
+### 常见错误字段怎么看
+
+校验失败响应中常见字段：
+
+- `loc`：错误位置，例如 `['body', 'question_id']` 表示请求体里的 `question_id`。
+- `msg`：人类可读的错误说明。
+- `type`：机器可识别的错误类型。
+- `input`：用户实际传入的值。
+- `ctx`：补充的约束上下文，例如必须大于多少。
+
+### 与 TypeScript / 前端的类比
+
+TypeScript 的 `interface` 主要帮助开发阶段做静态类型检查，而 Pydantic `BaseModel` 会在 Python 运行时真的检查客户端发来的数据。
+
+可以理解为：
+
+```text
+TypeScript interface
+    + 运行时表单校验
+    + JSON 解析
+    + Swagger Schema
+≈ Pydantic BaseModel
+```
+
+### 最小代码示例
+
+```python
+from pydantic import BaseModel, Field
+
+class AnswerSubmit(BaseModel):
+    question_id: int = Field(gt=0)
+    answer: str = Field(min_length=2, max_length=2000)
+
+@app.post('/attempts')
+async def create_attempt(payload: AnswerSubmit):
+    return {
+        'question_id': payload.question_id,
+        'answer': payload.answer,
+        'status': 'received',
+    }
+```
+
+### 在 StudyMate / Agent 中的用途
+
+Pydantic 不仅可以校验前端请求，后面还会直接用于 LLM Structured Output：要求模型必须返回固定字段，例如 `score`、`covered_points`、`missing_points`、`weak_topics`，避免大模型只返回一段不可控文本。
+
+### 容易踩的坑
+
+- Swagger 页面底部的 `Schemas` 是“数据结构说明”，不是实际请求结果。
+- `422 Validation Error` 显示在接口文档里，只代表“这个接口可能返回 422”，不代表当前接口已经报错。
+- 要看一次真实错误，需要点 `Try it out`，输入不合法数据后点 `Execute`，再看实际 `Server response`。
+
+### 面试可说答案
+
+FastAPI 通常通过 Pydantic `BaseModel` 定义请求体结构和约束。请求到达业务函数前会先完成解析和验证；如果 JSON 格式能被理解，但字段缺失、类型错误或不满足约束，FastAPI 会返回结构化的 422 校验错误。Pydantic 同样适合定义 LLM Structured Output 的结构。
+
+### 相关英文术语
+
+- Request Body：请求体
+- Schema：数据结构定义
+- Validation：校验
+- Unprocessable Content：无法处理的内容（HTTP 422）
+- Structured Output：结构化输出
