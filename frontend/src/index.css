@@ -1,111 +1,278 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    /* =========================
+       Typography
+       ========================= */
+    --font-heading: var(--font-sans);
+
+    --font-sans: "Geist Variable",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    sans-serif;
+
+
+    /* =========================
+       Semantic Colors
+       ========================= */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+
+    /* =========================
+       Charts
+       ========================= */
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+
+    /* =========================
+       Sidebar
+       ========================= */
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+
+    /* =========================
+       Radius
+       ========================= */
+    --radius-sm: calc(var(--radius) * 0.5);
+    --radius-md: calc(var(--radius) * 0.75);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.25);
+    --radius-2xl: calc(var(--radius) * 1.5);
+    --radius-3xl: calc(var(--radius) * 1.8);
+    --radius-4xl: calc(var(--radius) * 2.1);
+
+
+    /* =========================
+       StudyMate Shadows
+       ========================= */
+    --shadow-press: 0 4px 0 var(--button-shadow);
+    --shadow-press-hover: 0 5px 0 var(--button-shadow);
+
+    --shadow-soft: 0 12px 32px rgb(92 58 38 / 8%);
+}
+
+
+/* =====================================================
+   StudyMate Light Theme
+   ===================================================== */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    /* 页面背景 */
+    --background: #fff8ee;
+    --foreground: #2b211b;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* 卡片 */
+    --card: #fffdf9;
+    --card-foreground: #2b211b;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+
+    /* 浮层 */
+    --popover: #fffdf9;
+    --popover-foreground: #2b211b;
+
+
+    /* 品牌主色 */
+    --primary: #f47a3a;
+
+    /* hover 时略微变深 */
+    --primary-hover: #e86c30;
+
+    --primary-foreground: #fffdf9;
+
+
+    /* 主按钮实体底边 */
+    --button-shadow: #bc5728;
+
+
+    /* 次级色 */
+    --secondary: #fce8d8;
+    --secondary-foreground: #66361f;
+
+
+    /* 弱化区域 */
+    --muted: #f5ede5;
+    --muted-foreground: #7b6a5d;
+
+
+    /* Hover / Highlight */
+    --accent: #ffe2ca;
+    --accent-foreground: #5c2e18;
+
+
+    /* Error */
+    --destructive: #dc4c3f;
+
+
+    /* 边框 / 表单 */
+    --border: #eadbcf;
+    --input: #e5d4c6;
+    --ring: #f47a3a;
+
+
+    /* 图表 */
+    --chart-1: #f47a3a;
+    --chart-2: #f3a261;
+    --chart-3: #d85e29;
+    --chart-4: #8b6650;
+    --chart-5: #c4a996;
+
+
+    /*
+     * 8px 基准圆角
+     *
+     * 不走现在很流行的超大圆角风格
+     * 保持利落、克制
+     */
+    --radius: 0.5rem;
+
+
+    /* Sidebar 暂时不用，但保持统一 */
+    --sidebar: #fff4e7;
+    --sidebar-foreground: #2b211b;
+
+    --sidebar-primary: #f47a3a;
+    --sidebar-primary-foreground: #fffdf9;
+
+    --sidebar-accent: #ffe2ca;
+    --sidebar-accent-foreground: #5c2e18;
+
+    --sidebar-border: #eadbcf;
+    --sidebar-ring: #f47a3a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
+/* =====================================================
+   StudyMate Dark Theme
+   暂时不开发，只预留
+   ===================================================== */
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
+.dark {
+    --background: #1f1814;
+    --foreground: #fff7f0;
 
-body {
-  margin: 0;
-}
+    --card: #2a211b;
+    --card-foreground: #fff7f0;
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
+    --popover: #2a211b;
+    --popover-foreground: #fff7f0;
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+    --primary: #ff8a4c;
+    --primary-hover: #f77a3b;
+    --primary-foreground: #28150c;
+
+    --button-shadow: #b84f22;
+
+    --secondary: #3a2b22;
+    --secondary-foreground: #ffe9da;
+
+    --muted: #33271f;
+    --muted-foreground: #baa99b;
+
+    --accent: #4a3021;
+    --accent-foreground: #ffe9da;
+
+    --destructive: #f16d63;
+
+    --border: rgb(255 255 255 / 12%);
+    --input: rgb(255 255 255 / 15%);
+    --ring: #ff8a4c;
+
+    --chart-1: #ff8a4c;
+    --chart-2: #f4ad76;
+    --chart-3: #da6934;
+    --chart-4: #c19477;
+    --chart-5: #8e7565;
+
+    --sidebar: #251c17;
+    --sidebar-foreground: #fff7f0;
+
+    --sidebar-primary: #ff8a4c;
+    --sidebar-primary-foreground: #28150c;
+
+    --sidebar-accent: #4a3021;
+    --sidebar-accent-foreground: #ffe9da;
+
+    --sidebar-border: rgb(255 255 255 / 12%);
+    --sidebar-ring: #ff8a4c;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+
+/* =====================================================
+   Global Base Styles
+   ===================================================== */
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    html {
+        @apply font-sans;
+    }
+
+    body {
+        @apply m-0 min-h-screen bg-background text-foreground antialiased;
+    }
+
+    #root {
+        min-height: 100vh;
+    }
+
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+@layer utilities {
+    .home-background {
+        background-image: url("./assets/image/indx-bg.png");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
