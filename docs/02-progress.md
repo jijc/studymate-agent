@@ -7,7 +7,8 @@
 - 日期：2026-09-11
 - 当前阶段：Day 0
 - 状态：项目仓库初始化完成，尚未开始业务开发
-- 第一阶段产品：初一英语单词个性化学习 Agent
+- 第一阶段产品：**前端 / Agent 面试自适应学习 Agent**
+- 第二阶段扩展：初一英语背单词 + 初一数学每日 5 题
 - 主要求职方向：AI 前端工程师 / Agent 前端工程师
 - 附带方向：AI 全栈（前端侧重）
 
@@ -19,7 +20,10 @@
 - 确定 Python + FastAPI 作为后端学习主线
 - 确定 PostgreSQL / SQL 为必学数据库基础
 - 确定核心项目 StudyMate / 学伴 Agent
-- 确定第一月只完成英语单词个性化学习闭环
+- 重新确定第一月优先服务求职目标：先做“前端 / Agent 面试自适应学习”
+- 确定开放式面试题采用 Rubric + LLM + Structured Output 评估
+- 确定底层按 Subject / Topic / Question / Attempt / Mastery / Study Plan 抽象
+- 确定第二个月再扩英语和数学，验证同一套学习引擎可支持多学科
 - 建立 GitHub 仓库与文档体系
 - 建立 frontend / backend / docs 基础目录
 - 建立 backend/app 下 api、models、schemas、services、agents、tools 目录
@@ -33,42 +37,89 @@
 - 尚未安装 / 确认 Python 学习环境
 - 尚未创建 PostgreSQL 数据库
 - 尚未编写业务代码
+- 尚未编写真正题库
 
-## 醒来后的下一步
-
-### Day 0 环境准备
+## 接下来的 Day 0 环境准备
 
 1. Clone 仓库到本地
 2. 检查 Mac 当前 Python / Node / Git 环境
-3. 安装 PyCharm
+3. 安装 / 确认 PyCharm
 4. 配置 Python 虚拟环境 venv
 5. 确认 VS Code 前端环境
 6. 不提前让 Codex 生成业务代码
 
-### Day 1 正式学习
+## Day 1 正式学习
 
-- Python：变量、基本类型、list、dict、if
-- PyCharm：解释器、运行 Python 文件
-- FastAPI：理解什么是后端 API，完成最小 Hello World
-- React：创建项目首页骨架
-- 前端复习：HTTP 请求、浏览器 / 前端 / 后端之间的关系
-- 面试：Python 与 JavaScript 的基础差异、动态语言概念
+Python：
+
+- Python 如何运行
+- 变量
+- `str / int / float / bool`
+- `list / dict`
+- `if`
+
+开发环境：
+
+- PyCharm 解释器
+- venv
+- pip
+
+FastAPI：
+
+- 后端 API 是什么
+- 完成最小 Hello World
+
+React：
+
+- 创建 React + TypeScript + Vite 项目
+- StudyMate 首页骨架
+- “今日 5 题”入口
+
+前端复习：
+
+- 浏览器、前端、后端的关系
+- HTTP 请求最基础流程
+
+面试：
+
+- Python 与 JavaScript 的基础差异
+- 动态类型语言概念
 
 ## Day 7 强制验收目标
 
-孩子能够真正完成一轮 10～20 分钟的英语单词学习。
+StudyMate 能完整完成一轮 5 道固定前端 / Agent 面试题：
+
+```text
+显示题目 → 输入答案 → 提交 → 反馈 → 下一题 → 完成页
+```
 
 ## Day 14 强制验收目标
 
-系统能长期保存学习数据，并展示薄弱单词 / 薄弱题型。
+系统完成：
+
+- PostgreSQL 持久化
+- 题库 / Topic / Attempt
+- Rubric
+- LLM Structured Output 评分
+- 历史答题记录
 
 ## Day 21 强制验收目标
 
-AI / Agent 能依据真实学习历史改变后续学习策略。
+系统能根据真实历史数据生成 Weak Topics，并自动调整下一轮 5 题。
 
 ## Day 30 强制验收目标
 
-StudyMate v1 可以在线演示，并开始用于 AI 前端 / Agent 前端求职。
+StudyMate v1 可以在线演示，并正式作为 AI 前端 / Agent 前端求职项目：
+
+- 每日 5 题
+- 开放式回答
+- AI 结构化评分
+- Mastery / Weak Topics
+- 自适应出题
+- Agent 追问 / Workflow 基础
+- React + FastAPI + PostgreSQL
+- 学习报告
+- README / 架构图
 
 ---
 
