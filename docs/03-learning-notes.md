@@ -30,6 +30,7 @@
 
 - Day 1：FastAPI 最小应用、路由、装饰器、异步函数、Python 字典返回 JSON
 - Day 1：Query 查询参数、默认值、类型标注与数值/字符串校验
+- Day 1：Python list 切片（slice）常见写法
 
 ---
 
@@ -218,3 +219,101 @@ FastAPI 可以通过 Python 类型标注配合 `Query`、`Path`、Pydantic Model
 - Less Than or Equal：小于等于
 - Pattern：模式 / 正则表达式
 - Alias：别名
+
+---
+
+## 知识：Python list 切片（slice）
+
+### 一句话本质
+
+Python 的切片就是从序列里按“开始、结束、步长”取一部分数据，语法是 `list[start:stop:step]`。
+
+### 大白话解释
+
+`questions[:limit]` 的意思是：从开头开始，取到 `limit` 之前，不包含 `limit` 对应的位置。
+
+例如：
+
+```python
+items = [10, 20, 30, 40, 50]
+
+items[:3]      # [10, 20, 30]
+items[1:4]     # [20, 30, 40]
+items[2:]      # [30, 40, 50]
+items[:]       # 复制整个列表（浅拷贝）
+items[::2]     # [10, 30, 50]，每隔一个取一个
+items[::-1]    # [50, 40, 30, 20, 10]，倒序
+items[-1]      # 50，最后一个元素（这是索引，不是切片）
+items[-2:]     # [40, 50]，最后两个
+```
+
+### 与 JavaScript 的类比
+
+Python：
+
+```python
+questions[:limit]
+```
+
+大致对应 JavaScript：
+
+```javascript
+questions.slice(0, limit)
+```
+
+Python：
+
+```python
+items[1:4]
+```
+
+对应 JavaScript：
+
+```javascript
+items.slice(1, 4)
+```
+
+Python 切片还有 `step`，例如：
+
+```python
+items[::2]
+```
+
+JavaScript 没有完全相同的 `slice` 第三个步长参数，通常需要 `filter` 等方式实现。
+
+### 通用格式
+
+```python
+list[start:stop:step]
+```
+
+- `start`：从哪里开始，包含该位置
+- `stop`：到哪里结束，不包含该位置
+- `step`：步长，默认是 1
+
+### 在 StudyMate 项目中的用途
+
+```python
+return questions[:limit]
+```
+
+用于根据用户传入的 `limit`，返回前 N 道题。
+
+### 容易踩的坑
+
+- `stop` 不包含结束位置。
+- 负数索引从列表尾部开始算：`-1` 是最后一个。
+- `[::-1]` 经常用于快速倒序，但大数据场景会生成新的列表副本。
+- `[:]` 是浅拷贝，不会深拷贝嵌套对象。
+
+### 面试可说答案
+
+Python 切片语法是 `sequence[start:stop:step]`，可以用于 list、字符串等序列。`stop` 不包含结束位置，支持负数索引和步长。例如 `items[:5]` 取前 5 个，`items[::-1]` 可以生成倒序副本。
+
+### 相关英文术语
+
+- Slice / Slicing：切片
+- Start：开始位置
+- Stop：结束位置
+- Step：步长
+- Negative Index：负数索引
