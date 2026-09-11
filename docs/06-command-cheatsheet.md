@@ -142,7 +142,46 @@ python -m pip install fastapi "uvicorn[standard]"
 
 ---
 
-## 4. 环境排查命令
+## 4. Python 命令参数基础
+
+### `python -c` 是什么意思
+
+例如：
+
+```bash
+python -c "import fastapi; print(fastapi.__version__)"
+```
+
+其中 `-c` 的意思是：**直接执行后面这一小段 Python 代码字符串**。
+
+可以理解成：
+
+```text
+python       = 启动 Python
+-c           = command，后面跟一段要立即执行的代码
+"..."        = 真正执行的 Python 代码
+```
+
+上面的命令等价于临时写一个 Python 文件：
+
+```python
+import fastapi
+print(fastapi.__version__)
+```
+
+然后再运行它，只不过 `-c` 省去了创建文件这一步，特别适合做版本检查、环境验证和一两行的小测试。
+
+StudyMate 中第一次使用它是为了确认 FastAPI 已经安装成功：
+
+```bash
+python -c "import fastapi; print(fastapi.__version__)"
+```
+
+输出 `0.141.1`，说明当前虚拟环境可以正常导入 FastAPI。
+
+---
+
+## 5. 环境排查命令
 
 这些命令平时不一定需要背，遇到环境问题时知道它们是干什么的即可。
 
@@ -202,7 +241,7 @@ xcrun --show-sdk-path
 
 ---
 
-## 5. 当前 StudyMate 环境
+## 6. 当前 StudyMate 环境
 
 目前项目确定使用：
 
