@@ -63,9 +63,86 @@ python3 -m venv backend/.venv
 - `venv`：给“某一个项目”隔离 Python 依赖。
 - 类比前端：有点像项目自己的依赖环境，但和 `node_modules` 并不完全相同。
 
+### 激活 StudyMate 后端虚拟环境
+
+```bash
+source backend/.venv/bin/activate
+```
+
+作用：让当前终端进入 StudyMate 的 Python 虚拟环境。激活后，终端前面通常会出现 `(.venv)`。
+
+### 确认当前 Python 来自虚拟环境
+
+```bash
+which python
+```
+
+StudyMate 中正常结果应该类似：
+
+```text
+/Users/ab/self/studymate-agent/backend/.venv/bin/python
+```
+
+作用：确认接下来执行的 Python 和安装的依赖都属于当前项目。
+
+### 查看虚拟环境里的 Python 版本
+
+```bash
+python --version
+```
+
+作用：确认虚拟环境实际使用的 Python 版本。
+
 ---
 
-## 3. 环境排查命令
+## 3. Python 包管理：pip
+
+### pip 是什么
+
+`pip` 是 Python 的第三方包安装工具，可以类比前端里的 `npm` / `pnpm`。
+
+例如：
+
+```text
+npm install axios      ≈      python -m pip install fastapi
+```
+
+### 查看当前 pip 版本和路径
+
+```bash
+python -m pip --version
+```
+
+作用：确认当前 Python 使用的是哪一个 pip，以及 pip 安装在哪里。
+
+为什么优先写 `python -m pip`，而不是直接写 `pip`：
+
+> 这样可以明确让“当前这个 Python”调用自己的 pip，减少把依赖安装到错误 Python 环境里的情况。
+
+### 安装 FastAPI 和 Uvicorn
+
+```bash
+python -m pip install fastapi "uvicorn[standard]"
+```
+
+作用：
+
+- `FastAPI`：Python Web 后端框架，用来写 API 接口。
+- `Uvicorn`：运行 FastAPI 应用的 ASGI 服务器。
+
+安装完成看到 `Successfully installed ...` 就表示成功。
+
+如果最后看到：
+
+```text
+[notice] A new release of pip is available
+```
+
+这只是升级提醒，不是报错。项目可以继续运行，不需要看到提醒就立刻升级。
+
+---
+
+## 4. 环境排查命令
 
 这些命令平时不一定需要背，遇到环境问题时知道它们是干什么的即可。
 
@@ -125,7 +202,7 @@ xcrun --show-sdk-path
 
 ---
 
-## 4. 当前 StudyMate 环境
+## 5. 当前 StudyMate 环境
 
 目前项目确定使用：
 
