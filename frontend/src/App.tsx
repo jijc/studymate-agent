@@ -1,20 +1,40 @@
-import {CapabilitiesSection} from "@/components/home/CapabilitiesSection"
-import {HeroSection} from "@/components/home/HeroSection"
-import {StepsSection} from "@/components/home/StepsSection"
+import {Route, Routes} from "react-router"
+
 import {Header} from "@/components/layout/Header"
+import {HomePage} from "@/pages/HomePage"
+import {LoginPage} from "@/pages/LoginPage"
+import {PracticePage} from "@/pages/PracticePage"
+import {QuestionsPage} from "@/pages/QuestionsPage"
+import {ReportsPage} from "@/pages/ReportsPage"
 
 function App() {
     return (
-        <div className="min-h-screen overflow-x-hidden bg-background">
+        <div className="home-background min-h-screen overflow-x-hidden bg-background">
             <Header/>
 
-            <main className="home-background min-h-[calc(100vh-64px)] xl:min-h-[calc(100vh-70px)]">
-                <div className="mx-auto w-full max-w-[1480px] px-5 pb-10 pt-7 sm:px-8 lg:px-12 xl:px-8">
-                    <HeroSection/>
-                    <CapabilitiesSection/>
-                    <StepsSection/>
-                </div>
-            </main>
+            <Routes>
+                <Route path="/" element={<HomePage/>}/>
+
+                <Route
+                    path="/practice"
+                    element={<PracticePage/>}
+                />
+
+                <Route
+                    path="/questions"
+                    element={<QuestionsPage/>}
+                />
+
+                <Route
+                    path="/reports"
+                    element={<ReportsPage/>}
+                />
+
+                <Route
+                    path="/login"
+                    element={<LoginPage/>}
+                />
+            </Routes>
         </div>
     )
 }

@@ -25,13 +25,13 @@ function StepsSection() {
         <section aria-labelledby="steps-title" className="pb-1 pt-8 xl:pt-11">
             <div className="mb-6 flex items-center justify-center gap-7">
                 <span className="h-px w-8 bg-primary/70"/>
-                <h2 id="steps-title" className="text-center text-[24px] font-bold tracking-[-0.025em] text-foreground sm:text-[26px]">
+                <h2 id="steps-title" className="text-center text-2xl font-bold tracking-tight text-foreground">
                     只需 3 步，开启高效面试练习
                 </h2>
                 <span className="h-px w-8 bg-primary/70"/>
             </div>
 
-            <div className="mx-auto grid w-full max-w-[560px] gap-5 xl:max-w-none xl:grid-cols-3 xl:gap-0">
+            <div className="mx-auto grid w-full max-w-xl gap-5 xl:max-w-none xl:grid-cols-3 xl:gap-0">
                 {steps.map((step, index) => (
                     <InterviewStep
                         key={step.title}

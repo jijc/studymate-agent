@@ -24,7 +24,7 @@ function CapabilitiesSection() {
     return (
         <section
             aria-label="核心能力"
-            className="mx-auto mt-10 grid w-full max-w-[560px] gap-4 xl:mt-1 xl:max-w-none xl:grid-cols-3 xl:gap-5"
+            className="mx-auto mt-10 grid w-full max-w-xl gap-4 xl:mt-1 xl:max-w-none xl:grid-cols-3 xl:gap-5"
         >
             {capabilities.map((capability) => (
                 <CapabilityCard key={capability.title} {...capability}/>
