@@ -1,6 +1,6 @@
 import {useState} from "react"
 import {Menu, X} from "lucide-react"
-import {Link, NavLink, useNavigate} from "react-router"
+import {Link, NavLink} from "react-router"
 import logo from "@/assets/image/logo-trimmed.png"
 import {Button} from "@/components/ui/button"
 import {cn} from "@/lib/utils"
@@ -14,10 +14,9 @@ const navItems = [
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false)
-    const navigation = useNavigate()
 
     return (
-        <header id="top" className="relative z-30 h-16 border-b border-border/30 bg-card/95 backdrop-blur-sm">
+        <header id="top" className="relative z-30 h-16 border-b border-border/30 bg-card/70 backdrop-blur-sm">
             <div className="mx-auto flex h-full w-full max-w-[1480px] items-center px-5 sm:px-8 xl:px-8">
                 <Link
                     to="/"
@@ -93,7 +92,7 @@ function Header() {
                 <nav
                     id="mobile-navigation"
                     aria-label="移动端导航"
-                    className="absolute inset-x-0 top-full border-y border-border/60 bg-card px-5 py-3 shadow-soft xl:hidden"
+                    className="absolute inset-x-0 top-full border-y border-border/60 bg-card/70 px-5 py-3 shadow-soft backdrop-blur-sm xl:hidden"
                 >
                     <div className="mx-auto grid max-w-[1480px] gap-1">
                         {navItems.map((item) => (

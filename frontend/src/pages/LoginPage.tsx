@@ -1,6 +1,6 @@
 function LoginPage() {
     return (
-        <main>
+        <main className="home-background min-h-screen">
             <h1>登录</h1>
         </main>
     )

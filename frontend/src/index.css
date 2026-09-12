@@ -270,7 +270,13 @@
 
 @layer utilities {
     .home-background {
-        background-image: url("./assets/image/indx-bg.png");
+        background-color: var(--background);
+        background-image:
+            linear-gradient(
+                color-mix(in oklch, var(--background) 40%, transparent),
+                color-mix(in oklch, var(--background) 40%, transparent)
+            ),
+            url("./assets/image/indx-bg.png");
         background-position: center top;
         background-repeat: no-repeat;
         background-size: cover;
