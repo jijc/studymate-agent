@@ -36,7 +36,6 @@ function HeroSection() {
                         <ArrowRight aria-hidden="true" className="ml-2 size-5"/>
                     </Button>
                     <Button
-                        variant="outline"
                         size="xl"
                         className="w-full font-semibold sm:w-48 xl:w-56"
                     >

@@ -4,7 +4,7 @@ import {StepsSection} from "@/components/home/StepsSection"
 
 function HomePage() {
     return (
-        <main className="min-h-[calc(100dvh-4rem)]">
+        <main className="min-h-[calc(100dvh-5rem)]">
             <div className="mx-auto w-full max-w-[1480px] px-5 pb-10 pt-7 sm:px-8 lg:px-12 xl:px-8">
                 <HeroSection/>
                 <CapabilitiesSection/>

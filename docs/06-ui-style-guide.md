@@ -306,7 +306,7 @@ import { Button } from "@/components/ui/button"
 
 ```tsx
 <Button>开始练习</Button>
-<Button variant="outline">上传简历</Button>
+<Button>上传简历</Button>
 <Button size="lg">登录</Button>
 ```
 
@@ -339,9 +339,10 @@ src/components/ui/button.tsx
 主按钮可以保留轻微实体感：
 
 ```text
-默认：轻微底部阴影
+默认：轻量柔和阴影
 Hover：颜色缓慢变深
-Active：轻微下压 + 阴影收起
+Active：轻微降低透明度
+过渡：统一 400ms
 ```
 
 效果要克制，不做明显游戏按钮效果。
@@ -780,7 +781,7 @@ transition-transform duration-300
 hover:-translate-y-1
 ```
 
-Button 可以有轻微实体按压感。
+Button 使用 400ms 的克制过渡与轻量反馈。
 
 避免：
 
@@ -797,6 +798,8 @@ Button 可以有轻微实体按压感。
 ```text
 200ms ～ 300ms
 ```
+
+通用 Button 按本节约定统一使用 `400ms`，其余普通交互仍保持 `200ms ～ 300ms`。
 
 ---
 

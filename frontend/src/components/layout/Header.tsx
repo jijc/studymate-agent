@@ -16,7 +16,7 @@ function Header() {
     const [menuOpen, setMenuOpen] = useState(false)
 
     return (
-        <header id="top" className="relative z-30 h-16 border-b border-border/30 bg-card/70 backdrop-blur-sm">
+        <header id="top" className="relative z-30 h-20 border-b border-border/30 bg-card/70 backdrop-blur-sm">
             <div className="mx-auto flex h-full w-full max-w-[1480px] items-center px-5 sm:px-8 xl:px-8">
                 <Link
                     to="/"
@@ -26,18 +26,18 @@ function Header() {
                     <img
                         src={logo}
                         alt="StudyMate"
-                        className="h-9 w-auto select-none xl:h-10"
+                        className="h-10 w-auto select-none"
                     />
                 </Link>
 
-                <nav aria-label="主导航" className="ml-14 hidden h-full items-center gap-11 xl:flex">
+                <nav aria-label="主导航" className="ml-16 hidden h-full items-center gap-14 xl:flex">
                     {navItems.map((item) => (
                         <NavLink
                             key={item.label}
                             to={item.to}
                             className={({isActive}) =>
                                 cn(
-                                    "relative flex h-full items-center px-1 text-base font-medium transition-colors duration-300",
+                                    "relative flex h-full items-center px-1 text-base font-medium transition-colors duration-400",
                                     isActive
                                         ? "text-primary"
                                         : "text-foreground/75 hover:text-primary",
@@ -50,7 +50,7 @@ function Header() {
 
                                     {isActive && (
                                         <span
-                                            className="absolute bottom-3.5 left-1/2 h-0.5 w-8 -translate-x-1/2 bg-primary"/>
+                                            className="absolute bottom-3 left-1/2 h-0.5 w-8 -translate-x-1/2 bg-primary"/>
                                     )}
                                 </>
                             )}
@@ -63,10 +63,18 @@ function Header() {
                         render={<Link to="/login"/>}
                         nativeButton={false}
                         size="lg"
-                        className="min-w-24 font-semibold"
+                        className="min-w-32 font-semibold"
                     >
                         登录
                     </Button>
+
+                    <div className="mx-8 h-10 w-px bg-border" aria-hidden="true"/>
+
+                    <p className="text-sm leading-5 text-muted-foreground">
+                        AI 陪伴学习，
+                        <br/>
+                        成长更有方向
+                    </p>
                 </div>
 
                 <div className="ml-auto flex items-center gap-2 xl:hidden">
@@ -102,7 +110,7 @@ function Header() {
                                 onClick={() => setMenuOpen(false)}
                                 className={({isActive}) =>
                                     cn(
-                                        "rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                                        "rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-400",
                                         isActive ? "bg-secondary text-primary" : "text-foreground/80 hover:bg-muted hover:text-primary",
                                     )
                                 }
