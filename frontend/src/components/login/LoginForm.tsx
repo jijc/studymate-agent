@@ -1,25 +1,19 @@
 import {useState} from "react"
-import {KeyRound, Mail, ShieldCheck, Smartphone} from "lucide-react"
+import {KeyRound, ShieldCheck, Smartphone} from "lucide-react"
 
 import {AuthField} from "@/components/login/AuthField"
 import {VerificationCodeButton} from "@/components/login/VerificationCodeButton"
 import {Button} from "@/components/ui/button"
 import {cn} from "@/lib/utils"
 
-type LoginMethod = "phone" | "email"
+type LoginMethod = "verification" | "password"
 
-type LoginFormProps = {
-    onShowRegister: () => void
-}
+type LoginErrors = Partial<Record<"phone" | "code" | "password" | "agreement", string>>
 
-type LoginErrors = Partial<Record<"phone" | "code" | "email" | "password" | "agreement", string>>
-
-function LoginForm({onShowRegister}: LoginFormProps) {
-    // 当前选择的登录方式决定下方显示手机号表单还是邮箱表单。
-    const [method, setMethod] = useState<LoginMethod>("phone")
+function LoginForm() {
+    const [method, setMethod] = useState<LoginMethod>("verification")
     const [phone, setPhone] = useState("")
     const [code, setCode] = useState("")
-    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [agreed, setAgreed] = useState(false)
     const [errors, setErrors] = useState<LoginErrors>({})
@@ -30,11 +24,11 @@ function LoginForm({onShowRegister}: LoginFormProps) {
 
         const nextErrors: LoginErrors = {}
 
-        if (method === "phone") {
-            if (!/^1[3-9]\d{9}$/.test(phone)) nextErrors.phone = "请输入正确的手机号"
+        if (!/^1[3-9]\d{9}$/.test(phone)) nextErrors.phone = "请输入正确的手机号"
+
+        if (method === "verification") {
             if (!/^\d{6}$/.test(code)) nextErrors.code = "请输入 6 位验证码"
         } else {
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = "请输入正确的邮箱地址"
             if (!password) nextErrors.password = "请输入密码"
         }
 
@@ -48,91 +42,75 @@ function LoginForm({onShowRegister}: LoginFormProps) {
                 <Button
                     type="button"
                     role="tab"
-                    aria-selected={method === "phone"}
+                    aria-selected={method === "verification"}
                     variant="ghost"
                     size="lg"
                     onClick={() => {
-                        setMethod("phone")
+                        setMethod("verification")
                         setErrors({})
                     }}
-                    className={cn("w-full", method === "phone" && "bg-card text-primary shadow-sm hover:bg-card")}
+                    className={cn("w-full", method === "verification" && "bg-card text-primary shadow-sm hover:bg-card")}
                 >
-                    手机号登录
+                    验证码登录
                 </Button>
                 <Button
                     type="button"
                     role="tab"
-                    aria-selected={method === "email"}
+                    aria-selected={method === "password"}
                     variant="ghost"
                     size="lg"
                     onClick={() => {
-                        setMethod("email")
+                        setMethod("password")
                         setErrors({})
                     }}
-                    className={cn("w-full", method === "email" && "bg-card text-primary shadow-sm hover:bg-card")}
+                    className={cn("w-full", method === "password" && "bg-card text-primary shadow-sm hover:bg-card")}
                 >
-                    邮箱登录
+                    密码登录
                 </Button>
             </div>
 
             <div className="mt-6 grid gap-4">
-                {method === "phone" ? (
-                    <>
-                        <AuthField
-                            id="login-phone"
-                            label="手机号"
-                            icon={Smartphone}
-                            type="tel"
-                            inputMode="numeric"
-                            autoComplete="tel"
-                            maxLength={11}
-                            placeholder="请输入手机号"
-                            value={phone}
-                            onChange={(event) => {
-                                setPhone(event.target.value)
-                                setErrors((current) => ({...current, phone: undefined}))
-                            }}
-                            error={errors.phone}
-                        />
+                <AuthField
+                    id="login-phone"
+                    label="手机号"
+                    icon={Smartphone}
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    maxLength={11}
+                    placeholder="请输入手机号"
+                    value={phone}
+                    onChange={(event) => {
+                        setPhone(event.target.value)
+                        setErrors((current) => ({...current, phone: undefined}))
+                    }}
+                    error={errors.phone}
+                />
 
-                        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
-                            <AuthField
-                                id="login-code"
-                                label="验证码"
-                                icon={ShieldCheck}
-                                inputMode="numeric"
-                                autoComplete="one-time-code"
-                                maxLength={6}
-                                placeholder="请输入验证码"
-                                value={code}
-                                onChange={(event) => {
-                                    setCode(event.target.value)
-                                    setErrors((current) => ({...current, code: undefined}))
-                                }}
-                                error={errors.code}
-                            />
-                            <VerificationCodeButton disabled={!/^1[3-9]\d{9}$/.test(phone)}/>
-                        </div>
-                    </>
+                {method === "verification" ? (
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+                        <AuthField
+                            id="login-code"
+                            label="验证码"
+                            icon={ShieldCheck}
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            maxLength={6}
+                            placeholder="请输入验证码"
+                            value={code}
+                            onChange={(event) => {
+                                setCode(event.target.value)
+                                setErrors((current) => ({...current, code: undefined}))
+                            }}
+                            error={errors.code}
+                        />
+                        <VerificationCodeButton disabled={!/^1[3-9]\d{9}$/.test(phone)}/>
+                    </div>
                 ) : (
                     <>
                         <AuthField
-                            id="login-email"
-                            label="邮箱地址"
-                            icon={Mail}
-                            type="email"
-                            autoComplete="email"
-                            placeholder="请输入邮箱地址"
-                            value={email}
-                            onChange={(event) => {
-                                setEmail(event.target.value)
-                                setErrors((current) => ({...current, email: undefined}))
-                            }}
-                            error={errors.email}
-                        />
-                        <AuthField
                             id="login-password"
-                            label="密码"
+                            label="登录密码"
                             icon={KeyRound}
                             type="password"
                             autoComplete="current-password"
@@ -144,6 +122,9 @@ function LoginForm({onShowRegister}: LoginFormProps) {
                             }}
                             error={errors.password}
                         />
+                        <Button type="button" variant="link" className="h-auto justify-self-end px-0 text-sm">
+                            忘记密码？
+                        </Button>
                     </>
                 )}
             </div>
@@ -173,17 +154,11 @@ function LoginForm({onShowRegister}: LoginFormProps) {
                 登录
             </Button>
 
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-                还没有账号？
-                <Button
-                    type="button"
-                    variant="link"
-                    onClick={onShowRegister}
-                    className="h-auto px-1 font-semibold"
-                >
-                    立即注册
-                </Button>
-            </p>
+            {method === "verification" && (
+                <p className="mt-5 text-center text-sm text-muted-foreground">
+                    未注册手机号验证后将自动创建账号
+                </p>
+            )}
         </form>
     )
 }

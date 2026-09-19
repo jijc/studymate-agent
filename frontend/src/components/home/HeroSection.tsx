@@ -1,62 +1,53 @@
-import {ArrowRight, Check, Sparkles, Upload} from "lucide-react"
+import {ArrowRight, Library, ShieldCheck} from "lucide-react"
+import {Link} from "react-router"
 
 import heroInterview from "@/assets/image/hero-interview.png"
 import {Button} from "@/components/ui/button"
 
-const benefits = ["更真实的模拟体验", "个性化的面试题目", "可量化的能力提升"]
-
 function HeroSection() {
     return (
-        <section className="grid items-center gap-8 xl:min-h-[470px] xl:grid-cols-[44%_56%] xl:gap-0">
+        <section className="grid items-center gap-8 xl:min-h-[440px] xl:grid-cols-[44%_56%] xl:gap-0">
             <div
                 className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center text-center xl:mx-0 xl:max-w-none xl:items-start xl:text-left xl:-mt-2">
-                <div
-                    className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-secondary/65 px-4 py-2 text-sm font-medium text-primary">
-                    <Sparkles aria-hidden="true" className="size-4 fill-primary/15"/>
-                    AI 面试陪练 · 更从容的职场起点
-                </div>
-
-                <h1 className="font-heading text-5xl font-black leading-none tracking-tighter text-foreground sm:text-6xl">
-                    <span className="block">让 AI 成为你的</span>
-                    <span className="mt-1 block text-primary">面试陪练</span>
+                <h1
+                    aria-label="根据简历和 JD，生成专属面试训练"
+                    className="font-heading text-4xl font-black leading-tight tracking-tight text-foreground sm:text-5xl"
+                >
+                    <span className="block">根据简历和 JD</span>
+                    <span className="mt-1 block text-primary">生成专属面试训练</span>
                 </h1>
 
-                <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/75 sm:text-xl">
-                    上传简历、项目资料或职位 JD，
-                    <br className="hidden sm:block"/>
-                    为你生成个性化的面试练习，真实模拟，助你自信上场。
+                <p className="mt-5 max-w-lg text-sm leading-7 text-foreground/75 sm:text-base">
+                    上传简历或目标岗位 JD，AI 为你生成专属题库。练习后获得评分与薄弱点强化，
+                    站内知识库也能随时学习。
                 </p>
 
                 <div className="mt-6 grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:gap-4">
                     <Button
-                        size="xl"
-                        className="w-full font-semibold sm:w-48 xl:w-56"
+                        render={<Link to="/questions/ai"/>}
+                        nativeButton={false}
+                        size="lg"
+                        className="w-full font-semibold sm:w-48 xl:w-52"
                     >
-                        开始练习
-                        <ArrowRight aria-hidden="true" className="ml-2 size-5"/>
+                        生成专属题库
+                        <ArrowRight aria-hidden="true" className="ml-2 size-4"/>
                     </Button>
                     <Button
-                        size="xl"
-                        className="w-full font-semibold sm:w-48 xl:w-56"
+                        render={<Link to="/questions"/>}
+                        nativeButton={false}
+                        variant="outline"
+                        size="lg"
+                        className="w-full font-semibold sm:w-48 xl:w-52"
                     >
-                        <Upload aria-hidden="true" className="mr-2 size-5"/>
-                        上传简历
+                        <Library aria-hidden="true" className="mr-2 size-4"/>
+                        浏览 IT 题库
                     </Button>
                 </div>
 
-                <div
-                    className="mt-7 grid w-full gap-3 text-sm text-foreground/75 sm:w-auto sm:grid-cols-3 sm:gap-7">
-                    {benefits.map((benefit) => (
-                        <div key={benefit}
-                             className="flex items-center justify-center gap-2 whitespace-nowrap xl:justify-start">
-                            <span
-                                className="grid size-6 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                                <Check aria-hidden="true" className="size-3.5 stroke-3"/>
-                            </span>
-                            {benefit}
-                        </div>
-                    ))}
-                </div>
+                <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+                    <ShieldCheck aria-hidden="true" className="size-4 text-primary"/>
+                    你的简历与 JD 仅用于生成个人面试训练内容
+                </p>
             </div>
 
             <div className="relative -my-5 hidden h-[400px] overflow-visible xl:block">

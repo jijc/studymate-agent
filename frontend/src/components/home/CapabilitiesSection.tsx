@@ -1,22 +1,22 @@
-import {BarChart3, FileText, Target} from "lucide-react"
+import {FileText, Library, MessageCircle} from "lucide-react"
 
 import {CapabilityCard} from "@/components/home/CapabilityCard"
 
 const capabilities = [
     {
-        title: "个性化面试题目",
-        description: "基于你的简历、项目经历或 JD，生成专属面试题。",
+        title: "AI 专属题库",
+        description: "结合简历与目标岗位 JD，生成更贴近你的面试题。",
         icon: FileText,
     },
     {
-        title: "贴合岗位要求",
-        description: "深度理解职位 JD，聚焦核心考点，练出真实水平。",
-        icon: Target,
+        title: "站内知识库",
+        description: "学习本站整理的各类 IT 高频面试题与答案。",
+        icon: Library,
     },
     {
-        title: "弱项分析与建议",
-        description: "AI 评估你的表现，定位薄弱环节，给出改进建议。",
-        icon: BarChart3,
+        title: "练习与反馈",
+        description: "文字或语音模拟面试，AI 评分定位薄弱点，持续生成强化练习。",
+        icon: MessageCircle,
     },
 ]
 
@@ -24,7 +24,7 @@ function CapabilitiesSection() {
     return (
         <section
             aria-label="核心能力"
-            className="mx-auto mt-10 grid w-full max-w-xl gap-4 xl:mt-1 xl:max-w-none xl:grid-cols-3 xl:gap-5"
+            className="mx-auto mt-10 grid w-full max-w-xl gap-4 lg:max-w-none lg:grid-cols-3 xl:mt-2 xl:gap-5"
         >
             {capabilities.map((capability) => (
                 <CapabilityCard key={capability.title} {...capability}/>

@@ -281,4 +281,18 @@
         background-repeat: no-repeat;
         background-size: cover;
     }
+
+    .question-bank-background {
+        background-color: #fffaf4;
+        background-image:
+            linear-gradient(
+                90deg,
+                color-mix(in srgb, var(--background) 50%, transparent),
+                color-mix(in srgb, var(--background) 78%, transparent)
+            ),
+            url("./assets/image/indx-bg.png");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
