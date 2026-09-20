@@ -41,7 +41,7 @@ function GeneratedLibraryCard({library}: {library: GeneratedLibrary}) {
 
             <div className="mt-auto flex items-center justify-between gap-3 pt-5">
                 <span className="text-xs text-muted-foreground">更新于 {library.updatedAt}</span>
-                <Button render={<Link to="/practice"/>} nativeButton={false} variant="ghost" size="sm" className="text-primary">
+                <Button render={<Link to={`/practice/session/${library.kind}/${library.id}`}/>} nativeButton={false} variant="ghost" size="sm" className="text-primary">
                     开始练习
                     <ArrowRight aria-hidden="true"/>
                 </Button>

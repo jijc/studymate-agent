@@ -5,6 +5,9 @@ import {AiLibrariesPage} from "@/pages/AiLibrariesPage"
 import {HomePage} from "@/pages/HomePage"
 import {LoginPage} from "@/pages/LoginPage"
 import {PracticePage} from "@/pages/PracticePage"
+import {PracticeRecordsPage} from "@/pages/PracticeRecordsPage"
+import {PracticeReviewPage} from "@/pages/PracticeReviewPage"
+import {PracticeSessionPage} from "@/pages/PracticeSessionPage"
 import {ProfilePage} from "@/pages/ProfilePage"
 import {QuestionLibraryPage} from "@/pages/QuestionLibraryPage"
 import {QuestionsPage} from "@/pages/QuestionsPage"
@@ -21,6 +24,10 @@ function App() {
                         path="/practice"
                         element={<PracticePage/>}
                     />
+
+                    <Route path="/practice/records" element={<PracticeRecordsPage/>}/>
+                    <Route path="/practice/records/:recordId" element={<PracticeReviewPage/>}/>
+                    <Route path="/practice/session/:source/:libraryId" element={<PracticeSessionPage/>}/>
 
                     <Route
                         path="/questions"

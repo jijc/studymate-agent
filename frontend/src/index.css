@@ -252,10 +252,16 @@
 
     html {
         @apply font-sans;
+        overscroll-behavior-y: none;
+    }
+
+    html:has([data-slot="sidebar-page-shell"]) {
+        overflow: hidden;
     }
 
     body {
         @apply m-0 min-h-screen bg-background text-foreground antialiased;
+        overscroll-behavior-y: none;
     }
 
     #root {

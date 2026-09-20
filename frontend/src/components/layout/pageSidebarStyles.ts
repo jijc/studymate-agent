@@ -9,6 +9,6 @@ function pageSidebarItemClassName(active: boolean) {
     )
 }
 
-const sidebarPageContentClassName = "min-w-0 flex-1 xl:min-h-0 xl:overflow-y-auto"
+const sidebarPageContentClassName = "min-h-0 min-w-0 flex-1 overflow-y-auto"
 
 export {pageSidebarItemClassName, sidebarPageContentClassName}

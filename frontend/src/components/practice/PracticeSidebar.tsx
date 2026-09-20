@@ -1,12 +1,12 @@
 import {ArrowRight, History, PlayCircle, Sparkles} from "lucide-react"
-import {Link} from "react-router"
+import {Link, NavLink} from "react-router"
 
 import {PageSidebar} from "@/components/layout/PageSidebar"
 import {pageSidebarItemClassName} from "@/components/layout/pageSidebarStyles"
 
 const practiceNavigation = [
-    {label: "开始练习", href: "#practice-modes", icon: PlayCircle, active: true},
-    {label: "练习记录", href: "#practice-history", icon: History},
+    {label: "开始练习", href: "/practice", icon: PlayCircle, end: true},
+    {label: "练习记录", href: "/practice/records", icon: History, end: false},
 ]
 
 function PracticeSidebar() {
@@ -33,10 +33,10 @@ function PracticeSidebar() {
                 const Icon = item.icon
 
                 return (
-                    <a key={item.label} href={item.href} className={pageSidebarItemClassName(Boolean(item.active))}>
+                    <NavLink key={item.label} to={item.href} end={item.end} className={({isActive}) => pageSidebarItemClassName(isActive)}>
                         <Icon aria-hidden="true" className="size-5"/>
                         {item.label}
-                    </a>
+                    </NavLink>
                 )
             })}
         </PageSidebar>
