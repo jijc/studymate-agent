@@ -1,139 +1,184 @@
 # StudyMate Agent
 
-一个用于 **AI 前端 / Agent 前端求职学习** 的个性化学习 Agent。
+StudyMate 是一个面向 IT 从业者、求职者和技术学习者的 AI 学习与面试训练平台。
 
-项目最终目标不是做普通聊天机器人，而是建立一套可以跨学科复用的自适应学习引擎：
+当前产品方向已经从早期“儿童英语 / 数学学习助手”正式调整为：
 
-```text
-学习档案
-  ↓
-Subject
-  ↓
-Topic / Knowledge Point
-  ↓
-Question
-  ↓
-Attempt
-  ↓
-Evaluation
-  ↓
-Mastery
-  ↓
-Study Plan
-```
+> 技术学习 + 面试练习 + AI 辅助评分 + 薄弱点分析 + 自适应训练 + 求职提升。
 
-## 当前阶段
+当前第一目标不是做一个普通聊天机器人，而是做出一套真实可用的 IT 学习 / 面试闭环，并把它同时作为 AI 前端 / Agent 工程师求职项目。
 
-当前处于 **Day 0：环境准备前**。
+## 当前产品能力
 
-### Month 1
+当前前端已经完成较完整的静态产品骨架，包括：
 
-第一阶段先做：
+- 首页
+- 登录 / 注册
+- 技术题库
+- AI 题库
+- 练习入口
+- 基础练习 / 简历专项 / JD 专项
+- 答题页
+- 练习记录
+- 单次复盘
+- 报告页
+- 个人中心
 
-# 前端 / Agent 面试自适应学习 Agent
+当前练习、复盘和部分评分仍以静态数据 / sessionStorage 演示为主，下一阶段会逐步替换成 FastAPI + PostgreSQL + LLM 的真实数据链路。
 
-每天自动完成：
+## 产品长期闭环
 
-```text
-读取历史掌握度
-  ↓
-选择今日重点
-  ↓
-给出 5 道题
-  ↓
-用户输入开放式回答
-  ↓
-LLM 按 Rubric 结构化评分
-  ↓
-记录遗漏点 / Weak Topics
-  ↓
-更新 Mastery
-  ↓
-下一轮针对弱项出题
-```
+~~~text
+用户 / 求职目标 / 简历 / JD
+        ↓
+技术题库 / AI 题库
+        ↓
+练习 Session
+        ↓
+开放式回答
+        ↓
+LLM Structured Output 评分
+        ↓
+covered_points / missing_points
+        ↓
+Weak Topics / Mastery
+        ↓
+个性化下一轮练习
+        ↓
+学习报告 / 面试提升
+~~~
 
-第一月主要用于训练：
-
-- JavaScript
-- TypeScript
-- React
-- 浏览器 / HTTP
-- SSE / WebSocket
-- Python / FastAPI
-- LLM
-- Structured Output
-- Tool Calling
-- Agent / Workflow / State
-- RAG
-- LangGraph
-- MCP 基础
-
-### Month 2
-
-在同一个学习引擎上扩展：
-
-- 初一英语背单词
-- 初一数学每日 5 题
-
-用于验证不同科目可以复用同一套 Subject / Topic / Attempt / Mastery / Study Plan 架构，只替换题目生成与评估策略。
+后续可加入 Pro 能力，例如更高额度的 AI 题库生成、简历 / JD 深度分析、更完整的学习报告和高级 Agent 能力。
 
 ## 技术路线
 
-- Frontend: React + TypeScript + Vite
-- Backend: Python + FastAPI + Pydantic
-- Database: PostgreSQL + SQLAlchemy
-- Cache / State: Redis（后期）
-- AI: LLM API + Structured Output + Tool Calling
-- Agent: LangGraph（逐步引入）
-- RAG: 第二阶段逐步接入学习笔记 / 面试笔记
-- Engineering: Git / Docker / Logging / Tests / Deployment
+### 当前前端
 
-## 学习原则
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Axios
+- TanStack Query
+- Tailwind CSS
+- shadcn/ui / Base UI
+- Lucide
+- Vitest / Testing Library
 
-这是一个“边学边做”的求职转型项目。
+### 前端升级路线
 
-- 核心学习代码第一遍尽量自己写。
-- ChatGPT / Codex 用于讲解、提示、Code Review 和排错，不直接替代学习。
-- 每天的新知识尽量当天进入真实项目。
-- 每天同步整理面试知识和踩坑记录。
-- 前端基础、React、AI 基础和项目开发同步推进。
-- 如果当前闭环没有完成，优先完成闭环，不盲目增加新技术。
+当前项目先继续完成 Vite React 的真实前后端闭环。
 
-## 第一月验收点
+完成第一条真实 API / 提交闭环后，开始学习并逐步迁移到：
 
-- Day 7：完整完成 5 道固定面试题的 Web 流程
-- Day 14：PostgreSQL + Rubric + LLM Structured Output 评分跑通
-- Day 21：根据 Weak Topics 自适应调整下一轮 5 题
-- Day 30：StudyMate v1 在线可演示，并正式用于 AI 前端 / Agent 前端求职
+- Next.js
+- App Router
+- Server Components / Client Components
+- layout / page / loading / error
+- Suspense / Streaming
+- Server / Client 数据边界
+- Metadata / SEO
 
-## 文档
+Next.js 不替代 FastAPI。目标架构是：
 
-- `docs/00-context.md`：长期上下文、方向和重要决策
-- `docs/01-study-plan.md`：8 周学习 / 项目 / 求职计划
-- `docs/02-progress.md`：每日项目进度（最重要的动态文档）
-- `docs/03-learning-notes.md`：技术学习笔记
-- `docs/04-interview-notes.md`：面试题与可直接口述答案
-- `docs/05-mistakes.md`：Bug、原因、排查和修复记录
+~~~text
+Next.js + React + TypeScript
+        ↓
+Python + FastAPI
+        ↓
+PostgreSQL / Redis
+        ↓
+LLM / Agent / RAG / MCP
+~~~
 
-## 新聊天窗口如何恢复上下文
+### Python / Agent
 
-优先让 ChatGPT / Codex 阅读：
+- Python
+- FastAPI
+- Pydantic
+- SQLAlchemy
+- Alembic
+- PostgreSQL
+- Redis
+- LLM / Structured Output
+- Tool Calling
+- ReAct / Agent Loop
+- LangGraph
+- Memory / Checkpoint
+- Human-in-the-loop
+- RAG
+- MCP
+- Web Agent
+- Evaluation / Bad Case
+- Docker / CI/CD / Observability
 
-1. `docs/00-context.md`
-2. `docs/02-progress.md`
-3. 需要完整路线时再读 `docs/01-study-plan.md`
+后端和 Agent 主语言统一使用 Python，不再增加 Java / Spring 学习路线。
 
-然后从 `02-progress.md` 记录的当前 Day 继续，不重新从零规划。
+## 开发与学习分工
 
-## 下一步
+### 用户亲手学习 / 编写
 
-正式进入 Day 0 环境准备：
+- React 核心状态与数据流
+- Axios / API 层
+- TanStack Query / Mutation
+- FastAPI / Python
+- 数据库
+- LLM / Agent / RAG / MCP
+- 关键工程设计
 
-1. Clone 本仓库
-2. 检查 Python / Node / Git
-3. 安装或确认 PyCharm
-4. 配置 Python venv
-5. 确认 VS Code 前端环境
-6. 开始 Day 1：亲手写第一段 Python + React + FastAPI 代码
+### Codex 适合加速
 
-> 当前仓库只初始化目录与学习文档，尚未提前生成 React / FastAPI 业务代码。
+- 静态页面
+- Tailwind / shadcn 组合
+- 重复 UI
+- 响应式适配
+- 测试补充
+- 机械性重构
+
+原则：Codex 加快产品开发，但不能替代核心知识第一次学习。
+
+## 学习文档
+
+- docs/00-context.md：长期上下文、项目方向、技术决策、协作规则
+- docs/01-study-plan.md：完整学习路线和阶段验收
+- docs/02-progress.md：当前学习指针 + 每日学习进度，换新对话首先看它
+- docs/03-learning-notes.md：已经学过的技术知识
+- docs/04-interview-notes.md：可直接口述的面试答案
+- docs/05-mistakes.md：真实 Bug / Bad Case / 排查记录
+- docs/06-ui-style-guide.md：前端 UI 规范
+
+## 新对话恢复顺序
+
+新的 ChatGPT / Codex 会话必须优先阅读：
+
+1. docs/00-context.md
+2. docs/02-progress.md
+3. docs/01-study-plan.md
+4. 需要复习具体知识时再读 docs/03-learning-notes.md 和 docs/04-interview-notes.md
+
+尤其以 docs/02-progress.md 顶部的 CURRENT LEARNING POINTER 为准，不要重新从 Day 1 开始，也不要根据旧计划猜测当前进度。
+
+## 当前学习位置
+
+截至 2026-09-20：
+
+~~~text
+React 基础 / Router
+        ✅
+Axios 请求层
+        ✅
+TanStack Query 基础
+        🟡 正在学习
+        ↓
+queryKey 参数
+        ↓
+useMutation
+        ↓
+invalidateQueries
+        ↓
+Practice 真实 API 闭环
+        ↓
+Next.js + App Router
+~~~
+
+详细状态见 docs/02-progress.md。

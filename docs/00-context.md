@@ -1,604 +1,504 @@
-# AI Agent 转型项目：上下文、决策与长期约定
+# StudyMate：长期上下文、重大决策与学习约定
 
-> 文件用途：用于在新聊天窗口、新设备或较长时间后，快速恢复整个项目背景。  
-> 日期：2026-09-11  
-> 当前版本：v1.1  
-> 每次重大方向变化后更新本文件。
-
----
-
-# 一、转型目标
-
-当前目标是从传统前端开发，转向：
-
-1. **AI 前端工程师**
-2. **Agent 前端工程师**
-
-附带补齐：
-
-3. **AI 全栈（前端侧重）**
-
-不把自己定位成“从零转 Python 的新人”，而是：
-
-> **已有多年 Web 前端经验 + 新增 React / AI / Agent / 基础后端能力的工程师。**
-
-现实约束：
-
-- 时间和经济压力较大，目标是尽快进入真实面试，而不是长期闭关。
-- 每天约可投入 6 小时。
-- 期望约 2 个月达到 AI 前端 / Agent 前端正式求职状态。
-- 前端实际编码经验有，但底层原理和面试表达需要同步补强。
-- 非计算机科班，英语较弱，技术英文以“高频术语 + 项目实际使用”为主，不单独死背。
-- 不希望让 Codex / ChatGPT 直接替代核心学习代码。
+> 版本：v2.0  
+> 更新日期：2026-09-20  
+> 本文件只记录长期不应丢失的方向和规则。  
+> 当前精确学习位置必须读取 docs/02-progress.md。
 
 ---
 
-# 二、固定教学方式
+# 一、用户转型目标
 
-以后新知识尽量按以下顺序讲：
+用户已有多年传统 Web 前端经验，主技术背景以 Vue 为主，当前目标不是“从零转行”，而是升级为：
 
-```text
-一句大白话
-↓
-最小代码
-↓
-为什么这样写 / 基础原理
-↓
-与 Vue / JavaScript 已知知识类比
-↓
-放进 StudyMate 项目
-↓
-面试怎么回答
-↓
-面试官可能继续追问什么
-```
+1. AI 前端工程师
+2. Agent 前端工程师
+3. AI 全栈工程师（前端侧重）
 
-学习规则：
+核心定位：
 
-- 核心知识第一遍尽量亲手写。
-- 卡住时先给提示，不直接整块代写。
-- 每天学到的知识尽量当天进入真实项目。
-- 前端基础、React、AI 基础和面试题不分成互相孤立的课程，而是在项目中穿插复习。
-- 每天结束更新 `02-progress.md`，同步沉淀学习笔记、面试题和踩坑。
+> 多年前端工程经验 + React / Next.js + Python / FastAPI + AI / Agent 应用工程能力。
+
+学习与求职必须同时推进，不能长期闭关后再开始面试。
 
 ---
 
-# 三、求职主攻方向
+# 二、StudyMate 产品方向已经正式变更
 
-## 第一主攻：AI 前端工程师
+早期方案曾考虑儿童英语 / 数学学习。
 
-重点能力：
+从 2026-09-20 起，不再把儿童学习作为当前主线，也不再把“第二个月扩英语数学”作为强制目标。
 
-- React + TypeScript
-- AI Streaming
-- SSE / WebSocket
-- Agent 状态展示
-- Tool Call 过程展示
-- RAG 引用展示
-- Loading / Error / Retry / Cancel
-- Human-in-the-loop
-- 前端工程化、性能与可维护性
+StudyMate 正式定位为：
 
-## 第一主攻：Agent 前端工程师
+> 面向 IT 从业者、技术学习者和求职者的 AI 学习、练习与面试提升平台。
 
-除前端外，必须真正理解：
+当前产品围绕 IT / 软件开发 / AI Agent 知识展开，第一阶段尤其服务前端、AI 前端、Agent 前端和 Agent 应用开发求职。
 
-- LLM
-- Prompt / Context
-- Structured Output
-- Tool Calling
-- Agent / Workflow / State
-- Memory / Checkpoint
-- RAG
-- LangGraph
-- MCP
-- Evaluation / Bad Case
-- Retry / Timeout / Fallback
+未来可以扩展其他技术岗位，但当前不扩大范围。
 
-## 附带方向：AI 全栈（前端侧重）
+---
 
-补齐：
+# 三、产品核心模块
+
+当前 / 规划中的主要能力：
+
+- 技术知识库
+- AI 生成题库
+- 基础专项练习
+- 简历专项练习
+- JD 专项练习
+- 开放式答题
+- AI Structured Output 评分
+- 逐题反馈与复盘
+- Weak Topics
+- Mastery / 掌握度
+- 个性化训练计划
+- 历史练习记录
+- 学习 / 面试报告
+- 个人求职画像
+- 后续 Pro 能力
+
+当前页面已经由 Codex 辅助完善了大量静态 UI 和本地交互。静态页面完成不等于核心业务完成，下一阶段重点是将本地示例数据逐步替换为真实 API、数据库和 AI 能力。
+
+---
+
+# 四、产品闭环
+
+StudyMate 不能只是：
+
+~~~text
+用户输入 → 调 LLM → 返回一段文本
+~~~
+
+核心闭环应为：
+
+~~~text
+Profile / Resume / JD
+        ↓
+Topic / Question Library
+        ↓
+Practice Session
+        ↓
+Attempt
+        ↓
+LLM Evaluation
+        ↓
+Covered / Missing Points
+        ↓
+Weak Topics / Mastery
+        ↓
+Next Study Plan
+        ↓
+下一轮更有针对性的练习
+~~~
+
+这是项目的核心价值，也是后续 Agent 化的基础。
+
+---
+
+# 五、技术架构决策
+
+## 5.1 前端当前状态
+
+当前仓库仍使用：
+
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Axios
+- TanStack Query
+- Tailwind CSS v4
+- shadcn/ui / Base UI
+- Lucide
+- Vitest / Testing Library
+
+当前先完成真实业务闭环，不为了“追新技术”立即重写。
+
+## 5.2 Next.js 决策
+
+Next.js 正式加入学习主线。
+
+未来 StudyMate 前端迁移目标：
+
+> Next.js + App Router
+
+不是“Next.js 和 App Router 二选一”。
+
+Next.js 是框架，App Router 是我们选择的 Next 路由 / 应用架构。
+
+重点学习：
+
+- app 目录
+- page.tsx
+- layout.tsx
+- nested layout
+- Server Component
+- Client Component
+- use client
+- loading.tsx
+- error.tsx
+- Suspense
+- Streaming
+- Server / Client 数据边界
+- Metadata / SEO
+- Cache / Revalidate
+- Server Actions 基础
+
+迁移时不删除 FastAPI。
+
+目标架构：
+
+~~~text
+Next.js
+  ↓
+FastAPI
+  ↓
+PostgreSQL / Redis
+  ↓
+LLM / Agent / RAG / MCP
+~~~
+
+Next 负责 Web / React / 路由 / 渲染体验；FastAPI 负责核心业务 API、AI、Agent、数据库和工作流。
+
+## 5.3 Python 单一路线
+
+后端与 Agent 开发统一选择 Python。
+
+不学习 Java / Spring / Spring Cloud 作为当前路线。
+
+Java 课程中出现的语言无关工程思想可以吸收，但全部使用 Python 生态实现，例如：
+
+- OAuth2 / OIDC
+- JWT
+- RBAC
+- 事务
+- 缓存
+- 消息 / 后台任务
+- 限流
+- 重试
+- 日志
+- 测试
+- 可观测性
+
+Python 技术栈：
 
 - Python
 - FastAPI
 - Pydantic
-- async / await
-- PostgreSQL / SQL
 - SQLAlchemy
+- Alembic
+- PostgreSQL
 - Redis
-- Docker
-
-目标不是两个月成为高级后端，而是能独立写基础 AI 后端、理解数据流和系统设计，并能应对面试追问。
+- pytest
 
 ---
 
-# 四、第一阶段不主攻
+# 六、从 Web Agent / Agent 课程体系吸收的能力
 
-暂不主攻：
+2026-09-20 对外部 Web Agent 学习体系进行了筛选。
 
+值得加入主线的内容：
+
+## Python 工程基础
+
+- 类型标注
+- Generic / TypeVar
+- 装饰器
+- 迭代器 / 生成器
+- 上下文管理器
+- 模块化
+- 事件循环
+- Future
+- Coroutine
+- async / await
+- 基础并发
+- 调试
+- 项目 / 依赖管理
+
+元类、描述符等高级 Python 知识保留为低优先级，不为了完整课程而提前深挖。
+
+## Python Web 工程
+
+- 分层目录
+- ORM
+- 数据迁移
+- Service 层
+- Dependency Injection
+- 统一异常
+- Middleware
+- 测试
+- 用户系统
+- 日志
+- Streaming Response
+- Docker / CI/CD
+
+## Agent 基础
+
+- Token / Embedding / Attention / Transformer 基本认知
+- System Prompt
+- Message / Conversation
+- Tool Calling
+- Tool 封装
+- ReAct
+- Agent Loop
+- Skill
+- MCP
+- SubAgent
+- Prompt Engineering
+- Context Engineering
+- Harness Engineering
+- Loop Engineering
+- Graph Engineering
+
+不把神经网络训练、梯度推导、模型训练实现作为当前主攻。
+
+## LangGraph
+
+- State
+- Message
+- Reducer
+- Tool Node
+- Thread
+- Checkpoint
+- Runtime / Config
+- Subgraph
+- Retry / Fault Tolerance
+- Command
+- Interrupt
+- Human-in-the-loop
+- Fan-out
+- Cancel
+- Event Stream
+- Store
+- Long-term Memory
+- A2A 基础
+
+## RAG
+
+- Tokenization
+- Embedding
+- Vector Database
+- Chunking
+- Data Cleaning
+- Retrieval
+- Metadata Filter
+- Hybrid Search
+- Rerank
+- Multi-source
+- Multimodal RAG 基础
+- Semantic Routing
+- Cache
+- RAG Evaluation
+
+## Agent 工程化
+
+- Structured Output
+- Middleware
+- Dynamic Prompt / Model
+- PII
+- Tool Interrupt
+- Sandbox 基础
+- File Permission
+- Memory
+- Context Compression
+- Plan-then-act
+- Multi-Agent
+- SubAgent
+- Handoff / Router
+- Authentication / Authorization / Isolation
+
+## 部署与生产化
+
+- Linux 常用运维
+- Nginx
+- Docker
+- Docker Compose
+- GitHub Actions / CI/CD
+- HTTPS
+- Logging
+- Metrics
+- Tracing
+- Prometheus / Grafana 基础
+- 高可用概念
+
+---
+
+# 七、明确暂不主攻
+
+当前不投入大量时间：
+
+- Java / Spring / Spring Cloud
+- Dubbo / Netty / MyBatis
+- 大规模微服务体系
+- 深入 Kubernetes
 - PyTorch / TensorFlow
 - CUDA
-- 模型训练
-- SFT / LoRA / RLHF
-- K8s 深入
-- 分布式系统
-- 高级 Python 后端架构
+- 全量微调
+- LoRA / QLoRA
+- RLHF / DPO
+- 分布式训练
 - 大模型推理优化
+- 数据科学完整课程
+- Dify 深入开发
 
-这些根据真实招聘反馈再补。
-
----
-
-# 五、项目核心原则
-
-StudyMate 不能只是：
-
-```text
-用户输入问题 → 调 GPT → 返回一段文字
-```
-
-真正有价值的 Agent 应该包含：
-
-```text
-模型推理
-+
-业务数据
-+
-工具
-+
-状态
-+
-工作流程
-+
-长期记录
-+
-根据结果动态决定下一步
-```
-
-因此项目重点是“个性化学习闭环”，不是普通聊天机器人。
+这些只有在真实岗位反馈要求时再增加。
 
 ---
 
-# 六、最终项目定位
+# 八、开发与学习分工
 
-项目名称暂定：
+## 用户必须亲手掌握
 
-# StudyMate / 学伴 Agent
-
-定位：
-
-> **一个多学科、长期记录掌握度、根据薄弱点自动安排下一轮练习的个性化学习 Agent。**
-
-系统核心抽象：
-
-```text
-Profile
- ↓
-Subject
- ↓
-Topic / Knowledge Point
- ↓
-Question / Exercise
- ↓
-Attempt
- ↓
-Evaluation
- ↓
-Mastery
- ↓
-Study Plan
-```
-
-这个抽象必须支持不同科目使用不同的评估方式。
-
----
-
-# 七、重大路线调整：第一个月先做“Agent 面试学习 Agent”
-
-原计划第一个月先做初一英语背单词。
-
-2026-09-11 调整为：
-
-## Month 1：Agent / 前端面试自适应学习
-
-原因：
-
-1. 直接服务当前最紧迫目标——尽快找到 AI 前端 / Agent 前端工作。
-2. 项目本身每天可以反过来训练正在学习的 React、Python、Agent、RAG 等知识。
-3. 开放式面试题天然适合学习 Structured Output、LLM Evaluation、Rubric、Weak Topic、Agent 追问等 AI 能力。
-4. 第一个月不需要先处理音标、发音、儿童 UI、教材版本等领域细节，技术主线更集中。
-5. 完成后再扩英语和数学，可以验证底层学习架构确实是多学科可扩展的，而不是写死的题库。
-
----
-
-# 八、Month 1 产品闭环
-
-用户进入 StudyMate 后选择：
-
-```text
-前端 / Agent 面试学习
-```
-
-系统每天：
-
-```text
-读取历史掌握度
- ↓
-选择今日重点知识点
- ↓
-生成 / 选择 5 道题
- ↓
-用户输入开放式答案
- ↓
-LLM 按 Rubric 结构化评分
- ↓
-指出已覆盖点 / 遗漏点
- ↓
-记录 Weak Topics
- ↓
-决定是否追问
- ↓
-更新 Mastery
- ↓
-生成今日总结
- ↓
-第二天继续针对弱项出题
-```
-
-第一月重点科目：
-
-- JavaScript
-- TypeScript
-- React
-- 浏览器 / HTTP
-- SSE / WebSocket
-- Python / FastAPI
-- LLM 基础
-- Tool Calling
-- Agent / Workflow / State
+- React 核心
+- React 状态 / Render
+- Router 核心
+- Axios
+- TanStack Query
+- Zustand
+- Next.js / App Router 核心
+- Python
+- FastAPI
+- PostgreSQL
+- LLM / Structured Output
+- Agent / LangGraph
 - RAG
-- LangGraph
-- MCP 基础
+- MCP
+- Web Agent
+- 关键系统设计
+
+## Codex 负责加速但不替代学习
+
+适合 Codex：
+
+- 静态页面
+- Tailwind
+- shadcn 组合
+- 重复组件
+- 响应式适配
+- UI 重构
+- 测试补充
+- 机械重复工作
+
+原则：
+
+> UI 可以快速做；核心数据流和 AI / Agent 能力第一次必须理解。
 
 ---
 
-# 九、开放式面试题如何评估
+# 九、固定教学方式
 
-面试题没有唯一字符串答案，因此不能用简单 `answer == expected`。
+每个新知识尽量按照：
 
-采用：
+~~~text
+一句大白话
+↓
+最小代码
+↓
+为什么这么写
+↓
+底层原理
+↓
+和 Vue / 已学 JS 对照
+↓
+放进 StudyMate
+↓
+面试怎么说
+↓
+可能追问
+~~~
 
-## Rubric + LLM + Structured Output
+用户喜欢逐步推进。
 
-每道题保存：
+遇到报错时停止扩展，只处理当前错误。
 
-```text
-question
-topic
-difficulty
-rubric
-reference_answer
-```
-
-例如问题：
-
-> Agent 和普通 LLM 调用有什么区别？
-
-Rubric 可包含：
-
-- 一次输入输出 vs 多步骤任务
-- Tool Calling
-- State / Workflow
-- 动态决定下一步
-- Error / Retry
-- Memory（按题目难度决定是否必需）
-
-LLM 返回固定结构：
-
-```json
-{
-  "score": 72,
-  "covered_points": ["tool_calling", "multi_step"],
-  "missing_points": ["state", "retry"],
-  "weak_topics": ["agent_state"]
-}
-```
-
-React 根据结构化数据展示掌握度，而不是解析一段不可预测的自然语言。
+正常学习可以加速，但不能突然丢出大量陌生代码。
 
 ---
 
-# 十、Month 2 扩展：英语 + 数学
+# 十、强制每日文档同步协议
 
-## 英语单词
+从 2026-09-20 起，这是长期规则，不是可选项。
 
-使用同一套学习引擎，但评估策略主要是确定性逻辑：
+每个实际学习日结束前，必须同步文档。
 
-- 英译中
-- 中译英
-- 拼写
-- 混淆词（后续）
+## docs/02-progress.md
 
-示例：
+必须更新：
 
-```text
-Subject = English
-Topic = beautiful
-Evaluator = Rule / Exact Match / Normalization
-```
+- LAST UPDATED
+- CURRENT LEARNING POINTER
+- 今天完成的知识
+- 今天亲手写的代码
+- 项目变化
+- 尚未掌握
+- 下一步唯一入口
+- 当日日志
 
-## 初一数学每日 5 题
+这是新聊天恢复学习位置的第一依据。
 
-根据历史知识点掌握度，每天挑选 5 道题：
+## docs/03-learning-notes.md
 
-```text
-Subject = Math
-Topic = 绝对值 / 数轴 / 有理数...
-Evaluator = 标准答案 / 程序规则
-```
+当天真正学懂的新知识，按知识点沉淀。
 
-若答错，可让 LLM 负责错误原因解释，但确定性答案优先由程序判断。
+不能把“计划学习”写成“已学习”。
 
-这样能证明：
+## docs/04-interview-notes.md
 
-> 同一个 Adaptive Learning Engine 可以支持开放式面试题、英语和数学，只需要替换 Question Generator / Evaluator / Content Strategy。
+当天已经理解、可以开始口述的高频知识，转成面试答案。
 
----
+## docs/05-mistakes.md
 
-# 十一、数据库设计方向
+只有真实出现过并完成排查的 Bug / Bad Case 才记录。
 
-底层优先采用通用表，而不是写死成英语表：
+## docs/00-context.md
 
-```text
-users
-profiles
-subjects
-topics
-questions
-rubrics
-attempts
-mastery
-study_sessions
-study_plans
-agent_runs
-tool_calls
-```
+只有方向、架构、长期规则发生变化时更新，不每天堆流水账。
 
-后续英语需要时再增加领域扩展表，例如：
+## docs/01-study-plan.md
 
-```text
-words
-word_details
-```
-
-核心 SQL 学习仍然来自真实业务：
-
-- SELECT
-- INSERT
-- UPDATE
-- DELETE
-- WHERE
-- ORDER BY
-- JOIN
-- GROUP BY
-- INDEX
-- FOREIGN KEY
-- ORM
+学习路线新增 / 删除 / 调整时更新，不用于记录每日完成情况。
 
 ---
 
-# 十二、技术路线
+# 十一、学习进度标识
 
-前端：
+统一使用：
 
-```text
-React
-TypeScript
-Vite
-SSE
-```
+- ✅ 已学习并基本理解
+- 🟡 正在学习 / 还需练习
+- ⏭ 下一步
+- ⬜ 尚未开始
+- 🔴 当前阻塞
+- 🧪 已接触但需要项目实践
 
-后端：
+注意：
 
-```text
-Python
-FastAPI
-Pydantic
-async / await
-```
+> “Codex 已经写进代码”不等于“用户已学习”。
 
-数据：
-
-```text
-PostgreSQL
-SQLAlchemy
-Redis
-```
-
-AI / Agent：
-
-```text
-LLM
-Prompt / Context
-Structured Output
-Tool Calling
-Agent State
-LangGraph
-Memory
-Checkpoint
-RAG
-Evaluation
-Bad Case
-```
-
-工程化：
-
-```text
-Git / GitHub
-Docker
-Logging
-Tests
-Deployment
-```
+学习进度只按用户真正讲过、问过、理解过的内容标记。
 
 ---
 
-# 十三、为什么使用 React
+# 十二、新聊天恢复协议
 
-用户过去主要使用 Vue。
+任何新的 ChatGPT 会话，如果要继续 StudyMate 学习：
 
-为了提高 AI 前端招聘覆盖度，本项目使用 React，并通过 Vue 对照学习：
-
-```text
-Vue ref        → React useState
-computed       → useMemo
-watch          → useEffect
-props          → props
-emit           → callback props
-slot           → children
-Pinia          → Zustand
-```
-
-注意：这些只是帮助建立联系，不代表底层原理完全相同；遇到具体知识点时必须解释差异和面试常见追问。
+1. 读取 docs/00-context.md
+2. 读取 docs/02-progress.md
+3. 找到 CURRENT LEARNING POINTER
+4. 查看“上一学习日”和“下一步”
+5. 如需完整路线，再读 docs/01-study-plan.md
+6. 如需确认是否已经学过某知识，再查 docs/03-learning-notes.md
+7. 不从头复述，不重新规划，不跳过当前未完成知识
 
 ---
 
-# 十四、开发工具
+# 十三、当前真实位置
 
-Python / FastAPI / Agent：
+长期文档不复制动态进度。
 
-- PyCharm
-- Python venv
+截至本次调整，准确位置请看：
 
-前端：
-
-- VS Code
-- React + TypeScript
-
-AI 辅助：
-
-- ChatGPT：主线讲解、答疑、面试训练、文档维护
-- Codex：UI/重复代码辅助、Code Review、排错，但核心学习代码第一遍不直接整块代写
-
----
-
-# 十五、第一月验收点
-
-## Day 7
-
-能完成最小“每天 5 道面试题”的 Web 流程：
-
-```text
-React → FastAPI → 题目 → 输入答案 → 显示反馈
-```
-
-## Day 14
-
-完成：
-
-- PostgreSQL 持久化
-- questions / topics / attempts
-- LLM Rubric 评分
-- Structured Output
-- 历史答题记录
-
-## Day 21
-
-完成：
-
-- Mastery / Weak Topics
-- 根据弱项调整下一轮 5 题
-- 个性化学习报告
-
-## Day 30
-
-StudyMate v1 至少具备：
-
-- 前端 / Agent 面试科目
-- 每日 5 题
-- 开放式答案
-- Rubric 结构化评分
-- 薄弱知识点
-- 自适应出题
-- Agent 基础工作流
-- 学习报告
-- React + FastAPI + PostgreSQL
-- 在线可演示
-- README / 架构图 / 面试项目说明
-
-同时正式进入 AI 前端 / Agent 前端求职。
-
----
-
-# 十六、求职节奏
-
-```text
-Day 1～14
-学习 + 产品闭环
-
-Day 15～21
-开始整理 AI 方向简历 / 项目表达
-
-Day 20～30
-少量试投，获取市场反馈
-
-Day 30～45
-大量投 AI 前端 / Agent 前端
-同时继续学习和完善项目
-
-Day 45～60
-根据真实面试反馈补短板
-并扩英语 / 数学证明架构可扩展
-```
-
-真实招聘反馈优先级高于原学习计划。
-
----
-
-# 十七、文档体系
-
-```text
-docs/
-├── 00-context.md
-├── 01-study-plan.md
-├── 02-progress.md
-├── 03-learning-notes.md
-├── 04-interview-notes.md
-└── 05-mistakes.md
-```
-
-维护规则：
-
-- 重大产品 / 学习路线决策：更新 `00-context.md`
-- 每日当前状态：更新 `02-progress.md`
-- 学过的知识：更新 `03-learning-notes.md`
-- 面试问答：更新 `04-interview-notes.md`
-- Bug / Bad Case：更新 `05-mistakes.md`
-
----
-
-# 十八、新聊天恢复方式
-
-新的聊天窗口优先读取：
-
-1. `docs/00-context.md`
-2. `docs/02-progress.md`
-3. 需要查看完整学习路线时再读 `docs/01-study-plan.md`
-
-然后从当前 Day 继续，不重新从零规划。
-
----
-
-# 十九、对未来 ChatGPT 的长期指令
-
-1. 不要重新从零设计路线，先读项目文档。
-2. 用户主攻 AI 前端 / Agent 前端。
-3. 第一个月项目是“Agent / 前端面试自适应学习 Agent”，不是英语背单词。
-4. 第二个月再扩英语和数学。
-5. 用户正在边学边做，不要一次生成过多核心代码。
-6. 新知识必须尽量连接已有前端知识。
-7. 讲解尽量包含：大白话、本质、代码、原理、项目用途、面试回答、追问。
-8. 每天同步积累面试知识，而不是最后突击。
-9. 不无节制扩大项目范围。
-10. 若当前闭环未完成，暂停加新技术，先把闭环做通。
-11. 真实面试反馈优先级高于原计划。
+> docs/02-progress.md → CURRENT LEARNING POINTER

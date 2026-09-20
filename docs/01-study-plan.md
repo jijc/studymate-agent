@@ -1,1045 +1,796 @@
-# 前端工程师转 AI Agent 前端：8 周学习与项目计划
+# StudyMate AI 前端 / Agent 工程师学习计划
 
-> 版本：v1.1  
-> 日期：2026-09-11  
-> 目标：8 周内，主攻 **AI 前端工程师 / Agent 前端工程师**，附带补齐 AI 全栈基础能力。  
-> 学习节奏：每天约 6 小时，边学边做项目，不等“全部学完”再开始开发。  
-> 核心项目：**StudyMate / 学伴 Agent**。  
-> 第一个月：先做 **前端 / Agent 面试自适应学习 Agent**；第二个月再扩英语和数学。
+> 版本：v2.0  
+> 更新日期：2026-09-20  
+> 原则：项目驱动、Python 单路线、React / Next + Agent 并重。  
+> 本文是路线图，不代表实际完成度。实际进度只以 docs/02-progress.md 为准。
 
 ---
 
-# 一、8 周最终目标
+# 一、最终目标
 
-8 周后希望达到：
+目标不是“看完课程”，而是在约 8 周的强化周期内形成：
 
-1. 能用 React + TypeScript 独立完成 AI / Agent 前端页面。
-2. 能理解并实现 Streaming、SSE、Tool Calling 状态、Agent Workflow 展示、Retry / Cancel 等交互。
-3. 能用 Python + FastAPI 写基础 AI 后端接口。
-4. 掌握 PostgreSQL CRUD、JOIN、基础索引和简单表设计。
-5. 会使用 Redis 的基础场景。
-6. 真正理解并在项目中使用 LLM、Structured Output、Tool Calling、Agent State、LangGraph、Memory、RAG、Evaluation。
-7. 能讲清项目架构、关键选择、Bad Case、性能和工程设计，而不是只会跑 Demo。
-8. 第 4 周开始试投，第 5～8 周边学习边参加真实面试。
-9. 项目最终可以扩成英语 / 数学，证明底层学习引擎不是写死的。
+~~~text
+多年 Vue / Web 前端经验
+        +
+React + TypeScript
+        +
+Next.js + App Router
+        +
+Python + FastAPI
+        +
+PostgreSQL / Redis
+        +
+LLM / Agent / LangGraph
+        +
+RAG / MCP / Web Agent
+        +
+Evaluation / Deployment
+~~~
 
----
+最终求职方向：
 
-# 二、固定学习方法
-
-每天约 6 小时：
-
-| 时间 | 内容 |
-|---|---|
-| 1 小时 | 新知识：大白话 + 原理 |
-| 2 小时 | 自己亲手写练习代码 |
-| 1.5 小时 | 把知识放进 StudyMate |
-| 45 分钟 | React / JS / 浏览器基础复习 |
-| 30 分钟 | AI 基础 / 高频英文术语 |
-| 15 分钟 | 面试口述与当天复盘 |
-
-规则：
-
-- 核心功能第一遍尽量自己写。
-- ChatGPT / Codex 主要负责讲解、提示、Code Review、排错。
-- 当天知识尽量当天进入项目。
-- 当天知识当天进入 `04-interview-notes.md`。
-- 闭环没做通时，不继续盲目增加新功能。
+1. AI 前端工程师
+2. Agent 前端工程师
+3. AI 产品前端
+4. AI 全栈（前端侧重）
+5. Agent 应用开发
 
 ---
 
-# 三、Month 1 产品：Agent / 前端面试自适应学习
+# 二、学习原则
 
-核心闭环：
+## 2.1 项目与学习并行
 
-```text
-读取历史掌握度
-  ↓
-选择今天最该练的知识点
-  ↓
-给出 5 道题
-  ↓
-用户输入开放式答案
-  ↓
-LLM 按 Rubric 评分
-  ↓
-返回已覆盖点 / 遗漏点 / weak topics
-  ↓
-记录 PostgreSQL
-  ↓
-更新 Mastery
-  ↓
-必要时追问
-  ↓
-生成今日总结
-  ↓
-下一次继续针对薄弱点
-```
+StudyMate 是主项目。
 
-第一月题目范围：
+任何核心知识尽量当天进入项目，而不是先学完几个月再做项目。
 
-- JavaScript
-- TypeScript
-- React
-- 浏览器 / HTTP
-- SSE / WebSocket
+## 2.2 Codex 和本人分工
+
+Codex 可以快速完成：
+
+- 静态 UI
+- Tailwind / shadcn
+- 重复页面
+- 响应式
+- 测试骨架
+- 机械性代码
+
+本人必须理解并尽量亲手完成第一遍：
+
+- React 核心
+- 网络请求
+- 状态管理
+- TanStack Query
+- Next 核心
 - Python / FastAPI
-- LLM 基础
-- Structured Output
-- Tool Calling
-- Agent / Workflow / State
-- RAG
+- 数据库
+- LLM
+- Agent
 - LangGraph
-- MCP 基础
+- RAG
+- MCP
 
-第一月暂时不做：
+## 2.3 Python 单后端路线
 
-- 英语完整模块
-- 数学完整模块
-- OCR
-- 语音识别
-- App / Electron / 小程序
-- 社区 / 排行榜 / 会员
-- 复杂权限系统
-- 大规模题库
+不学习 Java / Spring 作为当前主线。
 
----
+OAuth2、RBAC、缓存、事务、消息、日志、测试等工程知识，用 Python 生态学习。
 
-# 四、Week 1：React + Python + FastAPI + 最小题库
+## 2.4 不追求“课程全覆盖”
 
-## 本周目标
+外部课程只作为技能地图。
 
-Day 7 必须做到：
-
-> **StudyMate 可以真正完成“每天 5 道面试题”的最小 Web 闭环。**
-
-不要求 AI 智能评分，先把产品跑通。
+与求职 / StudyMate 强相关的吸收；过深、过早、偏 Java、偏模型训练的暂不学。
 
 ---
 
-## Day 1：环境 + Python 第一课 + React 起步
+# 三、阶段 1：React 数据流与真实前后端闭环
 
-学习：
+## 当前优先级：最高
 
-- PyCharm 基本使用
-- Python 解释器 / venv / pip
-- Python 文件如何运行
-- 变量
-- `str / int / float / bool`
-- `list / dict`
-- `if`
-- React 项目结构基础
+目标：
 
-项目：
+> 把目前 Codex 完成的静态 StudyMate 页面，接成真实 React → FastAPI 数据链路。
 
-- Clone `studymate-agent`
-- 创建 React + TypeScript + Vite 项目
-- 创建 Python 虚拟环境
-- 完成第一个 Python 文件
-- 完成最小 FastAPI Hello World
-- React 首页显示 StudyMate 标题和“今日 5 题”入口
-
-前端复习：
-
-- 浏览器、前端、后端分别做什么
-- HTTP 请求最基本流程
-
-面试：
-
-- Python 与 JavaScript 最直观的区别
-- 动态类型语言是什么
-
----
-
-## Day 2：函数 + API + JSON
-
-Python：
-
-- `def`
-- 参数
-- `return`
-- 类型注解基础
-
-FastAPI：
-
-- GET
-- POST
-- JSON
-- request / response 基础
-
-项目：
-
-实现：
-
-```text
-GET /api/questions/today
-POST /api/answers
-```
-
-先返回固定题目和固定反馈。
-
-前端复习 / 面试：
-
-- GET 与 POST
-- HTTP 状态码
-- REST API
-- JSON 为什么适合前后端通信
-
----
-
-## Day 3：React 基础
-
-学习：
+### React 已学 / 必学
 
 - JSX
 - Component
 - props
-- useState
-- 事件
+- children
+- map
 - 条件渲染
-- 列表渲染
+- useState
+- state 与 re-render
+- 事件
+- 表单受控输入
+- useEffect
+- Router
+- Link / NavLink
+- useNavigate
+- useParams
+- Layout / Outlet
 
-项目：
+### React 后续补齐
 
-完成题目卡：
+- useRef
+- Context
+- useMemo
+- useCallback
+- custom hooks
+- Error Boundary
+- 性能优化
+- React render / reconciliation / Fiber 基础
 
-```text
-第 1 / 5 题
+### API 工程
 
-什么是 Agent？
+- Axios instance
+- baseURL / env
+- request interceptor
+- response interceptor
+- ApiResponse<T>
+- API 文件分层
+- HTTP 错误处理
+- Token
+- CORS
+- Timeout / Abort
 
-[输入你的回答……]
+### TanStack Query
 
-[提交答案]
-```
+- QueryClient / Provider
+- useQuery
+- queryKey
+- queryFn
+- data / cache
+- isPending
+- isLoading
+- isFetching
+- refetch
+- staleTime
+- queryKey 带参数
+- enabled
+- retry
+- useMutation
+- onSuccess / onError
+- invalidateQueries
+- optimistic update 基础
+- query cache 与 server state 思维
 
-前端基础：
+### 阶段验收
 
-- React state 改变为什么会触发重新渲染
-- Vue `ref` 与 React `useState` 的直观区别
+真实完成：
 
----
-
-## Day 4：Pydantic + TypeScript 类型
-
-学习：
-
-- Python class 基础
-- Pydantic Model
-- TypeScript interface / type
-- 前后端数据结构约束
-
-项目：
-
-定义 Question / Answer 请求响应结构。
-
-面试：
-
-- interface vs type
-- 为什么 API 需要参数校验
-- Python 类型注解是不是“编译时强类型”
-
----
-
-## Day 5：异常处理 + UI 状态
-
-学习：
-
-- `try / except`
-- FastAPI `HTTPException`
-- loading / error / empty state
-
-项目处理：
-
-- API 失败
-- 空题目
-- 提交空答案
-- 重试按钮
-
-面试：
-
-- 4xx / 5xx
-- 前端接口异常应该怎么设计体验
-
----
-
-## Day 6：async / await
-
-学习：
-
-- 同步 vs 异步
-- Python `async / await`
-- 与 JS Promise / async-await 对照
-- I/O 的概念
-
-项目：
-
-把适合的 FastAPI 接口改为 async。
-
-面试：
-
-- 为什么 LLM / Agent 服务大量使用异步
-- Event Loop 基础
+~~~text
+Practice 页面
+↓
+GET FastAPI 题目
+↓
+显示题目
+↓
+用户输入答案
+↓
+POST FastAPI
+↓
+显示后端返回反馈
+~~~
 
 ---
 
-## Day 7：第一周验收
+# 四、阶段 2：Next.js + App Router
 
-必须实现：
+开始条件：
 
-- React 页面
-- FastAPI
-- 5 道固定面试题
-- 输入开放式答案
-- 提交
-- 显示固定或规则反馈
-- 上一题 / 下一题 / 当前进度
-- 5 题完成页
+> 第一条 React + FastAPI 真实查询 / 提交闭环跑通。
 
-本日不学新技术：
+不等 React 所有知识学完，但也不在当前 API 基础没打稳前强行重构。
 
-- 修 Bug
-- 整理代码
-- 第一次真实使用 StudyMate 复习
-- 更新文档
-- 自己口述本周面试题
+## Next.js 核心
+
+- Next 项目结构
+- App Router
+- app/
+- page.tsx
+- layout.tsx
+- nested layout
+- dynamic route
+- Link
+- useRouter
+- usePathname
+- params / searchParams
+- not-found
+- loading
+- error
+
+## Server / Client
+
+- Server Component
+- Client Component
+- use client
+- 为什么 useState / useEffect 必须在 Client Component
+- Server Component 能做什么
+- 浏览器 API 边界
+- sessionStorage / localStorage 边界
+
+## 数据与渲染
+
+- Server fetch
+- Client fetch
+- TanStack Query 在 Next 中的位置
+- SSR
+- SSG
+- Dynamic Rendering
+- Suspense
+- Streaming
+- Cache
+- Revalidate
+
+## 其他
+
+- Metadata
+- SEO
+- Image
+- Font
+- Route Handler 基础
+- Server Actions 基础
+
+## StudyMate 迁移练习
+
+优先迁移现有真实页面，而不是新建 Todo Demo：
+
+~~~text
+React Router → App Router
+MainLayout / Outlet → layout.tsx + children
+Practice route → app/practice
+PracticeSession → dynamic route
+useNavigate → useRouter
+~~~
 
 ---
 
-# 五、Week 2：PostgreSQL + LLM Rubric 评分
+# 五、阶段 3：Python 核心 + FastAPI 工程化
 
-## 本周目标
+## Python A 级：必须熟练
 
-Day 14 必须做到：
+- 基础语法
+- list / dict / tuple / set
+- 函数
+- 作用域
+- lambda
+- class / object
+- exception
+- type annotation
+- module / package
+- decorator
+- iterator
+- generator
+- context manager
+- async / await
+- event loop
+- coroutine
+- Future 基础
+- debugging
 
-> **开放式回答能够被 LLM 按明确评分标准结构化评价，并长期保存答题历史。**
+## Python B 级：理解并用到再加深
+
+- magic methods
+- callable
+- ABC
+- threading / multiprocessing
+- package build
+- project dependency management
+- monorepo 基础
+
+## Python C 级：当前低优先级
+
+- metaclass
+- descriptor 深入
+- Python 解释器内部实现
+
+## FastAPI
+
+- FastAPI app
+- Router
+- Query / Path / Body
+- Pydantic
+- Generic / TypeVar
+- response_model
+- Dependency Injection
+- Middleware
+- Exception Handler
+- CORS
+- Authentication
+- File Upload
+- Streaming Response
+- Background Task
+- Logging
+- pytest
+- API tests
+- OpenAPI
+
+## 分层
+
+~~~text
+api/
+schemas/
+services/
+models/
+agents/
+tools/
+~~~
+
+理解 API / Service / ORM / Agent 的边界。
 
 ---
 
-## Day 8：数据库入门
+# 六、阶段 4：PostgreSQL + 数据持久化 + 用户系统
 
-学习：
+## SQL
 
-- 数据库是什么
-- 表 / 行 / 列
-- 主键
-- PostgreSQL
-- `SELECT`
-
-项目：
-
-先设计：
-
-```text
-subjects
-topics
-questions
-```
-
----
-
-## Day 9：基础 SQL
-
-学习：
-
+- DDL
+- DML
+- SELECT
 - INSERT
 - UPDATE
 - DELETE
 - WHERE
 - ORDER BY
-
-项目：
-
-真正用数据库保存题目。
-
----
-
-## Day 10：Attempt 数据
-
-设计：
-
-```text
-attempts
-```
-
-建议字段：
-
-```text
-profile_id
-question_id
-answer
-score
-feedback
-created_at
-```
-
-学习：
-
-- 外键
-- 表关系
-- 为什么不能把所有数据塞进一张表
-
----
-
-## Day 11：JOIN / GROUP BY
-
-学习：
-
-- JOIN
-- COUNT
-- AVG
 - GROUP BY
+- JOIN
+- transaction
+- index
+- foreign key
+- relation
+- query plan 基础
 
-项目：
+## Python Database
 
-查询：
+- SQLAlchemy
+- ORM
+- Session
+- relationship
+- Alembic migration
+- transaction boundary
 
-- 每个 topic 做过多少题
-- 平均分
-- 最近成绩
+## StudyMate 数据
+
+优先围绕：
+
+~~~text
+users
+profiles
+topics
+questions
+rubrics
+practice_sessions
+attempts
+evaluations
+mastery
+study_plans
+agent_runs
+tool_calls
+~~~
+
+## 用户系统
+
+- password hash
+- JWT
+- access token
+- refresh token 基础
+- OAuth2 概念
+- OIDC 概念
+- RBAC
+- route protection
+
+OAuth2 / RBAC 不使用 Java 实现，统一 FastAPI / Python。
 
 ---
 
-## Day 12：ORM
+# 七、阶段 5：LLM 应用与 AI 评分
 
-学习：
+## LLM 基础
 
-- SQLAlchemy 基础
-- ORM 是什么
-- ORM 和 SQL 的关系
+需要理解但不做模型训练：
 
-原则：
-
-先理解 SQL，再用 ORM。
-
----
-
-## Day 13：LLM + Structured Output
-
-学习：
-
-- LLM 是什么
-- Prompt
 - Token
 - Context Window
-- Structured Output
-- JSON Schema / Pydantic
+- Embedding
+- Attention / Transformer 基础认知
+- inference
+- System / User / Assistant message
+- temperature
+- latency
+- cost
 
-项目：
+## Prompt / Context
 
-第一次让 LLM 按固定结构返回评分。
+- Prompt Engineering
+- Context Engineering
+- system prompt
+- few-shot
+- output constraints
+- context assembly
 
-示例：
+## Structured Output
 
-```json
+StudyMate 核心：
+
+~~~json
 {
   "score": 72,
   "covered_points": ["tool_calling"],
   "missing_points": ["state", "retry"],
   "weak_topics": ["agent_state"]
 }
-```
-
----
-
-## Day 14：Rubric 评分验收
-
-每一道题至少有：
-
-```text
-question
-topic
-difficulty
-rubric
-reference_answer
-```
-
-必须完成：
-
-- LLM 结构化评分
-- covered points
-- missing points
-- weak topics
-- 数据库存储 Attempt
-- 历史答题页面基础版
-
----
-
-# 六、Week 3：Mastery + 个性化学习
-
-## 本周目标
-
-Day 21 必须做到：
-
-> **系统不再随机给题，而是会根据真实历史数据调整下一轮 5 道题。**
-
----
-
-## Day 15
+~~~
 
 学习：
 
-- mastery 是什么
-- 为什么“做过题”不等于“掌握”
+- JSON Schema
+- Pydantic
+- output validation
+- parsing error
+- retry
+- fallback
+- provider abstraction
 
-设计：
+## Rubric Evaluation
 
-```text
-mastery
-profile_id
-topic_id
-score
-last_practiced_at
-```
-
----
-
-## Day 16
-
-实现弱项统计：
-
-```text
-React Hooks      82%
-SSE              90%
-Tool Calling     71%
-RAG              55%
-Agent State      38%
-```
-
-React 页面做成可视化仪表盘。
+- rubric
+- reference answer
+- scoring dimension
+- deterministic rule + LLM
+- score explanation
+- evaluation consistency
 
 ---
 
-## Day 17
+# 八、阶段 6：Agent 原理 + LangGraph
 
-实现选题策略 v1：
+先理解 Agent，再学框架。
 
-例如：
+## Agent 原理
 
-```text
-5 题 =
-2 道薄弱知识
-1 道次薄弱知识
-1 道已掌握复习
-1 道新知识
-```
-
-先用确定性规则，不急着让 LLM 决定一切。
-
----
-
-## Day 18
-
-学习：
-
-- Prompt Engineering
-- Few-shot
-- 幻觉
-- Prompt Bad Case
-
-项目：
-
-提高评分一致性。
-
----
-
-## Day 19
-
-实现 Agent 追问雏形：
-
-例如：
-
-```text
-RAG 是什么？
- ↓
-用户回答基本正确但没提 Retrieval
- ↓
-自动追问：
-“如果 RAG 回答不准确，你会从哪些环节排查？”
-```
-
----
-
-## Day 20
-
-加入 LLM 调用记录：
-
-- latency
-- token usage
-- status
-- error
-
-理解 AI 产品为什么需要成本和耗时观测。
-
----
-
-## Day 21：第三周验收
-
-必须完成：
-
-- Mastery
-- Weak Topics
-- 自适应选题
-- 至少一种追问机制
-- 今日学习总结
-- 明日推荐重点
-
----
-
-# 七、Week 4：Tool Calling + Agent Workflow + v1 求职版
-
-## 本周目标
-
-Day 30：
-
-> **StudyMate v1 成为可在线展示、能解释 Agent 价值、能真正帮自己复习面试的产品。**
-
----
-
-## Day 22：Tool Calling
-
-学习：
-
-- Tool Calling 是什么
+- Tool Calling
 - Tool Schema
-- 为什么 Tool 不等于 Prompt
+- ReAct
+- Agent Loop
+- Observation / Action
+- Stop Condition
+- Planning
+- Retry
+- Timeout
+- Fallback
+- Skill
+- SubAgent
+- Context Engineering
+- Harness Engineering
+- Loop Engineering
+- Graph Engineering
 
-实现 Tool：
-
-```text
-get_mastery()
-get_weak_topics()
-get_recent_attempts()
-get_questions_by_topic()
-```
-
----
-
-## Day 23：Agent 工作流
-
-流程：
-
-```text
-读取 Mastery
- ↓
-确定今日重点
- ↓
-调用题库 Tool
- ↓
-给出题目
- ↓
-评分
- ↓
-判断是否追问
- ↓
-更新掌握度
- ↓
-总结
-```
-
-理解：
-
-- Workflow
-- State
-- 多步骤任务
-
----
-
-## Day 24：LangGraph 入门
-
-学习：
+## LangGraph
 
 - State
 - Node
 - Edge
 - Conditional Edge
-
-把已有流程中的一个小闭环迁移到 LangGraph，而不是一次重写整个系统。
-
----
-
-## Day 25：开始试投
-
-开始尝试：
-
-- AI 前端
-- Agent 前端
-- AI 产品前端
-
-目标：获取真实面试反馈，不要求此时技术全部学完。
-
----
-
-## Day 26：SSE / Streaming / Cancel
-
-学习：
-
-- SSE
-- Streaming
-- AbortController
-- Stop / Retry
-
-项目：
-
-让前端能展示 AI 评分 / Agent 执行的流式过程。
-
----
-
-## Day 27：学习报告
-
-实现：
-
-- 总练习次数
-- 平均得分
-- Knowledge Mastery
-- Weak Topics
-- 最近趋势
-- Agent 推荐复习重点
-
----
-
-## Day 28：产品体验
-
-完善：
-
-- Loading
-- Empty State
-- Error
-- Retry
-- Responsive
-- 基础性能优化
-
-同时复习 React 高频面试点。
-
----
-
-## Day 29：工程化
-
-- README
-- 架构图
-- 日志
-- 基础测试
-- Docker 初步
-- 在线部署
-
----
-
-## Day 30：第一月最终验收
-
-StudyMate v1 至少具备：
-
-1. 前端 / Agent 面试 Subject
-2. Topic 分类
-3. 每日 5 题
-4. 开放式输入
-5. Rubric
-6. Structured Output 评分
-7. PostgreSQL Attempt 历史
-8. Mastery / Weak Topic
-9. 自适应选题
-10. Agent 追问
-11. Tool Calling 基础
-12. Agent Workflow / LangGraph 基础
-13. 学习报告
-14. React + FastAPI + PostgreSQL
-15. 在线 Demo
-16. README + 架构图
-
----
-
-# 八、Week 5：Agent 深化 + Memory / Checkpoint
-
-目标：一边正式投递，一边把 Agent 从“能跑”提升到“能讲”。
-
-学习：
-
-- LangGraph State / Node / Edge 深化
+- Message
+- Reducer
+- Tool Node
+- Runtime
+- Config
+- Thread
 - Checkpoint
-- Memory
+- Store
+- Subgraph
+- Command
+- Interrupt
 - Human-in-the-loop
-- Retry / Timeout / Fallback
+- Retry / Fault Tolerance
+- Cancel
+- Event Stream
+- Fan-out
+- Long-term Memory
+- A2A 基础
 
-项目：
+## StudyMate Agent
 
-- 保存一次学习 Session 的 Agent 状态
-- 中途恢复
-- Tool 错误状态展示
-- Agent 执行 Timeline
-
-前端重点：
-
-- React Hooks
-- useEffect
-- useMemo
-- useCallback
-- 状态设计
-- Streaming 性能问题
-
----
-
-# 九、Week 6：RAG + 自己的学习资料
-
-把项目中的：
-
-```text
-docs/03-learning-notes.md
-docs/04-interview-notes.md
-```
-
-逐步作为面试学习资料来源。
-
-学习：
-
-- Embedding
-- Vector
-- Chunk
-- Retrieval
-- RAG
-- Citation
-- Rerank 概念
-
-项目：
-
-```text
-学习资料
- ↓
-RAG
- ↓
-找到相关知识
- ↓
-用于出题 / 参考答案 / 评分依据
-```
-
-重点：理解每一环为什么会导致 RAG Bad Case。
-
----
-
-# 十、Week 7：扩展英语，验证通用架构
-
-新增英语单词学习，但复用：
-
-```text
-Subject
-Topic
-Question
-Attempt
-Mastery
-Study Plan
-```
-
-英语 Evaluator 使用确定性规则优先：
-
-- 英译中
-- 中译英
-- 拼写
-
-学习重点：
-
-- 为什么不是所有功能都应该调用 LLM
-- Strategy / Evaluator 的设计思想
-- 数据库如何支持多 Subject
-
-如果求职面试很多，本周项目扩展可降低优先级，以真实面试补弱为先。
-
----
-
-# 十一、Week 8：扩展数学 + 求职冲刺
-
-增加初一数学每日 5 题的最小版：
-
-```text
-历史掌握度
- ↓
-选择薄弱知识点
- ↓
-5 道题
- ↓
-规则 / 标准答案评分
- ↓
+~~~text
+读取历史 Mastery
+↓
+选择 Weak Topics
+↓
+调用题库 Tool
+↓
+生成本轮练习
+↓
+用户作答
+↓
+评分
+↓
+判断是否追问
+↓
 更新 Mastery
-```
-
-目的不是做完整数学产品，而是证明：
-
-> StudyMate 的 Adaptive Learning Engine 可以支持不同学科和不同评估策略。
-
-本周主要时间仍用于：
-
-- 项目打磨
-- React / JS / 浏览器高频面试
-- Agent / RAG / LangGraph 口述
-- 模拟面试
-- 大量投递
-- 根据真实面试反馈补知识
+↓
+生成下一轮计划
+~~~
 
 ---
 
-# 十二、两个月必须补的前端基础
+# 九、阶段 7：RAG
 
-## JavaScript
+目标不是“接一个向量库就算会 RAG”，而是理解质量链路。
 
-- 作用域
-- 闭包
-- this
-- 原型链
-- Event Loop
-- Promise
-- async / await
-- 宏任务 / 微任务
-- Map / WeakMap
-- 内存泄漏
+- Tokenization
+- Embedding
+- Chunking
+- Data Cleaning
+- Metadata
+- Vector DB
+- pgvector / Qdrant 选一
+- Retrieval
+- Keyword Search
+- Hybrid Search
+- Query Rewrite
+- Rerank
+- Citation
+- Context Assembly
+- Cache
+- Multi-source
+- Multimodal RAG 基础
+- Semantic Routing
+- RAG Evaluation
+- Bad Case
 
-## 浏览器 / 网络
+StudyMate 可用资料：
 
+- 技术笔记
+- 面试笔记
+- 题库
+- 用户上传简历
+- JD
+- 后续个人学习资料
+
+---
+
+# 十、阶段 8：MCP + Web Agent + 高级 Agent
+
+## MCP
+
+- MCP 解决什么问题
+- Client
+- Server
+- Tool
+- Resource
+- Prompt
+- stdio
+- Streamable HTTP
+- MCP + FastAPI
+- Tool permission
+- MCP testing
+
+## Web Agent
+
+- Playwright
+- Browser automation
 - DOM
-- Rendering Pipeline
-- 重排 / 重绘
-- HTTP / HTTPS
-- 缓存
-- Cookie
-- CORS
-- SSE
-- WebSocket
-
-## React
-
-- Component
-- props
-- state
-- render
-- useState
-- useEffect
-- useMemo
-- useCallback
-- useRef
-- Context
-- Zustand
-- React 性能优化
-- Fiber 基础概念
-
-## TypeScript
-
-- interface
+- Accessibility Tree
+- click
 - type
-- union
-- generic
-- narrowing
-- utility types
+- scroll
+- navigate
+- browser session
+- cookie
+- screenshot / vision
+- error recovery
+- task evaluation
+
+## 高级 Agent
+
+- sandbox 基础
+- file tools
+- PII
+- context compression
+- plan-then-act
+- multi-agent
+- supervisor
+- delegation
+- SubAgent
+- async subagent
+- handoff
+- router
+- resource isolation
+
+这些后置，不能抢占前面真实闭环。
 
 ---
 
-# 十三、两个月必须理解的 AI / Agent 基础
+# 十一、阶段 9：Evaluation 与生产工程
+
+## AI / Agent Evaluation
+
+- Golden Dataset
+- expected behavior
+- deterministic eval
+- LLM-as-Judge
+- regression
+- bad case
+- tool success rate
+- latency
+- token / cost
+- trace
+
+## Web 工程
+
+- unit test
+- integration test
+- E2E
+- API contract
+- error code
+- logging
+
+## Redis
+
+- cache
+- session
+- rate limit
+- temporary agent state
+- cache penetration / breakdown / avalanche 概念
+
+## 部署
+
+- Linux
+- SSH
+- Nginx
+- reverse proxy
+- HTTPS
+- Docker
+- Docker Compose
+- GitHub Actions
+- CI/CD
+- rollback
+
+## Observability
+
+- logs
+- metrics
+- trace
+- Prometheus 基础
+- Grafana 基础
+- alert 基础
+
+---
+
+# 十二、当前不主攻
+
+- Java / Spring / Spring Cloud
+- Dubbo / Netty
+- Java 微服务全家桶
+- Kubernetes 深入
+- PyTorch / TensorFlow
+- CUDA
+- SFT / LoRA / QLoRA
+- RLHF / DPO
+- 分布式训练
+- 大模型底层训练工程
+- 完整数据科学课程
+- Dify 深入
+
+---
+
+# 十三、建议 8 周节奏
+
+这是阶段建议，不是死日历。卡住的知识可以跨天。
+
+## Week 1-2
+
+- React 核心
+- Axios
+- TanStack Query
+- FastAPI
+- 第一条真实 Practice 闭环
+- Python 基础补强
+
+## Week 2-3
+
+- Next.js + App Router
+- PostgreSQL / SQLAlchemy / Alembic
+- 用户系统
+- API 工程化
+
+## Week 3-4
 
 - LLM
-- Token
-- Context Window
-- Prompt
-- Temperature
 - Structured Output
-- Function / Tool Calling
-- Agent
-- Workflow
-- State
-- Memory
+- Rubric AI 评分
+- Attempt / Evaluation 持久化
+- Weak Topics
+
+## Week 4-5
+
+- Agent 原理
+- Tool Calling
+- ReAct
+- LangGraph
 - Checkpoint
-- Embedding
-- Vector
-- Chunk
-- Retrieval
+- HITL
+- Streaming
+
+## Week 5-6
+
 - RAG
+- Hybrid Search
 - Rerank
-- MCP
-- Hallucination
-- Context Engineering
 - Evaluation
-- Rubric
-- Bad Case
-- Latency
-- Token Cost
-- Retry
-- Timeout
-- Fallback
+- 简历 / JD / 技术资料接入
+
+## Week 6-7
+
+- MCP
+- Skill
+- SubAgent
+- Web Agent 基础
+- Agent Evaluation
+
+## Week 7-8
+
+- Docker / CI/CD
+- Observability
+- 项目部署
+- 项目架构 / 面试表达
+- 大量真实面试 + 反向补短板
 
 ---
 
-# 十四、建议项目目录
+# 十四、阶段验收
 
-```text
-studymate-agent/
-├── frontend/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   ├── agents/
-│   │   └── tools/
-│   └── tests/
-│
-├── docs/
-│   ├── 00-context.md
-│   ├── 01-study-plan.md
-│   ├── 02-progress.md
-│   ├── 03-learning-notes.md
-│   ├── 04-interview-notes.md
-│   └── 05-mistakes.md
-│
-├── docker-compose.yml
-└── README.md
-```
+## 验收 A：Web 闭环
 
----
+React / Next 能真实调用 FastAPI，完成查询和提交。
 
-# 十五、每日文档维护
+## 验收 B：数据闭环
 
-`02-progress.md`：今天完成什么、下一步是什么。  
-`03-learning-notes.md`：知识本质、代码、前端类比、项目用途。  
-`04-interview-notes.md`：问题、一句话本质、可直接口述答案、追问。  
-`05-mistakes.md`：报错、原因、排查、修复、避免方式。
+练习记录进入 PostgreSQL，可查询历史。
+
+## 验收 C：AI 闭环
+
+开放式答案由 LLM 按 Rubric 返回 Structured Output。
+
+## 验收 D：个性化闭环
+
+Weak Topics / Mastery 会影响下一轮练习。
+
+## 验收 E：Agent 闭环
+
+Tool + State + Workflow + Checkpoint 真正在项目中工作。
+
+## 验收 F：RAG / MCP
+
+至少一个真实 RAG 能力和一个真实 MCP Tool 接入项目。
+
+## 验收 G：生产化
+
+Docker 部署、有日志、有基本测试、有项目说明和架构图。
 
 ---
 
-# 十六、强制验收点
+# 十五、每日实际进度怎么管理
 
-## Day 7
+本文永远只描述“应该往哪里走”。
 
-能完整完成 5 道面试题的 Web 流程。
+真正每天学到哪里，统一写入：
 
-## Day 14
+> docs/02-progress.md
 
-PostgreSQL + Rubric + LLM Structured Output 评分完整跑通。
+每天学习结束必须：
 
-## Day 21
+1. 移动 CURRENT LEARNING POINTER
+2. 记录当天实际学习内容
+3. 标记 ✅ / 🟡 / ⏭
+4. 将学懂知识补到 03-learning-notes
+5. 将可口述面试点补到 04-interview-notes
+6. 有真实 Bug 才补 05-mistakes
 
-系统能根据 Weak Topics 自动调整下一轮 5 题。
-
-## Day 30
-
-StudyMate v1 在线可演示，并正式进入 AI 前端 / Agent 前端求职。
-
-如果任何节点未完成：
-
-> **停止增加新技术，先把当前闭环做通。**
-
----
-
-# 十七、最终求职定位
-
-主投：
-
-1. AI 前端工程师
-2. Agent 前端工程师
-3. AI 产品前端
-
-第二梯队：
-
-4. AI 全栈（前端侧重）
-5. Agent 应用开发（匹配度合适时尝试）
-
-第一阶段不主投：
-
-- AI 算法工程师
-- 纯 Python 高级后端
-- 模型训练 / 微调
-- Agent 基础设施高级架构岗位
+换新对话时，不按照 Week 计划猜进度，只按照 02-progress 继续。
