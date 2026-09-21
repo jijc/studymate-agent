@@ -408,3 +408,219 @@ FastAPI 通常通过 Pydantic `BaseModel` 定义请求体结构和约束。请�
 - Validation：校验
 - Unprocessable Content：无法处理的内容（HTTP 422）
 - Structured Output：结构化输出
+
+
+---
+
+# 2026-09-20 学习进度同步补录
+
+> 以下内容用于把 9 月中旬实际已经学习的 React / API / TanStack Query 知识同步进长期笔记。  
+> 详细每日位置以 docs/02-progress.md 为准。
+
+## React：组件为什么会执行多次
+
+### 一句话本质
+
+React 函数组件不是“进入页面只执行一次的初始化函数”，而是“根据当前 props / state 重新计算 UI 的函数”。
+
+当组件订阅的状态发生变化时，React 可以再次调用组件函数。
+
+### 已理解
+
+- useState setter 会触发状态更新。
+- TanStack Query 的 query state 变化会通知订阅它的组件。
+- 普通 let 变量改变不会自动触发 React re-render。
+- return 只结束当前这一次 render，不会永久结束组件生命周期。
+
+### Vue 对照
+
+Vue 更像：
+
+~~~text
+响应式值改变
+→ Vue 更新依赖它的 DOM
+~~~
+
+React 更像：
+
+~~~text
+state 改变
+→ 组件函数重新执行
+→ 重新计算 JSX
+→ React 更新真正变化的 DOM
+~~~
+
+---
+
+## TanStack Query：useQuery 与 queryFn 不是一回事
+
+### 一句话本质
+
+useQuery 会随着组件 render 重新执行，但 queryFn 是否真的再次发请求，由 TanStack Query 根据 queryKey、缓存状态和配置判断。
+
+### 数据流
+
+~~~text
+PracticePage render
+↓
+useQuery({ queryKey, queryFn })
+↓
+TanStack Query 查 query cache
+↓
+需要请求？
+├─ 是 → 执行 queryFn
+└─ 否 → 使用缓存
+~~~
+
+因此：
+
+~~~text
+useQuery 再执行
+≠
+接口再次请求
+~~~
+
+---
+
+## TanStack Query：queryKey
+
+### 一句话本质
+
+queryKey 是服务端数据在 Query Cache 里的“身份标识”。
+
+当前练习使用：
+
+~~~ts
+queryKey: ["todayQuestions"]
+~~~
+
+后续学习参数化，例如：
+
+~~~ts
+queryKey: ["todayQuestions", limit]
+~~~
+
+字符串 "questions" 和变量 const questions 不存在命名冲突，因为一个是字符串值，一个是 JavaScript 标识符。
+
+---
+
+## TanStack Query：isPending / isLoading / isFetching
+
+### 一句话本质
+
+- isPending：当前还没有成功数据。
+- isFetching：现在有请求正在进行，即使已有旧数据。
+- isLoading：可以先理解为首次没有数据且正在请求的加载状态。
+
+后台刷新时常见：
+
+~~~text
+已有 data
+isPending = false
+isFetching = true
+~~~
+
+因此可以继续显示旧内容，只额外显示“刷新中”。
+
+---
+
+## TanStack Query：refetch
+
+refetch 表示业务代码主动要求当前 query 再次获取数据。
+
+它会触发 queryFn 重新执行，而不是依赖组件 render。
+
+---
+
+## TanStack Query：staleTime
+
+### 一句话本质
+
+staleTime 决定一份成功缓存多久被认为“新鲜”。
+
+stale 不等于缓存被删除。
+
+~~~text
+fresh
+→ staleTime 到期
+→ stale
+→ 旧 data 仍可继续使用
+→ 满足重新获取条件时可以后台刷新
+~~~
+
+---
+
+## Axios：全局 HTTP 层与业务 API 层
+
+当前 StudyMate 决策：
+
+~~~text
+React / TanStack Query
+        ↓
+src/api/*.ts
+        ↓
+src/lib/http.ts
+        ↓
+FastAPI
+~~~
+
+http.ts：
+
+- axios.create
+- baseURL
+- timeout
+- interceptor
+- 保留 AxiosResponse
+
+API 函数：
+
+- 声明业务类型
+- 调用 http
+- 解开 Axios 外层 response.data
+- 给页面返回 ApiResponse<T>
+
+所以业务代码希望得到：
+
+~~~ts
+res.code
+res.msg
+res.data
+~~~
+
+而不是全局 interceptor 强制改变 Axios 的标准返回类型。
+
+---
+
+## TypeScript：对象解构冒号不是类型声明
+
+下面的冒号表示重命名：
+
+~~~ts
+const { data: response } = result
+~~~
+
+意思是把 result.data 取出来，局部变量命名为 response。
+
+它不是：
+
+~~~text
+data 的类型是 response
+~~~
+
+如果 getTodayQuestions 已经正确声明返回类型，useQuery 通常可以自动推导，不需要在页面重复写 ApiResponse<Question[]>。
+
+---
+
+# 当前尚未学习
+
+以下不要误标成已掌握：
+
+- ⏭ queryKey 带参数的完整实践
+- ⬜ enabled
+- ⬜ useMutation
+- ⬜ invalidateQueries
+- ⬜ optimistic update
+- ⬜ Next.js App Router 正式学习
+- ⬜ LangGraph
+- ⬜ RAG
+- ⬜ MCP

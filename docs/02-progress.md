@@ -1,413 +1,586 @@
-# StudyMate Agent 当前进度
-
-> 这是项目最重要的动态文档。每天学习结束后必须更新。
-
-## 当前状态
-
-- 日期：2026-09-11
-- 当前阶段：Day 1
-- 状态：**后端基础链路已跑通，React 前端环境已初始化，下一步正式进入页面开发**
-- 第一阶段产品：**AI 面试陪练 / 前端与 Agent 面试自适应学习平台**
-- 第二阶段扩展：初一英语背单词 + 初一数学每日 5 题
-- 主要求职方向：AI 前端工程师 / Agent 前端工程师
-- 附带方向：AI 全栈（前端侧重）
-
-## 产品方向最新确认
-
-StudyMate 第一阶段不再只是“固定 5 道题练习”，而是逐步发展为可上线的 AI 面试陪练平台。
-
-核心价值：
-
-```text
-用户简历 / 项目资料 / 招聘 JD
-        ↓
-AI 分析个人背景与目标岗位
-        ↓
-生成专属面试题
-        ↓
-文字 / 语音模拟回答
-        ↓
-AI 评分 + 追问 + 弱项分析
-        ↓
-持续针对性强化
-```
-
-长期可扩展能力：
-
-- 上传简历后生成专属面试题
-- 上传项目说明 / 本地项目资料后生成项目深挖题
-- 输入招聘 JD 文本生成岗位匹配题
-- 上传招聘信息截图后识别并生成专属题目
-- AI 模拟面试
-- 语音回答与语音识别
-- 结构化评分与弱项分析
-- 长期学习报告
-- 后续加入 Pro 订阅，但当前阶段暂不开发 Pro
-
-当前第一阶段导航确定为：
-
-```text
-首页 ｜ 练习 ｜ 题库 ｜ 报告 ｜ 登录
-```
-
-`Pro` 暂不放入导航；未来真正有订阅方案后再加入公开 Pricing 页面和登录后头像菜单入口。
-
-## 已完成：环境与工程基础
-
-- GitHub 仓库初始化完成
-- 本地仓库与远程仓库已完成 Commit / Fetch / Pull / Push 全流程学习
-- Python 项目版本固定为 3.12.12
-- 创建 `backend/.venv`
-- PyCharm 已配置正确解释器与 FastAPI Run Configuration
-- FastAPI / Uvicorn / Pydantic 已安装
-- Node.js 24.16.0 可用
-- pnpm 10.28.0 可用，并确定前端统一使用 pnpm
-- WebStorm 已作为 React 前端开发 IDE
-- WebStorm 已配置 `pnpm dev` Run Configuration
-- React + TypeScript + Vite 前端项目已初始化
-- `localhost:5173` 已成功运行 Vite React 页面
-
-## 已完成：FastAPI / Python 基础学习
-
-已经学习并实际使用：
-
-- FastAPI 最小应用
-- `FastAPI()` 应用实例
-- `@app.get()` / `@app.post()` 路由装饰器
-- `async def`
-- Python `dict` / `list`
-- Python list 切片：`sequence[start:stop:step]`
-- Query 参数
-- `Query(default=5, ge=1, le=10)`
-- `gt / ge / lt / le`
-- Pydantic `BaseModel`
-- `Field()` 数据约束
-- POST Request Body
-- 422 Validation Error
-- HTTP 常见状态码：200 / 400 / 401 / 403 / 404 / 409 / 422 / 429 / 500 等
-- Python 类型标注
-- 函数返回类型：`-> EvaluationResult`
-- `if / elif / else`
-- `len()`
-- Python `class` / 继承的基础概念
-- `import` / module / package / `__init__.py`
-- `as` 导入别名
-- `APIRouter`
-- `include_router()`
-- `response_model`
-
-## 已完成：后端目录规范化
-
-当前后端按以下职责拆分：
-
-```text
-backend/app/
-├── main.py
-├── api/
-│   ├── questions.py
-│   └── attempts.py
-├── schemas/
-│   ├── attempt.py
-│   └── evaluation.py
-├── services/
-│   ├── question_service.py
-│   └── evaluation_service.py
-├── models/
-├── agents/
-└── tools/
-```
-
-职责：
-
-```text
-main.py   = FastAPI 应用入口和组装
-api/      = HTTP 路由
-schemas/  = Pydantic 请求 / 响应数据结构
-services/ = 业务逻辑
-models/   = 后续数据库 ORM
-agents/   = 后续 LLM / Agent Workflow
-tools/    = 后续 Agent Tool
-```
-
-当前已能正常运行：
-
-```text
-GET  /
-GET  /questions/today
-POST /attempts
-```
-
-## 已完成：模拟评分链路
-
-已经建立 `EvaluationResult`：
-
-```python
-class EvaluationResult(BaseModel):
-    score: int = Field(ge=0, le=100)
-    covered_points: list[str]
-    missing_points: list[str]
-    weak_topics: list[str]
-```
-
-当前评分仍为本地模拟规则，目标数据流：
-
-```text
-AnswerSubmit
-    ↓
-evaluation_service
-    ↓
-EvaluationResult
-    ↓
-未来替换为真实 LLM Structured Output
-```
-
-已经理解：
-
-- LLM = Large Language Model / 大语言模型
-- Structured Output 的基本作用
-- Pydantic 可同时用于 API Schema 和未来 LLM 结构化输出校验
-- 后续真正接入模型时，业务层不应绑死具体模型服务商
-
-模型平台暂定：
-
-- 当前不急着购买 API
-- 真正开始接 LLM 时，优先考虑阿里云百炼作为第一平台
-- 原因：后续项目明确可能需要文本模型 + 图片理解 + ASR 语音识别
-- 代码设计仍需保留 Provider 抽象，未来可切换 Qwen / DeepSeek / GLM 等模型
-
-## 已完成：React 前端初始化
-
-前端当前技术基础：
-
-```text
-React 19
-TypeScript
-Vite
-pnpm
-WebStorm
-```
-
-Vite 默认页面已经成功运行。
-
-前端 UI 技术方向暂定：
-
-```text
-React
-+ Tailwind CSS
-+ shadcn/ui
-+ Lucide Icons
-+ 自定义业务组件
-```
-
-原因：
-
-- 不使用 Ant Design / Element 这类强办公后台风格作为主视觉
-- 需要做更有品牌感的暖橙色 / 奶油白极简视觉
-- shadcn/ui 更适合保留组件源码并自行调整品牌风格
-- 页面开发过程同时用于学习 React component / props / state / event / map / conditional rendering 等核心知识
-
-注意：Tailwind / shadcn/ui / Lucide Icons **目前还没有正式安装**，这是下一个学习步骤。
-
-## UI / 产品视觉方向已确认
-
-当前视觉关键词：
-
-```text
-暖橙色
-奶油白
-极简
-少文字
-大圆角
-按钮有厚重点击感
-避免办公蓝
-```
-
-已完成设计方向探索：
-
-- 首页
-- 登录页
-- 练习页
-- 题库页
-- 报告页
-- Banner 方向
-- 暖橙色背景方向
-- StudyMate Logo 方向
-
-首页核心文案方向：
-
-```text
-让 AI 成为你的面试陪练
-```
-
-产品定位文案方向：
-
-```text
-不是刷更多的题，而是练更可能被问到的题。
-```
-
-首页不再使用“观看 Demo”作为主要入口。
-
-## 今天学习到的工程 / 面试知识
-
-### npm vs pnpm
-
-已实际体验 npm / pnpm 安装流程，并确定项目使用 pnpm。
-
-面试核心表达：
-
-- npm 与 pnpm 都是 Node 包管理器
-- pnpm 使用全局内容寻址存储并通过链接复用依赖
-- 通常更省磁盘、安装更快
-- pnpm 的依赖隔离更严格，可以减少 phantom dependency（幽灵依赖）
-- pnpm workspace 很适合 Monorepo
-
-### Git
-
-已实际走过：
-
-```text
-Commit → Fetch → Pull → Push
-```
-
-理解：
-
-- Commit：提交到本地仓库
-- Fetch：更新远程引用，不修改工作区
-- Pull：拉取并整合远程提交
-- Push：把本地提交上传远程
-- Merge 与 Rebase 的基本区别已开始了解
-
-## 当前 Git 状态
-
-用户已完成并推送最新本地代码。
-
-最新可见提交包含：
-
-```text
-feat: initialize FastAPI backend
-feat: 初始化 react
-```
-
-本地 `main` 与 `origin/main` 当前已同步。
-
-## 下一步：正式进入前端页面开发
-
-新对话不要重新做产品规划，直接从以下顺序继续：
-
-1. 安装并理解 Tailwind CSS
-2. 决定并初始化 shadcn/ui
-3. 安装 Lucide Icons
-4. 清理 Vite 默认页面
-5. 建立颜色 / 圆角 / 阴影等基础 Design Token
-6. 开发公共 Header
-7. 开发首页 Hero
-8. 开发首页核心功能区
-9. 再逐步实现登录页 / 练习页 / 题库页 / 报告页
-10. 页面稳定后连接 FastAPI
-
-React 教学需要继续使用“React 与 Vue 对照”的方式，例如：
-
-```text
-React component ≈ Vue component
-props ≈ Vue props
-state ≈ Vue ref/reactive 的一部分用途
-事件处理 ≈ @click / @change
-条件渲染 ≈ v-if
-数组 map ≈ v-for
-```
-
-## 学习方式继续保持
-
-每个新知识尽量按以下顺序讲：
-
-1. 一句话大白话讲本质
-2. 实际代码
-3. 为什么这么写 / 底层原理
-4. 与用户已经熟悉的 Vue / Promise / 前端工程知识类比
-5. 面试可以怎么回答
-
-用户希望自己亲手写代码，不希望核心 Python / React / Agent 代码被自动生成代替学习。
-
-调试时不要一次给太多步骤：
-
-> 遇到错误就停在当前错误，只处理下一小步。
-
-正常学习时可以适当加快速度，但遇到新的参数、命令或 Python / React 语法时，需要顺便解释相关写法。
-
-## Day 7 强制验收目标
-
-StudyMate 能完整完成一轮 5 道固定前端 / Agent 面试题：
-
-```text
-显示题目 → 输入答案 → 提交 → 反馈 → 下一题 → 完成页
-```
-
-## Day 14 强制验收目标
-
-系统完成：
-
-- PostgreSQL 持久化
-- 题库 / Topic / Attempt
-- Rubric
-- LLM Structured Output 评分
-- 历史答题记录
-
-## Day 21 强制验收目标
-
-系统能根据真实历史数据生成 Weak Topics，并自动调整下一轮 5 题。
-
-## Day 30 强制验收目标
-
-StudyMate v1 可以在线演示，并正式作为 AI 前端 / Agent 前端求职项目：
-
-- 每日练习
-- 开放式回答
-- AI 结构化评分
-- Mastery / Weak Topics
-- 自适应出题
-- Agent 追问 / Workflow 基础
-- React + FastAPI + PostgreSQL
-- 学习报告
-- README / 架构图
+# StudyMate 每日学习进度与当前指针
+
+> 这是整个仓库最重要的动态学习文档。  
+> LAST UPDATED：2026-09-20  
+> 更新规则：每个实际学习日结束前必须更新。  
+> 新聊天优先读本文件顶部，不要从旧 Day 重新开始。
 
 ---
 
-## 每日更新模板
+# 🚩 CURRENT LEARNING POINTER
 
-```markdown
-# Day X
+## 当前阶段
 
-日期：
+**阶段 1：React 数据流 + Axios + TanStack Query + FastAPI 真实闭环**
 
-## 今天学了什么
+## 当前正在学习
+
+🟡 TanStack Query 服务端状态管理。
+
+已经讲到：
+
+- ✅ QueryClient / QueryClientProvider
+- ✅ useQuery
+- ✅ queryKey 的作用
+- ✅ queryFn 的作用
+- ✅ useQuery 会随组件 render 运行，但 queryFn 不等于每次 render 都请求
+- ✅ TanStack Query 根据 queryKey / cache / stale 状态决定是否请求
+- ✅ data 请求前为什么是 undefined
+- ✅ React state / query state 变化为什么会触发 re-render
+- ✅ isPending
+- ✅ isLoading
+- ✅ isFetching
+- ✅ refetch
+- ✅ staleTime
+
+## 下一步唯一入口
+
+⏭ **queryKey 带参数**
+
+然后严格按：
+
+~~~text
+queryKey 参数
+↓
+useMutation
+↓
+onSuccess / onError
+↓
+invalidateQueries
+↓
+把真实 FastAPI GET 接入现有 Practice 业务
+↓
+把提交答案改为真实 POST
+↓
+完成第一条真实前后端闭环
+~~~
+
+在这条闭环完成前，不因为 Next / Agent 新知识而跳走。
+
+## Next.js 状态
+
+🧪 已完成技术路线决策，还没有正式学习。
+
+决策：
+
+> StudyMate 未来使用 Next.js + App Router。
+
+开始条件：
+
+> 第一条 React + FastAPI 真实查询 / 提交闭环跑通后进入。
+
+## Agent 状态
+
+🧪 已重新整理完整技能地图，还没有进入 LangGraph / RAG / MCP 主学习阶段。
+
+---
+
+# 一、当前项目代码状态
+
+截至 2026-09-20，main 最新同步基准：
+
+~~~text
+389439caad2dda06dfadd50e1ac462c47882fee3
+feat: 静态页面开发
+~~~
+
+Codex 已帮助完成大量静态产品与本地交互。
+
+当前已存在主要路由：
+
+- /
+- /login
+- /practice
+- /practice/records
+- /practice/records/:recordId
+- /practice/session/:source/:libraryId
+- /questions
+- /questions/ai
+- /questions/:libraryId
+- /reports
+- /profile/*
+
+当前 PracticeSessionPage 已包含：
+
+- useState
+- useEffect
+- useParams
+- useNavigate
+- 逐题回答
+- 草稿 / 已提交状态
+- sessionStorage 本地记录链路
+
+注意：
+
+> “代码中已经存在”不等于“已经学会”。
+
+Codex 写出的 React 代码会作为后续真实学习素材，不强迫用户重新手写所有静态 UI。
+
+---
+
+# 二、当前真实技术栈
+
+前端：
+
+- React 19
+- TypeScript
+- Vite
+- React Router 8
+- Axios
+- TanStack Query
+- Tailwind CSS v4
+- shadcn / Base UI
+- Lucide
+- Vitest / Testing Library
+
+后端：
+
+- Python
+- FastAPI
+- Pydantic
+- api / schemas / services 分层
+
+后续：
+
+- PostgreSQL
+- SQLAlchemy
+- Alembic
+- Redis
+- Next.js + App Router
+- LLM
+- LangGraph
+- RAG
+- MCP
+
+---
+
+# 三、已学习知识总览
+
+## React
+
+- ✅ JSX
+- ✅ Component
+- ✅ props
+- ✅ children
+- ✅ ReactNode 基础
+- ✅ map 列表渲染
+- ✅ key
+- ✅ && 条件渲染
+- ✅ 三元表达式基础
+- ✅ className / cn 基础
+- ✅ 事件
+- ✅ useState
+- ✅ 数组解构
+- ✅ setter
+- ✅ functional update
+- ✅ controlled input
+- ✅ onChange
+- ✅ onSubmit
+- ✅ preventDefault
+- ✅ useEffect 基础
+- ✅ state 改变 → re-render
+- ✅ 普通变量改变不会自动触发 re-render
+
+仍需：
+
+- ⬜ useRef
+- ⬜ useMemo
+- ⬜ useCallback
+- ⬜ Context 深入
+- ⬜ custom hook
+- ⬜ React 性能
+- ⬜ Fiber 基础
+
+## React Router
+
+- ✅ BrowserRouter
+- ✅ Routes / Route
+- ✅ Link
+- ✅ NavLink
+- ✅ useNavigate
+- ✅ replace
+- ✅ Layout / Outlet
+- ✅ Outlet 和 Vue router-view 对照
+- 🧪 useParams 已在项目里出现，仍需系统练习
+
+## TypeScript / API 类型
+
+- ✅ import type
+- ✅ type 基础
+- ✅ Generic 的直觉
+- ✅ ApiResponse<T>
+- ✅ API 类型推导
+- ✅ 为什么 useQuery 不需要重复手写 ApiResponse<Question[]>
+- ✅ 对象解构 data: xxx 是重命名，不是类型声明
+
+## Axios
+
+- ✅ axios.create
+- ✅ baseURL
+- ✅ timeout
+- ✅ request interceptor
+- ✅ response interceptor
+- ✅ Promise.reject
+- ✅ env 基础
+- ✅ API 层与 http 层职责
+- ✅ 全局保留 AxiosResponse、API 函数返回业务 response.data 的设计
+- ✅ getTodayQuestions 返回 ApiResponse<Question[]>
+
+## TanStack Query
+
+- ✅ QueryClient
+- ✅ QueryClientProvider
+- ✅ useQuery
+- ✅ queryKey
+- ✅ queryFn
+- ✅ server state 基础
+- ✅ data 生命周期
+- ✅ cache 基础
+- ✅ re-render 与 queryFn 的区别
+- ✅ isPending
+- ✅ isLoading
+- ✅ isFetching
+- ✅ refetch
+- ✅ staleTime
+- ⏭ queryKey 参数
+- ⬜ enabled
+- ⬜ retry 配置
+- ⬜ useMutation
+- ⬜ invalidateQueries
+- ⬜ optimistic update
+
+## Python / FastAPI
+
+- ✅ FastAPI 最小应用
+- ✅ GET
+- ✅ POST
+- ✅ Query
+- ✅ JSON
+- ✅ list slice
+- ✅ APIRouter
+- ✅ include_router
+- ✅ Pydantic BaseModel
+- ✅ Field
+- ✅ response_model
+- ✅ 422
+- ✅ Schema / Service 基础分层
+- ✅ Structured Output 初步概念
+- ✅ typing / TypeVar / Generic 初步
+- 🟡 Python 基础仍需继续系统补强
+
+---
+
+# 四、已经形成的关键理解
+
+## React render
+
+用户已经理解到：
+
+> 组件函数不是只执行一次。state / query state 改变后，React 会再次执行组件函数，重新计算 UI。
+
+并已区分：
+
+~~~text
+普通变量变化
+≠
+自动触发 render
+
+useState / query state / props / context 等变化
+→
+可能触发 render
+~~~
+
+## useQuery 与 queryFn
+
+已经理解：
+
+~~~text
+PracticePage re-render
+↓
+useQuery 再运行
+↓
+不代表 queryFn 一定重新发请求
+↓
+TanStack Query 根据 queryKey / cache / stale / 配置决定
+~~~
+
+## queryKey
+
+当前推荐项目命名：
+
+~~~text
+["todayQuestions"]
+~~~
+
+后面带参数时再扩展。
+
+字符串 "questions" 与 const questions 变量不会命名冲突。
+
+---
+
+# 五、产品方向变化记录
+
+## 2026-09-20
+
+StudyMate 正式从早期“儿童学习 Agent”方向调整为：
+
+> IT 人员学习 / 练习 / AI 辅助训练 / AI 评分 / 面试提升平台。
+
+当前重点：
+
+- 前端
+- AI 前端
+- Agent
+- Python / FastAPI
+- IT 技术知识
+
+新增规划：
+
+- 简历专项
+- JD 专项
+- AI 题库
+- AI 评分
+- Weak Topics
+- 面试报告
+- 未来 Pro
+
+儿童英语 / 数学不再列为当前两个月强制主线。
+
+---
+
+# 六、技术路线变化记录
+
+## 2026-09-20：加入 Next.js
+
+决定：
+
+~~~text
+Next.js + App Router
+~~~
+
+不使用 Pages Router 作为主学习路线。
+
+Vite React 不立刻重写。
+
+先利用当前项目学懂：
+
+- React
+- Axios
+- TanStack Query
+- FastAPI
+
+跑通真实闭环后再迁 Next。
+
+## 2026-09-20：吸收 Web Agent 技能体系
+
+决定吸收：
+
+- Python 工程
+- PostgreSQL
+- FastAPI 工程化
+- Agent Loop
+- Skill
+- MCP
+- Context Engineering
+- LangGraph
+- HITL
+- Memory
+- RAG
+- Evaluation
+- Web Agent
+- Docker / CI/CD / Observability
+
+明确不学：
+
+- Java / Spring 主线
+- 模型微调主线
+- 深入 K8s
+- 完整数据科学课程
+
+---
+
+# 七、每日学习日志
+
+> 旧日期依据真实聊天和 Git 提交补录；从 2026-09-20 起严格按实际学习日更新。
+
+## 2026-09-11｜项目与基础启动
+
+状态：✅
+
+学习 / 实践：
+
+- FastAPI 最小应用
+- GET / POST
+- Query
+- Pydantic
+- 基础后端目录拆分
+- React + TypeScript + Vite 初始化
+- pnpm
+- React / Vue 对照学习方式确定
+- StudyMate 第一版学习路线建立
+
+项目：
+
+- FastAPI 后端基础
+- React 项目初始化
+- UI 风格方案确定
+
+## 2026-09-12 ～ 2026-09-13｜React 页面与路由阶段
+
+状态：✅ / 🧪
+
+学习：
+
+- JSX
+- Component
+- props
+- children
+- map
+- conditional rendering
+- BrowserRouter
+- Link / NavLink
+- useNavigate
+- Routes / Route
+- Layout / Outlet
+- useState
+- 受控表单
+
+项目：
+
+- 首页
+- Header
+- 路由
+- 登录 / 注册静态页
+- shadcn / Tailwind 逐步进入项目
+
+说明：
+
+大量静态 UI 后续允许 Codex 加速；学习重点转向核心 React 和数据流。
+
+## 2026-09-16｜Axios + API 工程 + TanStack Query 起步
+
+状态：✅ / 🟡
+
+学习：
+
+- Axios 与 fetch 的定位
+- axios.create
+- interceptor
+- env
+- ApiResponse<T>
+- Question 类型
+- http 层 / api 层职责
+- Pydantic Generic / TypeVar
+- QueryClientProvider
+- useQuery
+- queryKey
+- queryFn
+- data / isPending / isError / error
+- data 为什么可能 undefined
+
+关键决策：
+
+- http.ts 保留完整 AxiosResponse
+- API 函数返回 response.data
+- 页面得到业务对象 res.code / res.msg / res.data
+
+## 2026-09-18｜React Re-render + Query 状态
+
+状态：✅
+
+重点理解：
+
+- return 只结束当前一次 render
+- 请求回来后 query state 变化会触发新的 render
+- useQuery 会随 render 再执行
+- queryFn 不等于每次 render 都调用
+- cache / queryKey 决定数据身份
+- isPending / isLoading / isFetching
+- refetch
+- staleTime
+
+这是 React 状态思维的重要节点。
+
+## 2026-09-20｜项目方向 / Next / Agent 路线重构
+
+状态：✅ 规划完成
+
+完成：
+
+- 重新同步 GitHub 最新静态页面代码
+- 确认 Codex 负责 UI 加速的分工
+- StudyMate 改为 IT 学习 / 面试训练平台
+- Pro 作为未来能力
+- Next.js 正式加入路线
+- 选择 App Router
+- FastAPI 保留
+- Python 成为唯一后端 / Agent 主语言
+- 阅读并筛选 Web Agent 技能体系
+- 增加 LangGraph / RAG / MCP / Web Agent / Eval / Production 工程能力
+- 建立强制每日学习文档同步制度
+
+### 当天学习状态
+
+今天主要是路线和项目同步，不把尚未讲解的 Next / Agent 技能误标为“已学习”。
+
+### 下一步
+
+⏭ 回到 TanStack Query：queryKey 带参数。
+
+---
+
+# 八、每天结束时必须填写的模板
+
+~~~markdown
+## YYYY-MM-DD｜主题
+
+状态：✅ / 🟡
+
+### 今天真正学懂
 
 - 
 
-## 今天亲手写了什么
+### 今天亲手写 / 修改
 
 - 
 
-## 项目新增能力
+### 项目发生变化
 
 - 
 
-## 今天遇到的问题
+### 我问过并搞懂的问题
 
 - 
 
-## 今天能回答的面试题
+### 仍然模糊
 
 - 
 
-## 尚未解决
+### 面试可说
 
 - 
 
-## 下一步
+### 下一步唯一入口
 
 - 
 
-## Git
+### Git
 
-- commit：
-```
+- commit:
+~~~
+
+---
+
+# 九、新对话恢复提示
+
+如果只读 30 秒：
+
+1. 看 CURRENT LEARNING POINTER
+2. 看“下一步唯一入口”
+3. 看最近一个每日学习日志
+
+当前不要重新讲 React JSX，也不要直接跳到 Next / LangGraph。
+
+下一步：
+
+> queryKey 带参数 → useMutation → invalidateQueries → Practice 真实 FastAPI 闭环。
