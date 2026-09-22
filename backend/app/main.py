@@ -2,11 +2,13 @@ from fastapi import FastAPI
 
 from backend.app.api.attempts import router as attempts_router
 from backend.app.api.questions import router as questions_router
+from backend.app.api.practice import router as practice_router
 
 app = FastAPI()
 
 app.include_router(questions_router)
 app.include_router(attempts_router)
+app.include_router(practice_router)
 
 
 @app.get(
