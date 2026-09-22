@@ -1,6 +1,6 @@
 /**
- * 文件作用：练习答题主页面；负责当前题目、草稿、已提交状态、计时、切题、完成练习等交互。
- * 说明：目前仍保留部分本地静态数据逻辑，正在迁移到 FastAPI + TanStack Query。
+ * 文件作用：练习答题主页面；负责加载练习题、草稿、已提交状态、计时、切题、完成练习等交互。
+ * 说明：题目已经改为通过 FastAPI + TanStack Query 获取；练习记录暂时仍保留本地逻辑。
  */
 
 import {useEffect, useState} from "react"
@@ -14,23 +14,16 @@ import {Button} from "@/components/ui/button"
 import {DialogClose, DialogContent, DialogDescription, DialogRoot, DialogTitle} from "@/components/ui/dialog"
 
 import {fetchPracticeQuestions, type PracticeSource} from "@/api/practice"
-import {
-    resolvePracticeLibrary,
-} from "@/data/practiceSession"
+import {buildSubmittedRecord, savePracticeRecord} from "@/data/practiceRecords"
+import {resolvePracticeLibrary} from "@/data/practiceSession"
 
 type AnswerItem = { draft: string; submitted: boolean }
 
 function PracticeSessionPage() {
     const navigate = useNavigate()
-    const questions = response?.data ?? []
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [answers, setAnswers] = useState<AnswerItem[]>([])    // 答案
-    const [elapsedSeconds, setElapsedSeconds] = useState<number[]>([])    // 使用的秒数
-    const [exitOpen, setExitOpen] = useState(false)
-    const [finishOpen, setFinishOpen] = useState(false)
-
     const {source = "", libraryId = ""} = useParams()
     const limit = 10
+
     const {
         data: response,
         isPending,
@@ -43,7 +36,6 @@ function PracticeSessionPage() {
             libraryId,
             limit,
         ],
-
         queryFn: () =>
             fetchPracticeQuestions({
                 source: source as PracticeSource,
@@ -52,16 +44,65 @@ function PracticeSessionPage() {
             }),
     })
 
+    const questions = response?.data ?? []
     const library = resolvePracticeLibrary(source, libraryId)
+
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [answers, setAnswers] = useState<AnswerItem[]>([])
+    const [elapsedSeconds, setElapsedSeconds] = useState<number[]>([])
+    const [exitOpen, setExitOpen] = useState(false)
+    const [finishOpen, setFinishOpen] = useState(false)
+
     const currentSubmitted = answers[currentIndex]?.submitted ?? false
 
     useEffect(() => {
-        if (currentSubmitted || questions.length === 0 || answers.length === 0) return
+        if (questions.length === 0) return
+
+        setCurrentIndex(0)
+        setAnswers(
+            questions.map(() => ({
+                draft: "",
+                submitted: false,
+            })),
+        )
+        setElapsedSeconds(
+            questions.map(() => 0),
+        )
+    }, [questions])
+
+    useEffect(() => {
+        if (
+            currentSubmitted ||
+            questions.length === 0 ||
+            answers.length === 0
+        ) return
+
         const timer = window.setInterval(() => {
-            setElapsedSeconds((previous) => previous.map((seconds, index) => index === currentIndex ? seconds + 1 : seconds))
+            setElapsedSeconds((previous) =>
+                previous.map((seconds, index) =>
+                    index === currentIndex ? seconds + 1 : seconds,
+                ),
+            )
         }, 1000)
+
         return () => window.clearInterval(timer)
-    }, [currentIndex, currentSubmitted, questions.length])
+    }, [currentIndex, currentSubmitted, questions.length, answers.length])
+
+    if (isPending) {
+        return (
+            <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
+                正在加载练习题...
+            </main>
+        )
+    }
+
+    if (isError) {
+        return (
+            <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
+                加载练习题失败：{error instanceof Error ? error.message : "未知错误"}
+            </main>
+        )
+    }
 
     if (!library || questions.length === 0) {
         return (
@@ -70,6 +111,17 @@ function PracticeSessionPage() {
                 <h1 className="text-2xl font-semibold">没有找到这个练习题库</h1>
                 <Link to="/practice"
                       className="mt-6 inline-flex h-10 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary-hover">返回练习页</Link>
+            </main>
+        )
+    }
+
+    if (
+        answers.length !== questions.length ||
+        elapsedSeconds.length !== questions.length
+    ) {
+        return (
+            <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
+                正在初始化练习...
             </main>
         )
     }
@@ -163,7 +215,7 @@ function PracticeSessionPage() {
 
                     <PracticeSessionAside currentIndex={currentIndex} statuses={statuses}
                                           elapsedSeconds={elapsedSeconds[currentIndex]} topic={question.topic}
-                                          feedback={answer.submitted ? question.feedback : null}
+                                          feedback={null}
                                           onSelect={setCurrentIndex}/>
                 </div>
             </div>
