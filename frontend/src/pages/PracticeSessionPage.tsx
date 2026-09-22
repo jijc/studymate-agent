@@ -1,3 +1,8 @@
+/**
+ * 文件作用：练习答题主页面；负责当前题目、草稿、已提交状态、计时、切题、完成练习等交互。
+ * 说明：目前仍保留部分本地静态数据逻辑，正在迁移到 FastAPI + TanStack Query。
+ */
+
 import {useEffect, useState} from "react"
 import {ArrowLeft, ArrowRight} from "lucide-react"
 import {Link, useNavigate, useParams} from "react-router"

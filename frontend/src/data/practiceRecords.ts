@@ -1,3 +1,7 @@
+/**
+ * 文件作用：本地练习记录数据逻辑；负责构造、保存和读取模拟练习记录，后续会逐步替换为真实后端持久化。
+ */
+
 import {practiceRecords, type PracticeRecord} from "./practiceOverview"
 import {getPracticeQuestions, resolvePracticeLibrary, type PracticeQuestion, type PracticeSource} from "./practiceSession"
 

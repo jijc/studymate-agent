@@ -1,3 +1,7 @@
+/*
+ * 文件作用：前端全局样式入口；包含 Tailwind、主题变量、全局基础样式和项目设计 Token（设计变量）。
+ */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";

@@ -1,3 +1,7 @@
+"""
+文件作用：定义用户提交答案的请求 Schema（数据结构），校验 question_id 和 answer。
+"""
+
 from pydantic import BaseModel, Field
 
 

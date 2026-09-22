@@ -1,3 +1,7 @@
+/**
+ * 文件作用：练习题 API 层；定义练习题相关类型，并通过 Axios 请求 FastAPI 的 /practice/questions 接口。
+ */
+
 import {http} from "@/lib/http"
 import type {ApiResponse} from "@/types/api"
 

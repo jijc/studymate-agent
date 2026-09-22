@@ -1,3 +1,7 @@
+"""
+文件作用：练习题 Service（业务服务层）；根据 source、library_id、limit 组织并返回练习题。
+"""
+
 from backend.app.schemas.practice import PracticeQuestion
 
 REACT_TOPICS = [

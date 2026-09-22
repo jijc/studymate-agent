@@ -1,3 +1,7 @@
+"""
+文件作用：早期“今日题目” API 接口；当前主线正逐步迁移到 /practice/questions。
+"""
+
 from fastapi import APIRouter, Query
 
 from backend.app.schemas.question import Question

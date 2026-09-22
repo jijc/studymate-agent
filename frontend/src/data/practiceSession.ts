@@ -1,3 +1,8 @@
+/**
+ * 文件作用：本地静态练习数据与题库适配逻辑；为 PracticeSessionPage 提供模拟题目。
+ * 说明：真实 API 接入后，这部分静态题目逻辑会逐步减少或移除。
+ */
+
 import {jdLibraries, resumeLibraries} from "@/data/aiLibraries"
 import {questionLibraries} from "@/data/questionLibraries"
 

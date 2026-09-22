@@ -1,3 +1,7 @@
+"""
+文件作用：评分 Service（业务服务层）；当前用模拟规则生成 EvaluationResult，后续会替换为真实 LLM / Agent 评分。
+"""
+
 from backend.app.schemas.attempt import AnswerSubmit
 from backend.app.schemas.evaluation import EvaluationResult
 

@@ -1,3 +1,7 @@
+"""
+文件作用：练习题 API 接口层；接收 source / library_id / limit 等查询参数，并调用 practice_service 返回练习题。
+"""
+
 from fastapi import APIRouter, Query
 
 from backend.app.api import questions

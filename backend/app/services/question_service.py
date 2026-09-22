@@ -1,3 +1,7 @@
+"""
+文件作用：早期“今日题目” Service（业务服务层）；当前使用内存静态题库，主线正逐步迁移到 practice_service。
+"""
+
 QUESTIONS = [
     {"id": 1, "question": "什么是 JavaScript 闭包？", "topic": "JavaScript"},
     {"id": 2, "question": "Promise 和 async/await 是什么关系？", "topic": "JavaScript"},

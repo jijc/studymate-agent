@@ -1,3 +1,7 @@
+"""
+文件作用：FastAPI 后端应用入口；创建 app，并统一注册各业务 Router（路由器）。
+"""
+
 from fastapi import FastAPI
 
 from backend.app.api.attempts import router as attempts_router

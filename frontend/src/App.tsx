@@ -1,3 +1,7 @@
+/**
+ * 文件作用：前端总路由配置；集中声明页面 URL 与对应 React 页面组件。
+ */
+
 import {Route, Routes} from "react-router"
 
 import {MainLayout} from "@/components/layout/MainLayout"

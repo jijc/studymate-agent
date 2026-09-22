@@ -1,3 +1,7 @@
+"""
+文件作用：定义评分结果 Schema（数据结构），约束 score、covered_points、missing_points 和 weak_topics。
+"""
+
 from pydantic import BaseModel, Field
 
 

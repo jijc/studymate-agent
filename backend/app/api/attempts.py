@@ -1,3 +1,7 @@
+"""
+文件作用：答题提交 API 接口层；接收用户答案，并调用评分 Service（业务服务）返回结构化评分结果。
+"""
+
 from fastapi import APIRouter
 
 from backend.app.schemas.attempt import AnswerSubmit

@@ -1,3 +1,7 @@
+/**
+ * 文件作用：统一 Axios HTTP 实例；集中管理 baseURL（接口基础地址）、timeout（超时）和 request/response interceptor（请求/响应拦截器）。
+ */
+
 import axios from "axios";
 
 const http = axios.create({
