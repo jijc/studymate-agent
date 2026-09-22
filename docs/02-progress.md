@@ -690,3 +690,56 @@ SSE / Streaming（流式推送）
 ### 下一步唯一入口
 
 ⏭ **梳理 PracticeSession 静态题目结构和后端 Question 结构的差异，确定第一版真实 GET 接口。**
+
+
+### 2026-09-22 追加：真实 FastAPI 调试与 Python 类型语法
+
+用户本地开始搭建 practice API / service 时遇到真实错误：
+
+~~~text
+TypeError: unsupported operand type(s) for /: 'type' and 'type'
+~~~
+
+原因是把联合类型写成：
+
+~~~python
+limit: int / str
+~~~
+
+Python 中 `/` 是除法运算符，不是“或者”。
+
+正确的联合类型语法（Python 3.10+）是：
+
+~~~python
+value: int | str
+~~~
+
+但对当前 `limit` 参数不应该使用联合类型，继续使用：
+
+~~~python
+limit: int
+~~~
+
+因为 Query Parameter（查询参数）虽然在 URL 传输层是文本，但 FastAPI 会根据类型标注自动解析为 int，并执行 ge / le 校验。
+
+另外确认：
+
+- `enumerate` 返回的两个值变量名并不固定，`index, prompt` 可以改成 `i, d`。
+- 工程代码更推荐有语义的 `index, prompt`，可读性更好。
+- 对前端可见的长 ID，优先考虑 string，避免 JavaScript Number 超过安全整数范围后发生精度丢失。
+- JavaScript 最大安全整数为 `Number.MAX_SAFE_INTEGER = 9007199254740991`（2^53 - 1）。
+- API 中长整型 ID 序列化成 string 是常见做法。
+
+### 学习方式继续强化
+
+用户明确反馈：
+
+> 旧知识在后续代码里再次出现时，简短再讲一次非常有帮助，会形成第二次、第三次记忆。
+
+已加入长期教学规则。
+
+### 当前项目位置
+
+- 🧪 practice Schema / API / Service 正在本地实现。
+- ✅ 已开始理解 API（接口层）→ Service（业务层）→ Schema（数据结构层）的职责分离。
+- ⏭ 下一步：建立前端 `src/api/practice.ts`，把真实练习 GET 接口接入 Axios 层，再进入 useQuery 实战。
