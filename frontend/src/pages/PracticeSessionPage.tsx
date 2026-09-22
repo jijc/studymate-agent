@@ -20,10 +20,14 @@ import {resolvePracticeLibrary} from "@/data/practiceSession"
 type AnswerItem = { draft: string; submitted: boolean }
 
 function PracticeSessionPage() {
+    // 1. 路由：拿跳转方法和当前地址中的 source / libraryId。
     const navigate = useNavigate()
     const {source = "", libraryId = ""} = useParams()
+
+    // 2. 普通配置：本次练习最多请求 10 道题。
     const limit = 10
 
+    // 3. 服务端数据：由 TanStack Query 负责请求、缓存和请求状态。
     const {
         data: response,
         isPending,
@@ -44,17 +48,21 @@ function PracticeSessionPage() {
             }),
     })
 
+    // 4. 根据已有数据得到当前题目列表和题库基本信息。
     const questions = response?.data ?? []
     const library = resolvePracticeLibrary(source, libraryId)
 
+    // 5. 页面自己的状态。
     const [currentIndex, setCurrentIndex] = useState(0)
     const [answers, setAnswers] = useState<AnswerItem[]>([])
     const [elapsedSeconds, setElapsedSeconds] = useState<number[]>([])
     const [exitOpen, setExitOpen] = useState(false)
     const [finishOpen, setFinishOpen] = useState(false)
 
+    // 6. 根据当前 state 计算出来的状态。
     const currentSubmitted = answers[currentIndex]?.submitted ?? false
 
+    // 7. 题目请求回来后，按照题目数量初始化答案和计时数组。
     useEffect(() => {
         if (questions.length === 0) return
 
@@ -70,6 +78,7 @@ function PracticeSessionPage() {
         )
     }, [questions])
 
+    // 8. 当前题目未提交时，每秒累加一次本题用时。
     useEffect(() => {
         if (
             currentSubmitted ||
@@ -88,6 +97,7 @@ function PracticeSessionPage() {
         return () => window.clearInterval(timer)
     }, [currentIndex, currentSubmitted, questions.length, answers.length])
 
+    // 9. 特殊页面状态：加载、失败、无题库、状态初始化中。
     if (isPending) {
         return (
             <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
@@ -126,12 +136,14 @@ function PracticeSessionPage() {
         )
     }
 
+    // 10. 到这里数据已经准备好，可以安全读取当前题目和当前答案。
     const answer = answers[currentIndex]
     const question = questions[currentIndex]
     const statuses: QuestionStatus[] = answers.map((item) => item.submitted ? "已提交" : item.draft.trim() ? "草稿" : "未作答")
     const submittedCount = answers.filter((item) => item.submitted).length
     const modeLabel = source === "basic" ? "基础练习" : source === "resume" ? "简历专项" : "JD 专项"
 
+    // 11. 页面操作函数。
     function updateAnswer(value: string) {
         setAnswers((previous) => previous.map((item, index) => index === currentIndex && !item.submitted ? {
             ...item,
@@ -165,6 +177,7 @@ function PracticeSessionPage() {
         completePractice()
     }
 
+    // 12. 最后渲染页面 UI。
     return (
         <main
             className="min-h-[calc(100vh-66px)] bg-[linear-gradient(145deg,rgba(255,246,238,0.8),rgba(255,255,255,0.95)_34%)] px-4 py-6 sm:px-6 lg:py-5">
