@@ -122,3 +122,45 @@ Axios 负责“怎么发 HTTP 请求”，TanStack Query 负责“怎么管理�
 ### 面试可直接说的答案
 
 项目里我会把 Axios 封装成统一 HTTP 实例，处理 baseURL、timeout、拦截器等；API 层定义具体业务接口和类型。TanStack Query 在页面层管理请求状态、缓存、stale、refetch、mutation 和 invalidation。两者不是替代关系，而是不同层次的职责。
+
+
+---
+
+# 2026-09-22 补录：Mutation 与缓存失效
+
+## 问题：useQuery（查询）和 useMutation（修改）有什么区别？
+
+### 一句话本质
+
+useQuery 主要管理“读取服务端数据”，useMutation 主要管理“主动修改服务端数据”。
+
+### 项目实例
+
+StudyMate 获取题目使用 useQuery；提交回答并触发 AI 评分使用 useMutation。
+
+### 面试可直接说的答案
+
+TanStack Query 中，useQuery 更适合 GET 这类服务端状态读取，并围绕 queryKey、缓存和 staleTime 管理数据；useMutation 适合提交、更新、删除等主动修改操作。useMutation 不会因为组件 render 自动执行，通常需要调用 mutate 主动触发，同时提供 isPending、onSuccess、onError 等生命周期状态。
+
+---
+
+## 问题：invalidateQueries（使查询缓存失效）是做什么的？
+
+### 一句话本质
+
+mutation 修改服务器数据后，用 invalidateQueries 告诉相关 Query：“你缓存的数据可能旧了”。
+
+### 项目实例
+
+提交新的练习记录后，服务器中的 practice records 已经改变，因此可以使 ["practiceRecords"] 对应缓存失效，让活跃页面重新确认服务端最新数据。
+
+### 面试可直接说的答案
+
+TanStack Query 不会自动知道一次 mutation 影响了哪些其他服务端数据。mutation 成功以后，我会根据业务关系调用 queryClient.invalidateQueries，使相关 Query 标记为 stale，并在满足条件时重新获取。invalidate 的含义是“使失效 / 不再可靠”，不是简单删除缓存。
+
+### 面试官可能继续追问
+
+- invalidateQueries 和 refetchQueries 有什么区别？
+- invalidate 后一定马上发送请求吗？
+- staleTime 很长时 invalidate 会怎样？
+- 什么情况下应该直接 setQueryData？

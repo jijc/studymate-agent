@@ -1,7 +1,7 @@
 # StudyMate 每日学习进度与当前指针
 
 > 这是整个仓库最重要的动态学习文档。  
-> LAST UPDATED：2026-09-20  
+> LAST UPDATED：2026-09-22  
 > 更新规则：每个实际学习日结束前必须更新。  
 > 新聊天优先读本文件顶部，不要从旧 Day 重新开始。
 
@@ -20,37 +20,50 @@
 已经讲到：
 
 - ✅ QueryClient / QueryClientProvider
-- ✅ useQuery
-- ✅ queryKey 的作用
-- ✅ queryFn 的作用
-- ✅ useQuery 会随组件 render 运行，但 queryFn 不等于每次 render 都请求
-- ✅ TanStack Query 根据 queryKey / cache / stale 状态决定是否请求
+- ✅ useQuery（查询服务端数据）
+- ✅ queryKey（查询键 / 缓存数据的身份证）
+- ✅ queryFn（查询函数）
+- ✅ useQuery 会随组件 render（重新渲染）运行，但 queryFn 不等于每次 render 都请求
+- ✅ TanStack Query 根据 queryKey / cache（缓存）/ stale（陈旧）状态决定是否请求
 - ✅ data 请求前为什么是 undefined
-- ✅ React state / query state 变化为什么会触发 re-render
-- ✅ isPending
-- ✅ isLoading
-- ✅ isFetching
-- ✅ refetch
-- ✅ staleTime
+- ✅ React state / query state 变化为什么会触发 re-render（重新渲染）
+- ✅ isPending（尚未拿到成功数据）
+- ✅ isLoading（首次加载状态）
+- ✅ isFetching（正在请求）
+- ✅ refetch（重新获取）
+- ✅ staleTime（数据保持“新鲜”的时间）
+- ✅ queryKey 带参数：所有会影响 queryFn 返回结果的参数通常都应进入 queryKey
+- ✅ useMutation（服务端修改操作）
+- ✅ mutate（真正触发修改操作）
+- ✅ mutationFn（修改操作函数）
+- ✅ onSuccess（成功回调）
+- ✅ onError（失败回调）
+- ✅ onSettled（无论成功失败都会执行的收尾回调）
+- ✅ AI 长耗时请求与 Axios timeout（超时）的关系
+- ✅ invalidateQueries（使查询缓存失效 / 宣告缓存不再可靠）
 
 ## 下一步唯一入口
 
-⏭ **queryKey 带参数**
+⏭ **停止继续堆 TanStack Query 理论，进入 StudyMate 真实项目实践。**
 
-然后严格按：
+严格按：
 
 ~~~text
-queryKey 参数
+先梳理 PracticeSession 当前静态题目模型
 ↓
-useMutation
+对照 FastAPI 当前 /questions/today 返回结构
 ↓
-onSuccess / onError
+确定第一版真实题目 API 契约
 ↓
-invalidateQueries
+先接真实 GET + useQuery
 ↓
-把真实 FastAPI GET 接入现有 Practice 业务
+页面跑通 Loading / Error / Data
 ↓
-把提交答案改为真实 POST
+再接 POST /attempts + useMutation
+↓
+接 AI 评分 Pending / Success / Error
+↓
+最后用 invalidateQueries 更新受影响缓存
 ↓
 完成第一条真实前后端闭环
 ~~~
@@ -77,11 +90,18 @@ invalidateQueries
 
 # 一、当前项目代码状态
 
-截至 2026-09-20，main 最新同步基准：
+截至 2026-09-22，本轮学习前已重新同步 main，最新基准：
 
 ~~~text
-389439caad2dda06dfadd50e1ac462c47882fee3
-feat: 静态页面开发
+bec542e121acce49e19557605124adf6bac76ae9
+Merge branch 'main' of https://github.com/jijc/studymate-agent
+~~~
+
+其前一业务提交：
+
+~~~text
+889d5e9e2d89b7db767a3b22ae494e7ffa8e4b74
+feat: 修改
 ~~~
 
 Codex 已帮助完成大量静态产品与本地交互。
@@ -230,24 +250,28 @@ Codex 写出的 React 代码会作为后续真实学习素材，不强迫用户�
 
 - ✅ QueryClient
 - ✅ QueryClientProvider
-- ✅ useQuery
-- ✅ queryKey
-- ✅ queryFn
-- ✅ server state 基础
+- ✅ useQuery（查询）
+- ✅ queryKey（查询键 / 缓存身份证）
+- ✅ queryFn（查询函数）
+- ✅ server state（服务端状态）基础
 - ✅ data 生命周期
-- ✅ cache 基础
-- ✅ re-render 与 queryFn 的区别
+- ✅ cache（缓存）基础
+- ✅ re-render（重新渲染）与 queryFn 的区别
 - ✅ isPending
 - ✅ isLoading
 - ✅ isFetching
-- ✅ refetch
-- ✅ staleTime
-- ⏭ queryKey 参数
-- ⬜ enabled
-- ⬜ retry 配置
-- ⬜ useMutation
-- ⬜ invalidateQueries
-- ⬜ optimistic update
+- ✅ refetch（重新获取）
+- ✅ staleTime（新鲜时间）
+- ✅ queryKey 参数
+- ✅ useMutation（修改服务端数据）
+- ✅ mutate（触发修改）
+- ✅ mutationFn（修改函数）
+- ✅ onSuccess / onError / onSettled
+- ✅ invalidateQueries（使缓存失效）
+- ⬜ enabled（是否启用查询）
+- ⬜ retry（失败重试）配置
+- ⬜ optimistic update（乐观更新）
+- 🧪 当前开始把以上知识接入真实 Practice 业务
 
 ## Python / FastAPI
 
@@ -584,3 +608,85 @@ Vite React 不立刻重写。
 下一步：
 
 > queryKey 带参数 → useMutation → invalidateQueries → Practice 真实 FastAPI 闭环。
+
+
+## 2026-09-22｜TanStack Query Mutation + 缓存失效 + 项目实践切换
+
+状态：✅ 概念完成 / 🧪 等待真实项目落地
+
+### 今天真正学懂
+
+- queryKey（查询键）带参数：参数影响返回结果时，应进入 queryKey。
+- useMutation（服务端修改操作）和 useQuery（查询）的职责区别。
+- mutate（触发修改）才会真正执行 mutationFn（修改操作函数）。
+- isPending（等待中）可以直接用于 AI 评分的“正在评分”状态。
+- onSuccess（成功回调）、onError（失败回调）、onSettled（收尾回调）。
+- AI 评分可能耗时 15 秒以上，异步请求本身没有问题，但要注意 Axios timeout（超时）。
+- 普通接口与 AI 长耗时接口可以使用不同 timeout。
+- invalidateQueries（使查询缓存失效 / 宣告缓存不再可靠）的作用。
+- invalidate 不等于 delete（删除）；它更接近“这份缓存可能旧了，不应继续当成 fresh（新鲜）数据”。
+- mutation 成功后，应根据“这次修改影响了哪些服务端数据”决定 invalidation（缓存失效）哪些 query。
+
+### 今天形成的重要工程判断
+
+第一版 AI 评分：
+
+~~~text
+useMutation
+↓
+POST /attempts
+↓
+AI 等待十几秒
+↓
+isPending 显示“AI 正在评分”
+↓
+EvaluationResult
+~~~
+
+先跑通同步长请求。
+
+后期 Agent / RAG 链路耗时明显增加后，再升级：
+
+~~~text
+快速提交任务
+↓
+processing（处理中）
+↓
+SSE / Streaming（流式推送）
+↓
+实时评分 / Agent 状态
+~~~
+
+### 学习表达方式新增长期规则
+
+用户明确反馈：
+
+> 英文 API / 方法名后直接加中文翻译或用途解释，记忆效果明显更好。
+
+以后例如：
+
+- invalidateQueries（使查询缓存失效）
+- mutationFn（修改操作函数）
+- refetch（重新获取）
+- stale（陈旧 / 不再新鲜）
+
+必须尽量采用这种写法。
+
+另外，“你现在应该记住的完整代码”是有效的重点提示，后续继续保留。
+
+### 项目同步结果
+
+已重新读取当前 PracticeSessionPage、前端 questions API、后端 questions / attempts API。
+
+当前发现：
+
+- PracticeSessionPage 仍使用 data/practiceSession.ts 的静态题目。
+- 前端已经存在 getTodayQuestions(limit)。
+- FastAPI 已存在 GET /questions/today。
+- FastAPI 已存在 POST /attempts。
+- 当前静态 Practice 模型与 /questions/today 的返回结构还不完全一致。
+- 因此下一步不应直接硬替换，先确定真实 API 契约。
+
+### 下一步唯一入口
+
+⏭ **梳理 PracticeSession 静态题目结构和后端 Question 结构的差异，确定第一版真实 GET 接口。**

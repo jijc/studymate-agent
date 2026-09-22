@@ -611,15 +611,147 @@ data 的类型是 response
 
 ---
 
-# 当前尚未学习
+# 2026-09-22 TanStack Query 继续学习
 
-以下不要误标成已掌握：
+## queryKey（查询键）带参数
 
-- ⏭ queryKey 带参数的完整实践
-- ⬜ enabled
-- ⬜ useMutation
-- ⬜ invalidateQueries
-- ⬜ optimistic update
+### 一句话本质
+
+会影响 queryFn（查询函数）返回结果的参数，通常也应该进入 queryKey（查询键），因为 queryKey 负责区分不同缓存。
+
+~~~tsx
+const limit = 5
+
+useQuery({
+  queryKey: ["todayQuestions", limit],
+  queryFn: () => getTodayQuestions(limit),
+})
+~~~
+
+~~~text
+["todayQuestions", 5]
+≠
+["todayQuestions", 10]
+~~~
+
+两者应被视为两份不同的服务端数据缓存。
+
+---
+
+## useMutation（服务端修改操作）
+
+### 一句话本质
+
+useMutation 用来管理一次“主动修改服务端数据”的操作；真正执行通常要调用 mutate（触发修改）。
+
+~~~tsx
+const mutation = useMutation({
+  mutationFn: submitAttempt,
+})
+
+mutation.mutate({
+  question_id: question.id,
+  answer,
+})
+~~~
+
+核心区别：
+
+~~~text
+useQuery（查询）
+→ 声明“我要这份服务端数据”
+
+useMutation（修改）
+→ 声明“我有一个修改动作”
+→ 调用 mutate 后才真正执行
+~~~
+
+### 常用状态与回调
+
+- isPending（修改正在执行）
+- data（成功结果）
+- isError（是否失败）
+- error（错误对象）
+- isSuccess（是否成功）
+- onSuccess（成功回调）
+- onError（失败回调）
+- onSettled（成功或失败后都会执行的收尾回调）
+
+---
+
+## AI 长耗时请求与 timeout（超时）
+
+AI 评分请求即使需要 15 秒，前端 await（等待异步结果）也不会把浏览器主线程“卡死”。
+
+真正需要注意的是 HTTP timeout（超时）。
+
+当前项目 Axios 全局 timeout 是 10 秒，如果 AI 请求超过 10 秒，会被 Axios 主动判定超时。
+
+第一版可以让 AI 接口单独使用更长 timeout，例如 60 秒，而普通接口继续保持较短超时。
+
+后期如果 Agent / RAG 流程明显变长，再升级为：
+
+~~~text
+POST 创建任务
+→ 返回 processing（处理中）
+→ SSE / Streaming（流式传输）
+→ 前端实时展示阶段状态
+~~~
+
+---
+
+## invalidateQueries（使查询缓存失效）
+
+### 命名记忆
+
+invalidate = 使失效 / 宣告不再可靠。
+
+因此 invalidateQueries 的意思不是“删除 Query”，而是：
+
+> 告诉 TanStack Query：这些匹配的缓存可能已经旧了，不应该继续按 fresh（新鲜）数据对待。
+
+### 最小代码
+
+~~~tsx
+const queryClient = useQueryClient()
+
+const mutation = useMutation({
+  mutationFn: submitAttempt,
+
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["practiceRecords"],
+    })
+  },
+})
+~~~
+
+### 为什么需要
+
+~~~text
+GET /practice/records
+→ Query Cache 中有 3 条记录
+
+POST /attempts
+→ 服务端新增数据
+
+但浏览器 Query Cache 仍可能是旧的 3 条
+~~~
+
+所以 mutation（修改）成功以后，要根据它影响的业务数据决定是否 invalidate（使失效）对应 query。
+
+### 与 staleTime（新鲜时间）的关系
+
+即使某份 Query 设置了 5 分钟 staleTime，如果刚刚发生 mutation，业务代码已经明确知道服务器数据发生变化，就可以立即 invalidateQueries，提前宣告缓存不再可靠。
+
+---
+
+# 当前尚未学习 / 尚未实践
+
+- ⬜ enabled（是否启用查询）
+- ⬜ retry（失败重试）配置
+- ⬜ optimistic update（乐观更新）
+- 🧪 queryKey / useMutation / invalidateQueries 已学概念，正在进入 StudyMate 真实项目实践
 - ⬜ Next.js App Router 正式学习
 - ⬜ LangGraph
 - ⬜ RAG
