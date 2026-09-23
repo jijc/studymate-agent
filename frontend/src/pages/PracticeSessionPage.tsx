@@ -54,34 +54,32 @@ function PracticeSessionPage() {
 
     // 5. 页面自己的状态。
     const [currentIndex, setCurrentIndex] = useState(0)
-    const [answers, setAnswers] = useState<AnswerItem[]>([])
-    const [elapsedSeconds, setElapsedSeconds] = useState<number[]>([])
+    const [answers, setAnswers] = useState<Record<string, AnswerItem>>({})
+    const [elapsedSeconds, setElapsedSeconds] = useState<Record<string, number>>({})
     const [exitOpen, setExitOpen] = useState(false)
     const [finishOpen, setFinishOpen] = useState(false)
 
-    // 6. 根据当前 state 计算出来的状态。
-    const currentSubmitted = answers[currentIndex]?.submitted ?? false
+    // 6. 根据当前题目 id 找到对应的客户端答题状态。
+    const currentQuestionId = questions[currentIndex]?.id ?? ""
+    const currentSubmitted = currentQuestionId
+        ? answers[currentQuestionId]?.submitted ?? false
+        : false
 
-    // 8. 当前题目未提交时，每秒累加一次本题用时。
+    // 7. 当前题目未提交时，每秒累加一次本题用时。
     useEffect(() => {
-        if (
-            currentSubmitted ||
-            questions.length === 0 ||
-            answers.length === 0
-        ) return
+        if (currentSubmitted || !currentQuestionId) return
 
         const timer = window.setInterval(() => {
-            setElapsedSeconds((previous) =>
-                previous.map((seconds, index) =>
-                    index === currentIndex ? seconds + 1 : seconds,
-                ),
-            )
+            setElapsedSeconds((previous) => ({
+                ...previous,
+                [currentQuestionId]: (previous[currentQuestionId] ?? 0) + 1,
+            }))
         }, 1000)
 
         return () => window.clearInterval(timer)
-    }, [currentIndex, currentSubmitted, questions.length, answers.length])
+    }, [currentQuestionId, currentSubmitted])
 
-    // 9. 特殊页面状态：加载、失败、无题库、状态初始化中。
+    // 8. 特殊页面状态：加载、失败、无题库。
     if (isPending) {
         return (
             <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
@@ -109,59 +107,91 @@ function PracticeSessionPage() {
         )
     }
 
-    if (
-        answers.length !== questions.length ||
-        elapsedSeconds.length !== questions.length
-    ) {
-        return (
-            <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
-                正在初始化练习...
-            </main>
-        )
+    // 9. 到这里服务端题目已经准备好，可以安全读取当前题目和它对应的客户端状态。
+    const question = questions[currentIndex]
+    const answer = answers[question.id] ?? {
+        draft: "",
+        submitted: false,
     }
 
-    // 10. 到这里数据已经准备好，可以安全读取当前题目和当前答案。
-    const answer = answers[currentIndex]
-    const question = questions[currentIndex]
-    const statuses: QuestionStatus[] = answers.map((item) => item.submitted ? "已提交" : item.draft.trim() ? "草稿" : "未作答")
-    const submittedCount = answers.filter((item) => item.submitted).length
+    const statuses: QuestionStatus[] = questions.map((item) => {
+        const itemAnswer = answers[item.id]
+
+        if (itemAnswer?.submitted) return "已提交"
+        if (itemAnswer?.draft.trim()) return "草稿"
+        return "未作答"
+    })
+
+    const submittedCount = questions.filter((item) => answers[item.id]?.submitted).length
     const modeLabel = source === "basic" ? "基础练习" : source === "resume" ? "简历专项" : "JD 专项"
 
-    // 11. 页面操作函数。
+    // 10. 页面操作函数。
     function updateAnswer(value: string) {
-        setAnswers((previous) => previous.map((item, index) => index === currentIndex && !item.submitted ? {
-            ...item,
-            draft: value
-        } : item))
+        setAnswers((previous) => {
+            const previousAnswer = previous[question.id] ?? {
+                draft: "",
+                submitted: false,
+            }
+
+            if (previousAnswer.submitted) return previous
+
+            return {
+                ...previous,
+                [question.id]: {
+                    ...previousAnswer,
+                    draft: value,
+                },
+            }
+        })
     }
 
     function submitCurrent() {
         if (!answer.draft.trim() || answer.submitted) return
-        setAnswers((previous) => previous.map((item, index) => index === currentIndex ? {
-            ...item,
-            submitted: true
-        } : item))
+
+        setAnswers((previous) => {
+            const previousAnswer = previous[question.id] ?? {
+                draft: "",
+                submitted: false,
+            }
+
+            return {
+                ...previous,
+                [question.id]: {
+                    ...previousAnswer,
+                    submitted: true,
+                },
+            }
+        })
     }
 
     function completePractice(destination?: string) {
         const record = buildSubmittedRecord({
             source: source as PracticeSource,
             libraryId,
-            answers: answers.map((item) => item.submitted ? item.draft : ""),
+            answers: questions.map((item) => {
+                const itemAnswer = answers[item.id]
+                return itemAnswer?.submitted ? itemAnswer.draft : ""
+            }),
         })
         savePracticeRecord(record)
         navigate(destination ?? `/practice/records/${record.id}`)
     }
 
     function finishGroup() {
-        if (answers.some((item) => !item.submitted && item.draft.trim())) {
+        const hasDraft = questions.some((item) => {
+            const itemAnswer = answers[item.id]
+            return !itemAnswer?.submitted && Boolean(itemAnswer?.draft.trim())
+        })
+
+        if (hasDraft) {
             setFinishOpen(true)
             return
         }
+
         completePractice()
     }
 
-    // 12. 最后渲染页面 UI。
+    // 11. 最后渲染页面 UI。
     return (
         <main
             className="min-h-[calc(100vh-66px)] bg-[linear-gradient(145deg,rgba(255,246,238,0.8),rgba(255,255,255,0.95)_34%)] px-4 py-6 sm:px-6 lg:py-5">
@@ -211,7 +241,7 @@ function PracticeSessionPage() {
                     </section>
 
                     <PracticeSessionAside currentIndex={currentIndex} statuses={statuses}
-                                          elapsedSeconds={elapsedSeconds[currentIndex]} topic={question.topic}
+                                          elapsedSeconds={elapsedSeconds[question.id] ?? 0} topic={question.topic}
                                           feedback={null}
                                           onSelect={setCurrentIndex}/>
                 </div>
