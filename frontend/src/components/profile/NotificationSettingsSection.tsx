@@ -15,7 +15,7 @@ function NotificationSettingsSection() {
         <ProfileSectionCard
             id="notification-settings"
             title="通知设置"
-            description="只保留与练习、薄弱点和学习报告有关的提醒。"
+            description="以下为通知偏好展示，发送与保存功能尚未接入。"
             icon={BellRing}
         >
             <div className="divide-y divide-border/60">
@@ -40,7 +40,7 @@ function NotificationSettingsSection() {
             </div>
 
             <p className="mt-7 rounded-xl bg-muted/55 px-4 py-3 text-sm text-muted-foreground">
-                绑定邮箱后，可以在这里开启邮件版周度学习报告。
+                每日提醒、周度报告及邮件通知尚未开放；绑定邮箱不会自动开启邮件提醒。
             </p>
         </ProfileSectionCard>
     )

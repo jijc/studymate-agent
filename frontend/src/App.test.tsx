@@ -1,16 +1,179 @@
 import "@testing-library/jest-dom/vitest"
 
-import {cleanup, fireEvent, render, screen, within} from "@testing-library/react"
+import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react"
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
-import {MemoryRouter} from "react-router"
+import {createMemoryRouter, MemoryRouter, RouterProvider} from "react-router"
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest"
 
 import App from "./App"
 import {SmartPracticeCard} from "./components/practice/SmartPracticeCard"
 import {questionLibraries} from "./data/questionLibraries"
+import {getInterviewResult, saveInterviewResult} from "./data/mockInterview"
 
 beforeEach(() => {
     vi.spyOn(window, "scrollTo").mockImplementation(() => {})
+})
+
+describe("AI 题库详情静态流程", () => {
+    it("从 AI 题库卡片进入对应的题目预览", () => {
+        renderApp(["/questions/ai"])
+
+        expect(within(screen.getByRole("article", {name: "高级前端工程师"}))
+            .getByRole("link", {name: "查看题目"}))
+            .toHaveAttribute("href", "/questions/ai/resume/frontend-resume")
+        expect(within(screen.getByRole("article", {name: "字节跳动 · 前端工程师"}))
+            .getByRole("link", {name: "查看题目"}))
+            .toHaveAttribute("href", "/questions/ai/jd/byte-frontend-jd")
+    })
+
+    it("预览 AI 独立题目并能从目录切换，保留练习和模拟面试入口", () => {
+        renderApp(["/questions/ai/resume/frontend-resume"])
+
+        expect(screen.getByRole("heading", {level: 1, name: "高级前端工程师"})).toBeInTheDocument()
+        expect(screen.getByText(/示例预览 5 题.*题库共 42 题/)).toBeInTheDocument()
+        const directory = screen.getByRole("navigation", {name: "AI 预览题目目录"})
+        expect(within(directory).getAllByRole("button")).toHaveLength(5)
+        expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("你在项目中如何拆分 React 组件")
+        fireEvent.click(within(directory).getByRole("button", {name: /讲一次你用 TypeScript/}))
+        expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("讲一次你用 TypeScript")
+        expect(screen.getByRole("link", {name: "开始练习"})).toHaveAttribute("href", "/practice/session/resume/frontend-resume")
+        expect(screen.getByRole("link", {name: "模拟面试"})).toHaveAttribute("href", "/interview/session/resume/frontend-resume")
+    })
+
+    it("未知题库和未解锁专属题库都有清晰的返回路径", () => {
+        const {unmount} = renderApp(["/questions/ai/jd/missing"])
+        expect(screen.getByRole("heading", {name: "未找到该 AI 题库"})).toBeInTheDocument()
+        expect(screen.getByRole("link", {name: "返回 AI 题库"})).toHaveAttribute("href", "/questions/ai")
+        unmount()
+
+        renderApp(["/questions/ai/exclusive/weakness"])
+        expect(screen.getByRole("heading", {name: "专属 AI 题库尚未解锁"})).toBeInTheDocument()
+        expect(screen.getByRole("link", {name: "去练习"})).toHaveAttribute("href", "/practice")
+        expect(screen.queryByRole("region", {name: "AI 题目预览"})).not.toBeInTheDocument()
+    })
+})
+
+describe("AI 模拟面试静态会话", () => {
+    it("从练习页选择 JD 题库进入对应模拟面试", () => {
+        renderApp(["/practice"])
+
+        const interviewEntry = screen.getByRole("region", {name: "AI 模拟面试"})
+        const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
+        expect(interviewEntry.compareDocumentPosition(basicPractice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        fireEvent.click(screen.getByRole("button", {name: "选择题库开始模拟面试"}))
+        const dialog = screen.getByRole("dialog", {name: "选择模拟面试题库"})
+        expect(within(dialog).getByRole("link", {name: /字节跳动 · 前端工程师/}))
+            .toHaveAttribute("href", "/interview/session/jd/byte-frontend-jd")
+        expect(within(dialog).queryByText("专属 AI 题库")).not.toBeInTheDocument()
+    })
+
+    it("逐轮保留真实输入和跳过状态，结果仍关联 JD 题库", () => {
+        renderApp(["/interview/session/jd/byte-frontend-jd"])
+
+        expect(screen.getByRole("heading", {level: 1, name: "AI 模拟面试"})).toBeInTheDocument()
+        expect(screen.getByText(/你为什么关注这个前端岗位/)).toBeInTheDocument()
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "我做过大型 React 项目"}})
+        fireEvent.click(screen.getByRole("button", {name: "回答并继续"}))
+        const completedReview = screen.getByText("已完成 1 轮 · 展开回顾")
+        expect(completedReview.closest("details")).not.toHaveAttribute("open")
+        fireEvent.click(completedReview)
+        expect(screen.getByText("我做过大型 React 项目")).toBeInTheDocument()
+        expect(screen.getByText("第 2 / 5 轮")).toBeInTheDocument()
+
+        for (let index = 0; index < 4; index++) {
+            fireEvent.click(screen.getByRole("button", {name: "跳过本轮"}))
+        }
+
+        const saved = JSON.parse(sessionStorage.getItem("studymate-interview-results") ?? "[]") as Array<{id: string}>
+        const result = getInterviewResult(saved[0].id)
+        expect(result?.source).toBe("jd")
+        expect(result?.libraryId).toBe("byte-frontend-jd")
+        expect(result?.answers).toHaveLength(5)
+        expect(result?.answers[0].answer).toBe("我做过大型 React 项目")
+        expect(result?.answers[4].skipped).toBe(true)
+    })
+
+    it("语音占位不丢失草稿，退出前确认，未知题库可返回", () => {
+        const {unmount} = renderApp(["/interview/session/resume/frontend-resume"])
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "我主导了前端项目"}})
+        fireEvent.click(screen.getByRole("button", {name: "语音回答"}))
+        expect(screen.getByText("语音录入待接入")).toBeInTheDocument()
+        fireEvent.click(screen.getByRole("button", {name: "文字输入"}))
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("我主导了前端项目")
+        fireEvent.click(screen.getByRole("button", {name: "退出面试"}))
+        expect(screen.getByRole("dialog", {name: "确定退出模拟面试？"})).toBeInTheDocument()
+        expect(sessionStorage.getItem("studymate-interview-results")).toBeNull()
+        unmount()
+
+        renderApp(["/interview/session/basic/react"])
+        expect(screen.getByRole("heading", {name: "无法开始这场模拟面试"})).toBeInTheDocument()
+        expect(screen.getByRole("link", {name: "返回练习页"})).toHaveAttribute("href", "/practice")
+    })
+
+    it("持续输入时计时仍按实际经过时间前进", () => {
+        vi.useFakeTimers({toFake: ["Date", "setInterval", "clearInterval"]})
+        renderApp(["/interview/session/resume/frontend-resume"])
+
+        for (let index = 0; index < 3; index++) {
+            act(() => vi.advanceTimersByTime(900))
+            fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: `回答片段 ${index}`}})
+        }
+
+        expect(screen.getByText("00:02")).toBeInTheDocument()
+    })
+
+    it("通过顶部导航离开前确认，取消后保留回答草稿", () => {
+        renderApp(["/interview/session/resume/frontend-resume"])
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "我还没答完"}})
+        fireEvent.click(screen.getByRole("link", {name: "首页"}))
+
+        expect(screen.getByRole("dialog", {name: "确定退出模拟面试？"})).toBeInTheDocument()
+        fireEvent.click(screen.getByRole("button", {name: "继续面试"}))
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("我还没答完")
+        expect(screen.getByRole("heading", {level: 1, name: "AI 模拟面试"})).toBeInTheDocument()
+    })
+})
+
+describe("AI 模拟面试结果", () => {
+    it("回看本次文字回答与跳过题目，且明确标注反馈为演示内容", () => {
+        saveInterviewResult({
+            id: "interview-review-1",
+            source: "resume",
+            libraryId: "frontend-resume",
+            title: "高级前端工程师",
+            durationSeconds: 125,
+            answers: [
+                {questionId: "q1", prompt: "请介绍项目", answer: "我主导了组件库升级", skipped: false},
+                {questionId: "q2", prompt: "你如何协作", answer: "", skipped: true},
+            ],
+        })
+        renderApp(["/interview/result/interview-review-1"])
+
+        expect(screen.getByRole("heading", {level: 1, name: "模拟面试结果"})).toBeInTheDocument()
+        expect(screen.getByText("我主导了组件库升级")).toBeInTheDocument()
+        expect(screen.getByText("未回答")).toBeInTheDocument()
+        expect(screen.getByText(/演示反馈.*不依据本次回答评分/)).toBeInTheDocument()
+        expect(screen.getByRole("link", {name: "再模拟一次"})).toHaveAttribute("href", "/interview/session/resume/frontend-resume")
+        expect(screen.getByRole("link", {name: "返回 AI 题库详情"})).toHaveAttribute("href", "/questions/ai/resume/frontend-resume")
+        expect(sessionStorage.getItem("studymate-practice-records")).toBeNull()
+    })
+
+    it("全跳过也能进入结果页，未知结果 ID 则提供返回入口", () => {
+        const {unmount} = renderApp(["/interview/session/jd/byte-frontend-jd"])
+        vi.mocked(window.scrollTo).mockClear()
+        for (let index = 0; index < 5; index++) {
+            fireEvent.click(screen.getByRole("button", {name: "跳过本轮"}))
+        }
+        expect(screen.getByRole("heading", {level: 1, name: "模拟面试结果"})).toBeInTheDocument()
+        expect(window.scrollTo).toHaveBeenCalledWith(0, 0)
+        expect(screen.getByText("5 题未回答")).toBeInTheDocument()
+        expect(screen.queryByText(/AI 评分：/)).not.toBeInTheDocument()
+        unmount()
+
+        renderApp(["/interview/result/missing"])
+        expect(screen.getByRole("heading", {name: "未找到这次模拟面试"})).toBeInTheDocument()
+        expect(screen.getByRole("link", {name: "返回练习页"})).toHaveAttribute("href", "/practice")
+    })
 })
 
 afterEach(() => {
@@ -28,13 +191,15 @@ function renderApp(initialEntries = ["/"]) {
         },
     })
 
-    return render(
-        <MemoryRouter initialEntries={initialEntries}>
+    const router = createMemoryRouter([{path: "*", element: <App/>}], {initialEntries})
+    return {
+        ...render(
             <QueryClientProvider client={queryClient}>
-                <App/>
-            </QueryClientProvider>
-        </MemoryRouter>,
-    )
+                <RouterProvider router={router}/>
+            </QueryClientProvider>,
+        ),
+        router,
+    }
 }
 
 describe("StudyMate home page", () => {
@@ -818,6 +983,54 @@ describe("StudyMate home page", () => {
         const notifications = screen.getByRole("region", {name: "通知设置"})
         expect(within(notifications).getByRole("switch", {name: "每日练习提醒"})).toBeChecked()
         expect(within(notifications).getByRole("switch", {name: "系统通知"})).toBeDisabled()
+    })
+
+    it("opens the notification page from both authenticated header layouts", () => {
+        renderApp(["/practice"])
+
+        const bells = within(screen.getByRole("banner")).getAllByRole("link", {name: "查看通知"})
+        expect(bells).toHaveLength(2)
+        bells.forEach((bell) => expect(bell).toHaveAttribute("href", "/notifications"))
+
+        fireEvent.click(bells[0])
+
+        expect(screen.getByRole("heading", {name: "通知"})).toBeInTheDocument()
+        expect(screen.getByRole("region", {name: "通知列表"})).toBeInTheDocument()
+        expect(screen.getAllByRole("article")).toHaveLength(3)
+        expect(screen.getByRole("link", {name: "通知设置"})).toHaveAttribute("href", "/profile/notifications")
+        expect(screen.queryByRole("navigation", {name: /侧边导航/})).not.toBeInTheDocument()
+    })
+
+    it("filters unread notifications and clears the header indicator when all are read", () => {
+        renderApp(["/notifications"])
+
+        expect(screen.getAllByRole("article")).toHaveLength(3)
+        expect(document.querySelectorAll('[data-slot="notification-unread-dot"]')).toHaveLength(2)
+
+        fireEvent.click(screen.getByRole("button", {name: "未读"}))
+        expect(screen.getAllByRole("article")).toHaveLength(2)
+        fireEvent.click(screen.getByRole("button", {name: "全部标为已读"}))
+
+        expect(screen.getByText("暂无未读通知")).toBeInTheDocument()
+        expect(document.querySelectorAll('[data-slot="notification-unread-dot"]')).toHaveLength(0)
+        expect(screen.getByRole("button", {name: "全部标为已读"})).toBeDisabled()
+
+        fireEvent.click(screen.getByRole("button", {name: "全部"}))
+        expect(screen.getAllByRole("article")).toHaveLength(3)
+    })
+
+    it("marks a notification read when opening its destination", () => {
+        renderApp(["/notifications"])
+
+        expect(screen.getByRole("link", {name: "查看复盘"})).toHaveAttribute("href", "/practice/records/practice-react-basic")
+        fireEvent.click(screen.getByText("练习反馈已就绪"))
+        expect(screen.getByRole("heading", {name: /React 基础练习.*练习复盘/})).toBeInTheDocument()
+
+        fireEvent.click(within(screen.getByRole("banner")).getAllByRole("link", {name: "查看通知"})[0])
+        fireEvent.click(screen.getByRole("button", {name: "未读"}))
+
+        expect(screen.getAllByRole("article")).toHaveLength(1)
+        expect(screen.queryByText("练习反馈已就绪")).not.toBeInTheDocument()
     })
 
     it("renders the dedicated login page without the main navigation or social login", () => {

@@ -62,22 +62,6 @@ function PracticeSessionPage() {
     // 6. 根据当前 state 计算出来的状态。
     const currentSubmitted = answers[currentIndex]?.submitted ?? false
 
-    // 7. 题目请求回来后，按照题目数量初始化答案和计时数组。
-    useEffect(() => {
-        if (questions.length === 0) return
-
-        setCurrentIndex(0)
-        setAnswers(
-            questions.map(() => ({
-                draft: "",
-                submitted: false,
-            })),
-        )
-        setElapsedSeconds(
-            questions.map(() => 0),
-        )
-    }, [questions])
-
     // 8. 当前题目未提交时，每秒累加一次本题用时。
     useEffect(() => {
         if (

@@ -4,7 +4,7 @@
 
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
-import {BrowserRouter} from "react-router"
+import {createBrowserRouter, RouterProvider} from "react-router"
 import {
     QueryClient,
     QueryClientProvider,
@@ -14,13 +14,12 @@ import App from './App.tsx'
 import './index.css'
 
 const queryClient = new QueryClient()
+const router = createBrowserRouter([{path: "*", element: <App/>}])
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <BrowserRouter>
-            <QueryClientProvider client={queryClient}>
-                <App/>
-            </QueryClientProvider>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router}/>
+        </QueryClientProvider>
     </StrictMode>,
 )

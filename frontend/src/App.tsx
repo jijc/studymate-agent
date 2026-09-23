@@ -6,8 +6,12 @@ import {Route, Routes} from "react-router"
 
 import {MainLayout} from "@/components/layout/MainLayout"
 import {AiLibrariesPage} from "@/pages/AiLibrariesPage"
+import {AiLibraryDetailPage} from "@/pages/AiLibraryDetailPage"
 import {HomePage} from "@/pages/HomePage"
+import {InterviewSessionPage} from "@/pages/InterviewSessionPage"
+import {InterviewResultPage} from "@/pages/InterviewResultPage"
 import {LoginPage} from "@/pages/LoginPage"
+import {NotificationsPage} from "@/pages/NotificationsPage"
 import {PracticePage} from "@/pages/PracticePage"
 import {PracticeRecordsPage} from "@/pages/PracticeRecordsPage"
 import {PracticeReviewPage} from "@/pages/PracticeReviewPage"
@@ -32,6 +36,9 @@ function App() {
                     <Route path="/practice/records" element={<PracticeRecordsPage/>}/>
                     <Route path="/practice/records/:recordId" element={<PracticeReviewPage/>}/>
                     <Route path="/practice/session/:source/:libraryId" element={<PracticeSessionPage/>}/>
+                    <Route path="/interview/session/:source/:libraryId" element={<InterviewSessionPage/>}/>
+                    <Route path="/interview/result/:sessionId" element={<InterviewResultPage/>}/>
+                    <Route path="/notifications" element={<NotificationsPage/>}/>
 
                     <Route
                         path="/questions"
@@ -42,6 +49,8 @@ function App() {
                         path="/questions/ai"
                         element={<AiLibrariesPage/>}
                     />
+
+                    <Route path="/questions/ai/:source/:libraryId" element={<AiLibraryDetailPage/>}/>
 
                     <Route
                         path="/questions/:libraryId"

@@ -1,9 +1,10 @@
 import {useState} from "react"
-import {Bell, Menu, X} from "lucide-react"
+import {Menu, X} from "lucide-react"
 import {Link, useLocation} from "react-router"
 import logo from "@/assets/image/logo-trimmed.png"
 import {StickyHeader} from "@/components/layout/StickyHeader"
 import {UserMenu} from "@/components/layout/UserMenu"
+import {NotificationBell} from "@/components/notifications/NotificationBell"
 import {Button} from "@/components/ui/button"
 import {cn} from "@/lib/utils"
 
@@ -43,7 +44,7 @@ function Header({variant = "guest"}: HeaderProps) {
                             <img
                                 src={logo}
                                 alt="StudyMate"
-                                className="h-10 w-auto select-none"
+                                className="h-10 w-auto select-none max-[360px]:h-9"
                             />
                         </Link>
 
@@ -72,14 +73,7 @@ function Header({variant = "guest"}: HeaderProps) {
 
                         {authenticated ? (
                             <div className="ml-auto hidden items-center gap-6 xl:flex">
-                                <button
-                                    type="button"
-                                    aria-label="查看通知"
-                                    className="relative grid size-10 place-items-center rounded-full text-foreground/75 transition hover:bg-muted hover:text-primary"
-                                >
-                                    <Bell aria-hidden="true" className="size-5"/>
-                                    <span className="absolute right-2 top-2 size-2 rounded-full bg-primary ring-2 ring-card"/>
-                                </button>
+                                <NotificationBell/>
                                 <span className="h-8 w-px bg-border" aria-hidden="true"/>
                                 <UserMenu/>
                             </div>
@@ -106,7 +100,10 @@ function Header({variant = "guest"}: HeaderProps) {
 
                         <div className="ml-auto flex items-center gap-2 xl:hidden">
                             {authenticated ? (
-                                <UserMenu compact/>
+                                <>
+                                    <NotificationBell/>
+                                    <UserMenu compact/>
+                                </>
                             ) : (
                                 <Button render={<Link to="/login"/>} nativeButton={false} className="font-semibold">
                                     登录

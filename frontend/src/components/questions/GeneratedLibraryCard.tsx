@@ -1,4 +1,4 @@
-import {ArrowRight, BriefcaseBusiness, FileText, MoreHorizontal} from "lucide-react"
+import {ArrowRight, BriefcaseBusiness, FileText} from "lucide-react"
 import {Link} from "react-router"
 
 import {Button} from "@/components/ui/button"
@@ -18,9 +18,6 @@ function GeneratedLibraryCard({library}: {library: GeneratedLibrary}) {
                     <h3 className="truncate font-semibold">{library.title}</h3>
                     <p className="mt-1 truncate text-xs text-muted-foreground">{library.subtitle}</p>
                 </div>
-                <Button type="button" variant="ghost" size="icon" aria-label={`更多操作：${library.title}`}>
-                    <MoreHorizontal aria-hidden="true"/>
-                </Button>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-1.5">
@@ -41,10 +38,15 @@ function GeneratedLibraryCard({library}: {library: GeneratedLibrary}) {
 
             <div className="mt-auto flex items-center justify-between gap-3 pt-5">
                 <span className="text-xs text-muted-foreground">更新于 {library.updatedAt}</span>
-                <Button render={<Link to={`/practice/session/${library.kind}/${library.id}`}/>} nativeButton={false} variant="ghost" size="sm" className="text-primary">
-                    开始练习
-                    <ArrowRight aria-hidden="true"/>
-                </Button>
+                <div className="flex items-center gap-1">
+                    <Link to={`/questions/ai/${library.kind}/${library.id}`} className="rounded-md px-2 py-1 text-xs font-medium text-foreground/70 transition hover:bg-secondary hover:text-primary">
+                        查看题目
+                    </Link>
+                    <Button render={<Link to={`/practice/session/${library.kind}/${library.id}`}/>} nativeButton={false} variant="ghost" size="sm" className="text-primary">
+                        开始练习
+                        <ArrowRight aria-hidden="true"/>
+                    </Button>
+                </div>
             </div>
         </article>
     )
