@@ -7,6 +7,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest"
 
 import App from "./App"
 import {SmartPracticeCard} from "./components/practice/SmartPracticeCard"
+import {recentPractice} from "./data/reportOverview"
 import {questionLibraries} from "./data/questionLibraries"
 import {getInterviewResult, saveInterviewResult} from "./data/mockInterview"
 
@@ -26,7 +27,7 @@ describe("AI 题库详情静态流程", () => {
             .toHaveAttribute("href", "/questions/ai/jd/byte-frontend-jd")
     })
 
-    it("预览 AI 独立题目并能从目录切换，保留练习和模拟面试入口", () => {
+    it("预览 AI 独立题目并能从目录切换，只保留详情练习入口", () => {
         renderApp(["/questions/ai/resume/frontend-resume"])
 
         expect(screen.getByRole("heading", {level: 1, name: "高级前端工程师"})).toBeInTheDocument()
@@ -36,8 +37,8 @@ describe("AI 题库详情静态流程", () => {
         expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("你在项目中如何拆分 React 组件")
         fireEvent.click(within(directory).getByRole("button", {name: /讲一次你用 TypeScript/}))
         expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("讲一次你用 TypeScript")
-        expect(screen.getByRole("link", {name: "开始练习"})).toHaveAttribute("href", "/practice/session/resume/frontend-resume")
-        expect(screen.getByRole("link", {name: "模拟面试"})).toHaveAttribute("href", "/interview/session/resume/frontend-resume")
+        expect(screen.getByRole("link", {name: "练习这套题库"})).toHaveAttribute("href", "/practice/session/resume/frontend-resume")
+        expect(screen.queryByRole("link", {name: "模拟面试"})).not.toBeInTheDocument()
     })
 
     it("未知题库和未解锁专属题库都有清晰的返回路径", () => {
@@ -54,17 +55,13 @@ describe("AI 题库详情静态流程", () => {
 })
 
 describe("AI 模拟面试静态会话", () => {
-    it("从练习页选择 JD 题库进入对应模拟面试", () => {
+    it("练习页隐藏模拟面试入口，保留独立练习分区", () => {
         renderApp(["/practice"])
 
-        const interviewEntry = screen.getByRole("region", {name: "AI 模拟面试"})
+        expect(screen.queryByRole("region", {name: "AI 模拟面试"})).not.toBeInTheDocument()
+        const aiPractice = screen.getByRole("region", {name: "AI 练习"})
         const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
-        expect(interviewEntry.compareDocumentPosition(basicPractice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-        fireEvent.click(screen.getByRole("button", {name: "选择题库开始模拟面试"}))
-        const dialog = screen.getByRole("dialog", {name: "选择模拟面试题库"})
-        expect(within(dialog).getByRole("link", {name: /字节跳动 · 前端工程师/}))
-            .toHaveAttribute("href", "/interview/session/jd/byte-frontend-jd")
-        expect(within(dialog).queryByText("专属 AI 题库")).not.toBeInTheDocument()
+        expect(aiPractice.compareDocumentPosition(basicPractice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     })
 
     it("逐轮保留真实输入和跳过状态，结果仍关联 JD 题库", () => {
@@ -216,7 +213,9 @@ describe("StudyMate home page", () => {
         expect(within(capabilities).getByRole("heading", {name: "AI 专属题库"})).toHaveClass("text-lg")
         expect(within(capabilities).getByRole("heading", {name: "站内知识库"})).toHaveClass("text-lg")
         expect(within(capabilities).getByRole("heading", {name: "练习与反馈"})).toHaveClass("text-lg")
-        expect(within(capabilities).getByText(/文字或语音模拟面试，AI 评分定位薄弱点/)).toBeInTheDocument()
+        expect(within(capabilities).getByText("选择题库独立作答，复盘反馈，逐步定位薄弱点。")).toBeInTheDocument()
+        expect(screen.queryByRole("img", {name: /模拟面试/})).not.toBeInTheDocument()
+        expect(recentPractice.map((item) => item.type)).not.toContain("模拟面试")
 
         expect(screen.getByRole("heading", {name: "四步形成专属训练闭环"})).toBeInTheDocument()
         expect(screen.getByText("上传资料")).toBeInTheDocument()
@@ -523,7 +522,7 @@ describe("StudyMate home page", () => {
     })
 
     it("activates start only after selecting a basic library", () => {
-        renderApp(["/practice"])
+        const {router} = renderApp(["/practice"])
 
         const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
         fireEvent.click(within(basicPractice).getByRole("radio", {name: "选择 React 题库"}))
@@ -531,10 +530,10 @@ describe("StudyMate home page", () => {
         expect(within(basicPractice).getByRole("button", {name: "开始练习"})).toBeEnabled()
         fireEvent.click(within(basicPractice).getByRole("button", {name: "开始练习"}))
 
-        expect(screen.getByRole("heading", {name: "React 基础练习"})).toBeInTheDocument()
+        expect(router.state.location.pathname).toBe("/practice/session/basic/react")
     })
 
-    it("keeps resume and basic selections independent", () => {
+    it("keeps resume and basic selections independent", async () => {
         renderApp(["/practice"])
 
         const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
@@ -544,16 +543,16 @@ describe("StudyMate home page", () => {
         fireEvent.click(within(resumePractice).getByRole("radio", {name: "选择 高级前端工程师 题库"}))
         expect(within(basicPractice).getByRole("radio", {name: "选择 React 题库"})).toBeChecked()
         fireEvent.click(within(resumePractice).getByRole("button", {name: "开始练习"}))
-        expect(screen.getByRole("heading", {name: "高级前端工程师 简历专项"})).toBeInTheDocument()
+        expect(await screen.findByRole("heading", {name: "高级前端工程师"})).toBeInTheDocument()
     })
 
-    it("starts a JD practice session from its own visible section", () => {
+    it("starts a JD practice session from its own visible section", async () => {
         renderApp(["/practice"])
 
         const jdPractice = screen.getByRole("region", {name: "JD 专练"})
         fireEvent.click(within(jdPractice).getByRole("radio", {name: "选择 字节跳动 · 前端工程师 题库"}))
         fireEvent.click(within(jdPractice).getByRole("button", {name: "开始练习"}))
-        expect(screen.getByRole("heading", {name: "字节跳动 · 前端工程师 JD 专项"})).toBeInTheDocument()
+        expect(await screen.findByRole("heading", {name: "字节跳动 · 前端工程师"})).toBeInTheDocument()
     })
 
     it("gives all four practice entries the same theme-colored icon treatment", () => {
@@ -580,15 +579,14 @@ describe("StudyMate home page", () => {
         expect(within(smartPractice).queryByRole("button", {name: "尚未开启"})).not.toBeInTheDocument()
     })
 
-    it("links an AI library card directly to its own practice session", () => {
+    it("AI 题库卡片只进入目录，不重复放开始练习", () => {
         renderApp(["/questions/ai"])
 
-        expect(within(screen.getByRole("article", {name: "高级前端工程师"}))
-            .getByRole("button", {name: "开始练习"}))
-            .toHaveAttribute("href", "/practice/session/resume/frontend-resume")
-        expect(within(screen.getByRole("article", {name: "字节跳动 · 前端工程师"}))
-            .getByRole("button", {name: "开始练习"}))
-            .toHaveAttribute("href", "/practice/session/jd/byte-frontend-jd")
+        for (const name of ["高级前端工程师", "字节跳动 · 前端工程师"]) {
+            const card = within(screen.getByRole("article", {name}))
+            expect(card.getByRole("link", {name: "查看题目"})).toBeInTheDocument()
+            expect(card.queryByRole("button", {name: "开始练习"})).not.toBeInTheDocument()
+        }
     })
 
     it("shows practice records on a dedicated route with real review links", () => {
@@ -607,7 +605,8 @@ describe("StudyMate home page", () => {
         renderApp(["/practice/records/practice-react-basic"])
 
         expect(screen.getByRole("heading", {name: /React 基础练习/})).toBeInTheDocument()
-        expect(screen.getByText(/示例评分/)).toBeInTheDocument()
+        expect(screen.getByText("AI 评分")).toBeInTheDocument()
+        expect(screen.getAllByText("逐题建议")).toHaveLength(10)
         expect(screen.getByRole("link", {name: "返回练习记录"}))
             .toHaveAttribute("href", "/practice/records")
     })
@@ -620,57 +619,21 @@ describe("StudyMate home page", () => {
             .toHaveAttribute("href", "/practice/records")
     })
 
-    it("keeps a draft when moving between questions without counting it as submitted", () => {
-        renderApp(["/practice/session/basic/react"])
+    it("答题时不显示逐题反馈，AI 提示默认收起", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
 
-        expect(screen.getByRole("heading", {name: /React 基础练习/})).toBeInTheDocument()
-        expect(screen.getByText("1 / 10")).toBeInTheDocument()
-        expect(screen.getByRole("region", {name: "答题进度与时间"})).toBeInTheDocument()
-        expect(screen.getByRole("region", {name: "AI 提示"})).toBeInTheDocument()
-        const feedback = screen.getByRole("region", {name: "实时反馈"})
-        expect(feedback).toHaveTextContent("提交本题后")
-        expect(screen.getByRole("button", {name: "提交本题"})).toBeDisabled()
-
-        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
-            target: {value: "先确认依赖是否变化"},
-        })
-        fireEvent.click(screen.getByRole("button", {name: "下一题"}))
-        expect(screen.getByText("2 / 10")).toBeInTheDocument()
-        expect(screen.getByRole("button", {name: "第 1 题，草稿"})).toBeInTheDocument()
-        expect(feedback).toHaveTextContent("提交本题后")
-        fireEvent.click(screen.getByRole("button", {name: "第 1 题，草稿"}))
-        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("先确认依赖是否变化")
-        expect(screen.getByRole("button", {name: "提交本题"})).toBeEnabled()
+        expect(screen.queryByRole("region", {name: "实时反馈"})).not.toBeInTheDocument()
+        expect(screen.queryByRole("button", {name: "提交本题"})).not.toBeInTheDocument()
+        const hint = screen.getByText("AI 提示").closest("details")
+        expect(hint).not.toHaveAttribute("open")
+        fireEvent.click(screen.getByText("AI 提示"))
+        expect(hint).toHaveAttribute("open")
     })
 
-    it("reveals feedback only after submitting a question and excludes unsubmitted drafts from review", () => {
-        renderApp(["/practice/session/basic/react"])
-
-        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
-            target: {value: "先确认依赖是否变化"},
-        })
-        fireEvent.click(screen.getByRole("button", {name: "提交本题"}))
-        expect(screen.getByRole("region", {name: "实时反馈"})).toHaveTextContent("演示反馈")
-        expect(screen.getByRole("button", {name: "第 1 题，已提交"})).toBeInTheDocument()
-        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveAttribute("readonly")
-        expect(screen.getByRole("button", {name: "已提交"})).toBeDisabled()
-
-        fireEvent.click(screen.getByRole("button", {name: "下一题"}))
-        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
-            target: {value: "这题只写草稿"},
-        })
-        fireEvent.click(screen.getByRole("button", {name: "第 10 题，未作答"}))
-        fireEvent.click(screen.getByRole("button", {name: "完成本组"}))
-        expect(screen.getByRole("dialog", {name: "还有未提交的草稿"})).toBeInTheDocument()
-        fireEvent.click(screen.getByRole("button", {name: "忽略草稿并完成"}))
-
-        expect(screen.getByText(/完成 1 题/)).toBeInTheDocument()
-        expect(screen.getByRole("heading", {name: /React 基础练习.*练习复盘/})).toBeInTheDocument()
-        expect(screen.queryByText("这题只写草稿")).not.toBeInTheDocument()
-    })
-
-    it("switches between text and a clearly unavailable voice answer without losing typed work", () => {
-        renderApp(["/practice/session/basic/react"])
+    it("switches between text and a clearly unavailable voice answer without losing typed work", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
             target: {value: "先说明关键概念"},
@@ -680,51 +643,138 @@ describe("StudyMate home page", () => {
         expect(screen.queryByRole("textbox", {name: "我的回答"})).not.toBeInTheDocument()
         expect(screen.getByRole("button", {name: "开始录音"})).toBeDisabled()
         expect(screen.getByText(/语音录入待接入/)).toBeInTheDocument()
-        expect(screen.getByText(/已有文字答案仍可提交/)).toBeInTheDocument()
-        expect(screen.getByRole("button", {name: "提交本题"})).toBeEnabled()
+        expect(screen.getByText(/已有文字草稿已保留/)).toBeInTheDocument()
+        expect(screen.getByRole("button", {name: "提交本轮并查看评估"})).toBeDisabled()
         expect(screen.queryByRole("button", {name: /收藏/})).not.toBeInTheDocument()
 
         fireEvent.click(screen.getByRole("button", {name: "文字输入"}))
         expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("先说明关键概念")
     })
 
-    it("does not treat the voice placeholder as a submitted answer", () => {
-        renderApp(["/practice/session/basic/react"])
+    it("does not treat the voice placeholder as a submitted answer", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.click(screen.getByRole("button", {name: "语音回答"}))
-        expect(screen.getByRole("button", {name: "提交本题"})).toBeDisabled()
+        expect(screen.getByRole("button", {name: "提交本轮并查看评估"})).toBeDisabled()
         expect(screen.getByText(/尚未接收语音作答/)).toBeInTheDocument()
     })
 
-    it("offers a way back when a practice library does not exist", () => {
-        renderApp(["/practice/session/basic/missing"])
+    it("用演示题目展示高级前端工程师简历练习", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
 
-        expect(screen.getByText("没有找到这个练习题库")).toBeInTheDocument()
-        expect(screen.getByRole("link", {name: "返回练习页"})).toHaveAttribute("href", "/practice")
+        expect(await screen.findByRole("heading", {name: "高级前端工程师"})).toBeInTheDocument()
+        expect(screen.getByRole("heading", {name: "你在项目中如何拆分 React 组件，避免页面状态相互影响？"})).toBeInTheDocument()
+        expect(screen.getByText("1 / 10")).toBeInTheDocument()
     })
 
-    it("warns that unfinished answers are lost before leaving practice", () => {
-        renderApp(["/practice/session/basic/react"])
+    it("题库名称和专项标签放在同一个标题区域，不重复专项名称", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+
+        const title = await screen.findByRole("heading", {level: 1, name: "高级前端工程师"})
+        expect(title.parentElement).toHaveTextContent("简历专项")
+        expect(screen.queryByRole("heading", {name: "高级前端工程师 简历专项"})).not.toBeInTheDocument()
+    })
+
+    it("练习中说明整轮评估与本地草稿，不重复展示通用答题提示", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("heading", {level: 1, name: "高级前端工程师"})
+
+        expect(screen.getByRole("region", {name: "本轮评估"})).toHaveTextContent("每轮 10 道题")
+        expect(screen.getByRole("region", {name: "本轮评估"})).toHaveTextContent("复盘页")
+        expect(screen.getByText(/草稿仅保存在当前标签页，刷新可恢复/)).toBeInTheDocument()
+        expect(screen.queryByText(/先说明核心概念，再结合具体场景组织回答/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/复盘评分为演示数据/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/回答会自动保存为草稿/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/回答会自动保存/)).not.toBeInTheDocument()
+    })
+
+    it("纵向题目目录展示标题，并可切换题目", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+
+        const directory = await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(within(directory).getAllByRole("button")).toHaveLength(10)
+        fireEvent.click(within(directory).getByRole("button", {name: /第 2 题.*讲一次你用 TypeScript/}))
+        expect(screen.getByRole("heading", {name: "讲一次你用 TypeScript 发现并解决线上风险的经历。"})).toBeInTheDocument()
+        expect(screen.getByRole("button", {name: "展开题目目录"})).toHaveAttribute("aria-expanded", "false")
+    })
+
+    it("切题和重新进入时保留未提交的回答", async () => {
+        const firstView = renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "按业务边界拆分组件"}})
+        fireEvent.click(screen.getByRole("button", {name: "下一题"}))
+        expect(screen.getByRole("button", {name: /第 1 题，已作答/})).toBeInTheDocument()
+        firstView.unmount()
+
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("按业务边界拆分组件")
+        expect(screen.getByRole("button", {name: "提交本轮并查看评估"})).toBeDisabled()
+    })
+
+    it("10 题全部作答后才能提交本轮，最后一题不显示完成本组", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        const submit = screen.getByRole("button", {name: "提交本轮并查看评估"})
+        expect(submit).toBeDisabled()
+
+        for (let index = 0; index < 10; index++) {
+            fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
+                target: {value: `第 ${index + 1} 题的回答`},
+            })
+            if (index < 9) fireEvent.click(screen.getByRole("button", {name: "下一题"}))
+        }
+
+        expect(screen.getByText("已作答 10 / 10 题")).toBeInTheDocument()
+        expect(screen.getByRole("button", {name: "下一题"})).toBeDisabled()
+        expect(screen.queryByRole("button", {name: "完成本组"})).not.toBeInTheDocument()
+        expect(submit).toBeEnabled()
+        fireEvent.click(submit)
+
+        expect(await screen.findByRole("heading", {name: /高级前端工程师.*练习复盘/})).toBeInTheDocument()
+        expect(screen.getByRole("heading", {name: "如果重新设计你简历中的核心项目，你会保留和改进哪些技术决策？"})).toBeInTheDocument()
+        expect(screen.getByText("第 10 题的回答")).toBeInTheDocument()
+    })
+
+    it("题库不存在时展示图文空状态和返回入口", () => {
+        renderApp(["/practice/session/basic/missing"])
+
+        expect(screen.getByRole("heading", {name: "没有找到这个练习题库"})).toBeInTheDocument()
+        expect(screen.getByText("题库可能已被删除，或访问链接有误。请选择其他题库继续练习。"))
+            .toBeInTheDocument()
+        const emptyState = screen.getByRole("status", {name: "题库不可用"})
+        expect(emptyState).toBeInTheDocument()
+        expect(emptyState.className).not.toMatch(/\bborder(?:-|\s|$)/)
+        expect(emptyState.className).not.toMatch(/\bbg-card(?:\/|\s|$)/)
+        expect(screen.getByRole("button", {name: "返回练习页"})).toHaveAttribute("href", "/practice")
+    })
+
+    it("退出前说明草稿会保存，取消后留在当前题", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
         expect(screen.getByRole("dialog", {name: "确定退出练习？"}))
-            .toHaveTextContent("尚未提交的答案不会生成练习记录")
+            .toHaveTextContent("草稿仅保存在当前标签页")
         fireEvent.click(screen.getByRole("button", {name: "继续练习"}))
         expect(screen.queryByRole("dialog", {name: "确定退出练习？"})).not.toBeInTheDocument()
     })
 
-    it("saves already submitted questions when leaving a group early", () => {
-        renderApp(["/practice/session/basic/react"])
+    it("未完成一轮时只保存草稿，不生成练习记录", async () => {
+        renderApp(["/practice/session/resume/frontend-resume"])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
-            target: {value: "解释 React 状态更新"},
+            target: {value: "按职责拆分 React 组件"},
         })
-        fireEvent.click(screen.getByRole("button", {name: "提交本题"}))
         fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
-        fireEvent.click(screen.getByRole("button", {name: "保存并返回练习页"}))
+        fireEvent.click(screen.getByRole("button", {name: "保存草稿并返回"}))
 
         expect(screen.getByRole("heading", {name: "今天想练什么？"})).toBeInTheDocument()
-        expect(sessionStorage.getItem("studymate-practice-records")).toContain("解释 React 状态更新")
+        expect(sessionStorage.getItem("studymate-practice-draft:resume:frontend-resume")).toContain("按职责拆分 React 组件")
+        expect(sessionStorage.getItem("studymate-practice-records")).toBeNull()
     })
 
     it("filters knowledge libraries through the single search field", () => {

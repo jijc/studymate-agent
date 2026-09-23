@@ -32,19 +32,19 @@ function PracticeAnswerInput({value, onChange, readOnly = false}: {value: string
                         readOnly={readOnly}
                         onChange={(event) => onChange(event.target.value)}
                         placeholder="在这里写下你的回答或思路…"
-                        className="mt-3 min-h-36 w-full resize-y rounded-xl border border-input bg-card px-4 py-3 text-sm leading-7 outline-none transition placeholder:text-muted-foreground/60 focus:border-primary focus:ring-3 focus:ring-primary/10"
+                        className="mt-3 min-h-[200px] w-full resize-y rounded-xl border border-input bg-card px-4 py-3 text-sm leading-7 outline-none transition placeholder:text-muted-foreground/60 focus:border-primary focus:ring-3 focus:ring-primary/10"
                     />
-                    <p className="mt-2 text-xs text-muted-foreground">{readOnly ? "本题已提交，回答暂不能修改；右侧反馈为演示内容。" : "当前仅文字回答可提交；复盘评分为演示数据。"}</p>
+                    <p className="mt-2 text-xs text-muted-foreground">{readOnly ? "本题回答已提交。" : "草稿仅保存在当前标签页，刷新可恢复；不会自动提交。"}</p>
                 </>
             ) : (
-                <div className="mt-3 flex min-h-36 flex-col items-center justify-center rounded-xl border border-dashed border-primary/25 bg-[linear-gradient(135deg,rgba(255,250,245,0.95),rgba(255,237,222,0.45))] px-5 py-7 text-center">
+                <div className="mt-3 flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-primary/25 bg-[linear-gradient(135deg,rgba(255,250,245,0.95),rgba(255,237,222,0.45))] px-5 py-7 text-center">
                     <span className="grid size-12 place-items-center rounded-full bg-primary/10 text-primary">
                         <Mic aria-hidden="true" className="size-6"/>
                     </span>
                     <p className="mt-3 text-sm font-semibold">语音录入待接入</p>
                     <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
                         未来支持录音、回放与提交；当前尚未接收语音作答。
-                        {readOnly ? "本题已提交，可切回文字输入查看回答。" : value.trim() ? "已有文字答案仍可提交，也可以切回文字输入修改。" : "请切回文字输入完成练习。"}
+                        {readOnly ? "可切回文字输入查看回答。" : value.trim() ? "已有文字草稿已保留，可以切回文字输入修改。" : "请切回文字输入完成练习。"}
                     </p>
                     <Button type="button" disabled className="mt-4 h-9 px-4"><Mic aria-hidden="true"/>开始录音</Button>
                 </div>

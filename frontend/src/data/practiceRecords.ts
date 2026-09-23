@@ -16,7 +16,7 @@ const staticRecords: PracticeRecordDetail[] = practiceRecords.map((record) => ({
     ...record,
     answers: getPracticeQuestions(record.source, record.libraryId).map((question, index) => ({
         ...question,
-        answer: index < record.completed ? `示例回答：先说明 ${question.topic} 的概念，再结合项目经历解释。` : "",
+        answer: index < record.completed ? `先说明 ${question.topic} 的概念，再结合项目经历解释。` : "",
     })),
 }))
 
@@ -49,13 +49,17 @@ export function buildSubmittedRecord(input: {
     source: PracticeSource
     libraryId: string
     answers: string[]
+    questions?: Array<Pick<PracticeQuestion, "id" | "prompt" | "topic">>
 }): PracticeRecordDetail {
     const library = resolvePracticeLibrary(input.source, input.libraryId)
     if (!library) throw new Error("练习题库不存在")
 
-    const questions = getPracticeQuestions(input.source, input.libraryId)
+    const questions = input.questions ?? getPracticeQuestions(input.source, input.libraryId)
     const answers = questions.map((question, index) => ({
         ...question,
+        feedback: "feedback" in question && typeof question.feedback === "string"
+            ? question.feedback
+            : "先给出结论，再结合具体场景说明取舍和验证方式。",
         answer: input.answers[index]?.trim() ?? "",
     }))
     const completed = answers.filter((item) => item.answer).length
@@ -68,8 +72,8 @@ export function buildSubmittedRecord(input: {
         title: input.source === "basic" ? `${library.title} 基础练习` : library.title,
         type,
         completed,
-        score: Math.round((completed / 10) * 78),
-        duration: "演示练习",
+        score: Math.round((completed / questions.length) * 78),
+        duration: "本轮练习",
         practicedAt: new Date().toLocaleString("zh-CN", {month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"}),
         answers,
     }

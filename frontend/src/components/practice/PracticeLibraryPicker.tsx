@@ -1,4 +1,3 @@
-import {InterviewLibraryPicker} from "@/components/interview/InterviewLibraryPicker"
 import {PracticeLibrarySection} from "@/components/practice/PracticeLibrarySection"
 import {SmartPracticeCard} from "@/components/practice/SmartPracticeCard"
 
@@ -16,8 +15,6 @@ function PracticeLibraryPicker() {
                     <PracticeLibrarySection source="jd"/>
                 </div>
             </section>
-
-            <InterviewLibraryPicker/>
 
             <section aria-label="基础题库练习">
                 <div className="mb-4">

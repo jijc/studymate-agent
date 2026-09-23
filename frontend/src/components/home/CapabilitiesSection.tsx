@@ -15,7 +15,7 @@ const capabilities = [
     },
     {
         title: "练习与反馈",
-        description: "文字或语音模拟面试，AI 评分定位薄弱点，持续生成强化练习。",
+        description: "选择题库独立作答，复盘反馈，逐步定位薄弱点。",
         icon: MessageCircle,
     },
 ]

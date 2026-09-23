@@ -39,7 +39,7 @@ const weaknessItems = [
 ] as const
 
 const recentPractice = [
-    {title: "React 面试模拟", type: "模拟面试", date: "10月20日  19:24", score: 85, duration: "28 分钟", tone: "orange"},
+    {title: "React 基础练习", type: "基础练习", date: "10月20日  19:24", score: 85, duration: "28 分钟", tone: "orange"},
     {title: "系统设计 - 电商秒杀", type: "专项练习", date: "10月19日  16:03", score: 72, duration: "25 分钟", tone: "orange"},
     {title: "项目经历梳理", type: "AI 生成题目", date: "10月18日  20:11", score: 78, duration: "18 分钟", tone: "blue"},
 ] as const

@@ -42,6 +42,21 @@ describe("practice data flow", () => {
         expect(record.answers[1].answer).toBe("")
     })
 
+    it("练习复盘使用本轮实际抽到的题目", () => {
+        const record = buildSubmittedRecord({
+            source: "basic",
+            libraryId: "react",
+            questions: [{id: "actual-1", prompt: "本轮随机抽到的题目", topic: "组件"}],
+            answers: ["本轮回答"],
+        })
+
+        expect(record.answers[0]).toMatchObject({
+            id: "actual-1",
+            prompt: "本轮随机抽到的题目",
+            answer: "本轮回答",
+        })
+    })
+
     it("keeps demo records readable after saving and a storage reread", () => {
         const record = buildSubmittedRecord({
             source: "resume",
@@ -52,6 +67,8 @@ describe("practice data flow", () => {
         savePracticeRecord(record)
 
         expect(getPracticeRecord(record.id)?.libraryId).toBe("frontend-resume")
+        expect(getPracticeRecord(record.id)?.answers[0].prompt)
+            .toBe("你在项目中如何拆分 React 组件，避免页面状态相互影响？")
         expect(getAllPracticeRecords()[0].id).toBe(record.id)
         expect(getAllPracticeRecords()).toHaveLength(4)
     })

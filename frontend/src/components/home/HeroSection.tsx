@@ -1,7 +1,7 @@
 import {ArrowRight, Library, ShieldCheck} from "lucide-react"
 import {Link} from "react-router"
 
-import heroInterview from "@/assets/image/hero-interview.png"
+import questionBankHero from "@/assets/image/question-bank-hero.png"
 import {Button} from "@/components/ui/button"
 
 function HeroSection() {
@@ -52,9 +52,9 @@ function HeroSection() {
 
             <div className="relative -my-5 hidden h-[400px] overflow-visible xl:block">
                 <img
-                    src={heroInterview}
-                    alt="StudyMate AI 模拟面试界面"
-                    className="absolute left-[45%] top-[45%] w-[85%] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+                    src={questionBankHero}
+                    alt="AI 题库学习插画"
+                    className="absolute left-[48%] top-[48%] w-[90%] max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
                 />
             </div>
         </section>

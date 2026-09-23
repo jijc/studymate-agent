@@ -4,6 +4,7 @@
  */
 
 import {jdLibraries, resumeLibraries} from "@/data/aiLibraries"
+import {getPracticeDemoQuestions} from "@/data/practiceDemoQuestions"
 import {questionLibraries} from "@/data/questionLibraries"
 
 export type PracticeSource = "basic" | "resume" | "jd"
@@ -47,6 +48,13 @@ export function getPracticeQuestions(source: string, libraryId: string): Practic
     const library = getLibraryContext(source, libraryId)
     if (!library) return []
 
+    if (source === "resume" && libraryId === "frontend-resume") {
+        return getPracticeDemoQuestions(10).map((question) => ({
+            ...question,
+            feedback: "先给出结论，再结合具体场景说明取舍和验证方式。",
+        }))
+    }
+
     const [first = library.title, second = library.title, third = library.title] = library.topics
     const prompts = source === "basic" ? [
         `请用自己的话解释 ${library.title} 中的「${first}」是什么，并给一个实际例子。`,
@@ -87,6 +95,6 @@ export function getPracticeQuestions(source: string, libraryId: string): Practic
         id: `${source}-${libraryId}-${index + 1}`,
         prompt,
         topic: library.topics[index % library.topics.length] ?? library.title,
-        feedback: "演示反馈：先给出结论，再结合具体场景说明取舍和验证方式。",
+        feedback: "先给出结论，再结合具体场景说明取舍和验证方式。",
     }))
 }

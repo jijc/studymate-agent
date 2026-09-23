@@ -23,7 +23,7 @@ function InterviewSessionPage() {
     const [answers, setAnswers] = useState<InterviewAnswer[]>([])
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
     const [exitOpen, setExitOpen] = useState(false)
-    const startedAtRef = useRef(Date.now())
+    const startedAtRef = useRef(0)
     const allowExitRef = useRef(false)
     const available = Boolean(library && questions.length > 0)
     const blocker = useBlocker(({currentLocation, nextLocation}) => available
@@ -39,10 +39,6 @@ function InterviewSessionPage() {
         const timer = window.setInterval(() => setElapsedSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000)
         return () => window.clearInterval(timer)
     }, [source, libraryId, questions.length])
-
-    useEffect(() => {
-        if (blocker.state === "blocked") setExitOpen(true)
-    }, [blocker.state])
 
     useBeforeUnload(useCallback((event) => {
         if (!available || allowExitRef.current) return
@@ -134,7 +130,7 @@ function InterviewSessionPage() {
                 </div>
             </div>
 
-            <DialogRoot open={exitOpen} onOpenChange={(open) => open ? setExitOpen(true) : cancelExit()}>
+            <DialogRoot open={exitOpen || blocker.state === "blocked"} onOpenChange={(open) => open ? setExitOpen(true) : cancelExit()}>
                 <DialogContent className="max-w-md">
                     <DialogTitle className="text-xl font-semibold">确定退出模拟面试？</DialogTitle>
                     <DialogDescription className="mt-2 text-sm leading-6 text-muted-foreground">退出后本场回答不会生成结果；留在当前页面可以继续作答。</DialogDescription>

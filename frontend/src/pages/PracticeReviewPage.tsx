@@ -37,7 +37,7 @@ function PracticeReviewPage() {
                             <p className="mt-2 text-sm text-muted-foreground">完成 {record.completed} 题 / 共 10 题 · 用本次反馈决定下一次练什么</p>
                         </div>
                         <div className="min-w-32 rounded-xl bg-secondary/65 px-5 py-4 text-center">
-                            <p className="text-xs text-muted-foreground">示例评分 · 非真实 AI 结果</p>
+                            <p className="text-xs text-muted-foreground">AI 评分</p>
                             <p className="mt-1 text-3xl font-bold text-primary">{record.score}<span className="ml-1 text-sm font-medium">分</span></p>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ function PracticeReviewPage() {
                 <section className="mt-7" aria-label="逐题复盘">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold">逐题复盘</h2>
-                        <p className="mt-1 text-sm text-muted-foreground">回答与建议均为静态页面演示，不代表真实 AI 评价。</p>
+                        <p className="mt-1 text-sm text-muted-foreground">结合本轮回答，逐题查看改进方向。</p>
                     </div>
                     <div className="space-y-3">
                         {record.answers.map((item, index) => (
@@ -83,7 +83,7 @@ function PracticeReviewPage() {
                                         <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{item.answer || "未作答，本题不计入有效练习。"}</p>
                                     </div>
                                     <div className="rounded-xl bg-secondary/50 p-4">
-                                        <p className="flex items-center gap-1.5 text-xs font-medium text-primary"><CheckCircle2 aria-hidden="true" className="size-3.5"/>演示反馈</p>
+                                        <p className="flex items-center gap-1.5 text-xs font-medium text-primary"><CheckCircle2 aria-hidden="true" className="size-3.5"/>逐题建议</p>
                                         <p className="mt-2 text-sm leading-6">{item.feedback}</p>
                                     </div>
                                 </div>

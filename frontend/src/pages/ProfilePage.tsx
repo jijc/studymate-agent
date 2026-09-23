@@ -29,7 +29,7 @@ function ProfilePage() {
                     <p className="text-sm font-medium text-primary">账号与成长画像</p>
                     <h1 className="mt-1 text-3xl font-semibold tracking-[-0.03em] text-foreground">个人中心</h1>
                     <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-                        管理你的基本资料和求职目标，让后续的 AI 面试练习更贴近真实需求。
+                        管理基本资料和求职目标，让个人题库与专项练习更贴近你的目标岗位。
                     </p>
                 </div>
 

@@ -1,8 +1,9 @@
-import {BarChart3, Clock3, Lightbulb} from "lucide-react"
+import {useState} from "react"
+import {ChevronDown, Clock3} from "lucide-react"
 
 import {cn} from "@/lib/utils"
 
-type QuestionStatus = "未作答" | "草稿" | "已提交"
+type QuestionStatus = "未作答" | "已作答"
 
 function formatElapsed(seconds: number) {
     const minutes = Math.floor(seconds / 60).toString().padStart(2, "0")
@@ -10,27 +11,34 @@ function formatElapsed(seconds: number) {
     return `${minutes}:${remainder}`
 }
 
-function PracticeSessionAside({currentIndex, statuses, elapsedSeconds, topic, feedback, onSelect}: {
+function PracticeSessionAside({currentIndex, questions, statuses, elapsedSeconds, onSelect}: {
     currentIndex: number
+    questions: Array<{id: string; prompt: string}>
     statuses: QuestionStatus[]
     elapsedSeconds: number
-    topic: string
-    feedback: string | null
     onSelect: (index: number) => void
 }) {
-    const submittedCount = statuses.filter((status) => status === "已提交").length
+    const [mobileOpen, setMobileOpen] = useState(false)
+    const answeredCount = statuses.filter((status) => status === "已作答").length
+
+    function selectQuestion(index: number) {
+        onSelect(index)
+        setMobileOpen(false)
+    }
 
     return (
-        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <section aria-label="答题进度与时间" className="rounded-2xl border border-border/70 bg-card/90 p-5">
+        <aside className="min-w-0 lg:min-h-0">
+            <section aria-label="本轮题目与进度" className="rounded-2xl border border-border/70 bg-card/90 p-4 sm:p-5 lg:flex lg:h-full lg:min-h-0 lg:flex-col">
                 <div className="flex items-center gap-2">
                     <Clock3 aria-hidden="true" className="size-5 text-primary"/>
-                    <h2 className="font-semibold">答题进度与时间</h2>
+                    <h2 className="font-semibold">本轮题目</h2>
+                    <span className="ml-auto text-xs text-muted-foreground">{questions.length} 题</span>
                 </div>
+
                 <div className="mt-4 flex items-end justify-between gap-3">
                     <div>
                         <p className="text-xs text-muted-foreground">当前题目</p>
-                        <p className="mt-1 text-2xl font-bold text-primary">{currentIndex + 1} / {statuses.length}</p>
+                        <p className="mt-1 text-2xl font-bold text-primary">{currentIndex + 1} / {questions.length}</p>
                     </div>
                     <div className="text-right">
                         <p className="text-xs text-muted-foreground">本题用时</p>
@@ -38,58 +46,50 @@ function PracticeSessionAside({currentIndex, statuses, elapsedSeconds, topic, fe
                     </div>
                 </div>
                 <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-primary transition-[width]" style={{width: `${((currentIndex + 1) / statuses.length) * 100}%`}}/>
+                    <div className="h-full rounded-full bg-primary transition-[width]" style={{width: `${(answeredCount / questions.length) * 100}%`}}/>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">已提交 {submittedCount} / {statuses.length} 题 · 建议每题约 60 秒，不会自动交卷</p>
-                <div className="mt-4 grid grid-cols-5 gap-2 border-t border-border/60 pt-4" aria-label="题目导航">
-                    {statuses.map((status, index) => (
-                        <button
-                            key={index}
-                            type="button"
-                            aria-label={`第 ${index + 1} 题，${status}`}
-                            aria-current={currentIndex === index ? "step" : undefined}
-                            title={`第 ${index + 1} 题 · ${status}`}
-                            onClick={() => onSelect(index)}
-                            className={cn(
-                                "grid size-10 place-items-center rounded-lg border text-sm font-medium transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/25",
-                                currentIndex === index
-                                    ? "border-primary bg-primary text-primary-foreground"
-                                    : status === "已提交"
-                                        ? "border-primary/30 bg-primary/8 text-primary"
-                                        : status === "草稿"
-                                            ? "border-amber-300 bg-amber-50 text-amber-700"
-                                            : "border-border/80 bg-card text-muted-foreground hover:border-primary/40 hover:text-primary",
-                            )}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">题号可直接切换；草稿不会自动提交。</p>
-            </section>
+                <p className="mt-2 text-xs text-muted-foreground">已作答 {answeredCount} / {questions.length} 题</p>
 
-            <section aria-label="AI 提示" className="rounded-2xl border border-border/70 bg-card/90 p-5">
-                <div className="flex items-center gap-2">
-                    <Lightbulb aria-hidden="true" className="size-5 text-primary"/>
-                    <h2 className="font-semibold">AI 提示</h2>
-                    <span className="ml-auto text-xs text-muted-foreground">演示提示</span>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">先用一句话说明「{topic}」的关键点，再结合真实项目或场景，讲清自己的选择和结果。</p>
-            </section>
+                <button
+                    type="button"
+                    aria-label={mobileOpen ? "收起题目目录" : "展开题目目录"}
+                    aria-expanded={mobileOpen}
+                    onClick={() => setMobileOpen((previous) => !previous)}
+                    className="mt-4 flex w-full items-center justify-between rounded-lg border border-border/70 px-3 py-2 text-sm font-medium lg:hidden"
+                >
+                    查看 {questions.length} 道题目
+                    <ChevronDown aria-hidden="true" className={cn("size-4 transition-transform", mobileOpen && "rotate-180")}/>
+                </button>
 
-            <section aria-label="实时反馈" className="rounded-2xl border border-border/70 bg-card/90 p-5">
-                <div className="flex items-center gap-2">
-                    <BarChart3 aria-hidden="true" className="size-5 text-primary"/>
-                    <h2 className="font-semibold">实时反馈</h2>
-                </div>
-                {feedback ? (
-                    <div className="mt-3 rounded-xl bg-secondary/55 p-4">
-                        <p className="text-xs font-semibold text-primary">演示反馈 · 非真实 AI 评分</p>
-                        <p className="mt-2 text-sm leading-6">{feedback}</p>
+                <nav aria-label="本轮题目目录" className={cn("mt-4 border-t border-border/60 pt-4 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col", mobileOpen ? "block" : "hidden")}>
+                    <div className="space-y-1.5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
+                        {questions.map((question, index) => (
+                            <button
+                                key={question.id}
+                                type="button"
+                                aria-label={`第 ${index + 1} 题，${statuses[index]}，${question.prompt}`}
+                                aria-current={currentIndex === index ? "step" : undefined}
+                                onClick={() => selectQuestion(index)}
+                                className={cn(
+                                    "flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/25",
+                                    currentIndex === index
+                                        ? "bg-primary/10 text-primary"
+                                        : "text-foreground hover:bg-secondary/50",
+                                )}
+                            >
+                                <span className={cn(
+                                    "grid size-7 shrink-0 place-items-center rounded-lg text-xs font-semibold",
+                                    currentIndex === index ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                                )}>{index + 1}</span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="line-clamp-2 text-sm font-medium leading-5">{question.prompt}</span>
+                                    <span className={cn("mt-1 block text-xs", statuses[index] === "已作答" ? "text-primary" : "text-muted-foreground")}>{statuses[index]}</span>
+                                </span>
+                            </button>
+                        ))}
                     </div>
-                ) : (
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">提交本题后，这里会显示针对本次回答的反馈。</p>
-                )}
+                </nav>
+                <p className="mt-3 hidden text-xs text-muted-foreground lg:block">点击题目切换，草稿保存在当前标签页。</p>
             </section>
         </aside>
     )

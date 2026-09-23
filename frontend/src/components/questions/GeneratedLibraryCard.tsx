@@ -1,7 +1,6 @@
-import {ArrowRight, BriefcaseBusiness, FileText} from "lucide-react"
+import {BriefcaseBusiness, FileText} from "lucide-react"
 import {Link} from "react-router"
 
-import {Button} from "@/components/ui/button"
 import type {GeneratedLibrary} from "@/data/aiLibraries"
 
 function GeneratedLibraryCard({library}: {library: GeneratedLibrary}) {
@@ -38,15 +37,9 @@ function GeneratedLibraryCard({library}: {library: GeneratedLibrary}) {
 
             <div className="mt-auto flex items-center justify-between gap-3 pt-5">
                 <span className="text-xs text-muted-foreground">更新于 {library.updatedAt}</span>
-                <div className="flex items-center gap-1">
-                    <Link to={`/questions/ai/${library.kind}/${library.id}`} className="rounded-md px-2 py-1 text-xs font-medium text-foreground/70 transition hover:bg-secondary hover:text-primary">
-                        查看题目
-                    </Link>
-                    <Button render={<Link to={`/practice/session/${library.kind}/${library.id}`}/>} nativeButton={false} variant="ghost" size="sm" className="text-primary">
-                        开始练习
-                        <ArrowRight aria-hidden="true"/>
-                    </Button>
-                </div>
+                <Link to={`/questions/ai/${library.kind}/${library.id}`} className="rounded-md px-2 py-1 text-xs font-medium text-primary transition hover:bg-secondary">
+                    查看题目
+                </Link>
             </div>
         </article>
     )

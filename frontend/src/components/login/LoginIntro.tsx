@@ -7,8 +7,8 @@ const highlights = [
         icon: FileText,
     },
     {
-        title: "真实模拟体验",
-        description: "AI 模拟面试官，还原真实场景",
+        title: "专项题库练习",
+        description: "按题作答并回看练习反馈",
         icon: ChartNoAxesColumnIncreasing,
     },
     {
@@ -23,7 +23,7 @@ function LoginIntro() {
         <section className="hidden max-w-xl lg:block">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-secondary/65 px-4 py-2 text-sm font-medium text-primary">
                 <Sparkles aria-hidden="true" className="size-4"/>
-                AI 面试陪练 · 更从容的职场起点
+                AI 专属题库 · 更从容的职场起点
             </div>
 
             <h1 className="font-heading text-5xl font-black leading-tight tracking-tighter text-foreground sm:text-6xl">
@@ -34,7 +34,7 @@ function LoginIntro() {
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
                 上传简历、项目资料或职位 JD，
                 <br className="hidden sm:block"/>
-                让 AI 为你生成个性化面试练习，真实模拟，助你自信上场。
+                让 AI 为你生成个性化题库，通过练习与复盘，助你自信上场。
             </p>
 
             <div className="mt-10 grid grid-cols-3 gap-6">

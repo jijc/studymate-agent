@@ -1,4 +1,4 @@
-import {ArrowLeft, ArrowRight, BriefcaseBusiness, FileText, MessageCircleMore} from "lucide-react"
+import {ArrowLeft, ArrowRight, BriefcaseBusiness, FileText} from "lucide-react"
 import {Link} from "react-router"
 
 import type {AiLibraryDetail} from "@/data/aiLibraryDetails"
@@ -30,14 +30,13 @@ function AiLibraryDetailHeader({library}: {library: AiLibraryDetail}) {
                         <span>更新于 {library.updatedAt}</span>
                     </div>
                 </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                    <Link to={`/interview/session/${library.source}/${library.id}`} className="inline-flex h-10 items-center gap-2 rounded-lg border border-primary/40 bg-card px-4 text-sm font-medium text-primary transition hover:border-primary hover:bg-secondary">
-                        <MessageCircleMore aria-hidden="true" className="size-4"/>模拟面试
-                    </Link>
-                    <Link to={`/practice/session/${library.source}/${library.id}`} className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover">
-                        开始练习<ArrowRight aria-hidden="true" className="size-4"/>
-                    </Link>
-                </div>
+                <Link
+                    to={`/practice/session/${library.source}/${library.id}`}
+                    state={{returnTo: `/questions/ai/${library.source}/${library.id}`}}
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover"
+                >
+                    练习这套题库<ArrowRight aria-hidden="true" className="size-4"/>
+                </Link>
             </div>
         </header>
     )
