@@ -3,6 +3,7 @@ import {Outlet, useLocation} from "react-router"
 
 import {Header} from "@/components/layout/Header"
 import {NotificationsProvider} from "@/components/notifications/NotificationsProvider"
+import {QuestionLibraryFavoritesProvider} from "@/components/questions/QuestionLibraryFavoritesProvider"
 import {cn} from "@/lib/utils"
 
 function MainLayout() {
@@ -18,11 +19,13 @@ function MainLayout() {
 
     return (
         <NotificationsProvider>
-            <div className={cn("min-h-screen", usesHomeBackground ? "home-background" : "bg-background")}>
-                <Header variant={authenticated ? "authenticated" : "guest"}/>
+            <QuestionLibraryFavoritesProvider>
+                <div className={cn("min-h-screen", usesHomeBackground ? "home-background" : "bg-background")}>
+                    <Header variant={authenticated ? "authenticated" : "guest"}/>
 
-                <Outlet/>
-            </div>
+                    <Outlet/>
+                </div>
+            </QuestionLibraryFavoritesProvider>
         </NotificationsProvider>
     )
 }

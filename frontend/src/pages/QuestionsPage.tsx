@@ -5,14 +5,15 @@ import {SidebarPageLayout} from "@/components/layout/SidebarPageLayout"
 import {sidebarPageContentClassName} from "@/components/layout/pageSidebarStyles"
 import {QuestionHero} from "@/components/questions/QuestionHero"
 import {QuestionLibrarySection} from "@/components/questions/QuestionLibrarySection"
+import {useQuestionLibraryFavorites} from "@/components/questions/QuestionLibraryFavoritesContext"
 import {QuestionSidebar} from "@/components/questions/QuestionSidebar"
 import {Button} from "@/components/ui/button"
-import {defaultFavoriteLibraryIds, questionLibraries} from "@/data/questionLibraries"
+import {questionLibraries} from "@/data/questionLibraries"
 import {cn} from "@/lib/utils"
 
 function QuestionsPage() {
     const [query, setQuery] = useState("")
-    const [favoriteIds, setFavoriteIds] = useState(() => new Set(defaultFavoriteLibraryIds))
+    const {favoriteIds, toggleFavorite} = useQuestionLibraryFavorites()
     const normalizedQuery = query.trim().toLocaleLowerCase()
     const visibleLibraries = questionLibraries.filter((library) => (
         [library.title, library.description, ...library.topics]
@@ -22,18 +23,6 @@ function QuestionsPage() {
     ))
     const favoriteLibraries = visibleLibraries.filter((library) => favoriteIds.has(library.id))
     const remainingLibraries = visibleLibraries.filter((library) => !favoriteIds.has(library.id))
-
-    function handleFavoriteChange(libraryId: string) {
-        setFavoriteIds((current) => {
-            const next = new Set(current)
-            if (next.has(libraryId)) {
-                next.delete(libraryId)
-            } else {
-                next.add(libraryId)
-            }
-            return next
-        })
-    }
 
     return (
         <SidebarPageLayout>
@@ -50,7 +39,7 @@ function QuestionsPage() {
                                 description="快速进入你关心的知识库，收藏内容会自动置顶"
                                 libraries={favoriteLibraries}
                                 favoriteIds={favoriteIds}
-                                onFavoriteChange={handleFavoriteChange}
+                                onFavoriteChange={toggleFavorite}
                             />
                         )}
 
@@ -60,7 +49,7 @@ function QuestionsPage() {
                                 description="按固定顺序浏览本站整理的 IT 面试知识"
                                 libraries={remainingLibraries}
                                 favoriteIds={favoriteIds}
-                                onFavoriteChange={handleFavoriteChange}
+                                onFavoriteChange={toggleFavorite}
                             />
                         )}
 

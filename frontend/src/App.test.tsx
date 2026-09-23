@@ -533,6 +533,72 @@ describe("StudyMate home page", () => {
         expect(router.state.location.pathname).toBe("/practice/session/basic/react")
     })
 
+    it("pins a basic library when favorited without selecting it, and shares the favorite with the knowledge page", async () => {
+        const {router} = renderApp(["/practice"])
+        const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
+
+        fireEvent.click(within(basicPractice).getByRole("button", {name: "收藏 TypeScript 知识库"}))
+
+        expect(within(basicPractice).getByRole("radio", {name: "选择 TypeScript 题库"})).not.toBeChecked()
+        expect(within(basicPractice).getByRole("button", {name: "开始练习"})).toBeDisabled()
+        expect(within(basicPractice).getAllByRole("radio").slice(0, 5).map((radio) => (radio as HTMLInputElement).value))
+            .toEqual(["react", "java", "python", "typescript", "vue"])
+
+        await act(() => router.navigate("/questions"))
+        expect(within(screen.getByRole("region", {name: "我的收藏"}))
+            .getByRole("article", {name: "TypeScript 知识库"})).toBeInTheDocument()
+    })
+
+    it("reflects knowledge-page favorites in basic practice and keeps original order after unfavoriting", async () => {
+        const {router} = renderApp(["/questions"])
+        fireEvent.click(screen.getByRole("button", {name: "收藏 TypeScript 知识库"}))
+
+        await act(() => router.navigate("/practice"))
+        const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
+        expect(within(basicPractice).getByRole("button", {name: "取消收藏 TypeScript 知识库"}))
+            .toHaveAttribute("aria-pressed", "true")
+
+        fireEvent.click(within(basicPractice).getByRole("button", {name: "取消收藏 TypeScript 知识库"}))
+        expect(within(basicPractice).getAllByRole("radio").slice(0, 5).map((radio) => (radio as HTMLInputElement).value))
+            .toEqual(["react", "java", "python", "vue", "typescript"])
+
+        await act(() => router.navigate("/questions"))
+        expect(within(screen.getByRole("region", {name: "全部知识库"}))
+            .getByRole("article", {name: "TypeScript 知识库"})).toBeInTheDocument()
+    })
+
+    it("keeps the skill logo in place while placing the favorite at the top-right corner", async () => {
+        const {router} = renderApp(["/practice"])
+        const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
+        const reactLogo = within(basicPractice).getByRole("img", {name: "React 技术图标"})
+
+        expect(reactLogo).toBeInTheDocument()
+        expect(reactLogo.parentElement).toHaveClass("bg-[#eaf6ff]", "text-[#149eca]")
+        expect(reactLogo.closest("label")).toHaveClass("pl-3")
+        const favoriteButton = within(basicPractice).getByRole("button", {name: "取消收藏 React 知识库"})
+        expect(favoriteButton).toHaveClass("right-2.5", "top-2.5", "size-8", "rounded-lg")
+        expect(favoriteButton).not.toHaveClass("border", "rounded-full")
+        expect(favoriteButton.querySelector("svg")).toHaveClass("size-5")
+        expect(reactLogo.closest("label")?.querySelector("span.absolute"))
+            .toHaveClass("right-[18px]")
+
+        await act(() => router.navigate("/questions"))
+        const knowledgeFavoriteButton = screen.getByRole("button", {name: "取消收藏 React 知识库"})
+        expect(knowledgeFavoriteButton).toHaveClass("size-8")
+        expect(knowledgeFavoriteButton.querySelector("svg")).toHaveClass("size-5")
+    })
+
+    it("places the selection indicator at the bottom-right of every practice option", () => {
+        renderApp(["/practice"])
+
+        for (const name of ["简历专练", "JD 专练", "选择技能"]) {
+            const section = screen.getByRole("region", {name})
+            const option = within(section).getAllByRole("radio")[0].closest("label")
+            expect(option?.querySelector("span.absolute"), `${name} 的选中圆点`)
+                .toHaveClass("bottom-3", "right-[18px]")
+        }
+    })
+
     it("keeps resume and basic selections independent", async () => {
         renderApp(["/practice"])
 
