@@ -569,3 +569,24 @@ Python 技术栈：
 > 不把“讲过一次”当成“已经永久记住”，而是在真实项目中通过重复出现不断强化记忆。
 
 这种复习应简短，不重复整堂课，也不要因为已经讲过就完全跳过。
+
+
+---
+
+# 十六、Practice Session 长期设计（2026-09-24 新增）
+
+练习流程不再把“题库 ID”当成“一次练习”的身份。
+
+长期固定规则：
+
+> 每个用户、每个具体题库最多有一个 active Practice Session。第一次开始时创建 Session，并冻结本轮题组；只要 Session 仍为 active，刷新或重新进入都恢复同一个 Session 和同一组题。正式提交后变为 submitted，明确放弃后变为 abandoned；下一轮再创建新的 Session。
+
+基础技能题库与 AI 题库统一使用这套 Session 生命周期。
+
+草稿必须归属于 sessionId，不能只按 source + libraryId 保存。历史练习必须保存题目快照，避免题库后续修改导致历史复盘内容变化。
+
+完整设计见：
+
+> docs/07-practice-session-design.md
+
+后续实现前端路由、FastAPI、PostgreSQL、AI 评分时，必须优先读取该设计，不再引入会导致后续推翻的临时“题库即练习”模型。
