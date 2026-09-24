@@ -73,22 +73,20 @@ Weak Topics / Mastery
 
 ## 前端代码检查状态
 
-2026-09-24 Codex 已报告完成 sessionId 前端重构，但当前 GitHub main 连接中尚未看到对应新文件 / 新提交，仍显示旧的：
+2026-09-24 已在 GitHub main 复核 Codex 的 sessionId 前端重构。前端本地 Practice Session 闭环已成立：
 
-~~~text
-/practice/session/:source/:libraryId
-~~~
+- 路由已改为 `/practice/session/:sessionId`
+- 题库入口统一通过 `startOrResumePracticeSession`
+- PracticeSessionPage 只按 sessionId 加载固定题组
+- 草稿 key 已绑定 sessionId
+- active Session 可恢复同一题组与草稿
+- 暂时离开 / 放弃 / 提交三种行为已分离
+- 提交和放弃会清理对应草稿
+- 复盘“再练一组”会创建 / 恢复新一轮 Session
 
-因此在远端提交可见后需要再做一次代码审查，重点确认：
+当前 `api/practice.ts` 仍调用本地 `practiceSessionStore`，尚未连接真实 FastAPI Practice Session API。因此前端业务模型与 API 契约已走通，但真实网络接口闭环还没有完成。
 
-- PracticeSessionPage 只按 sessionId 加载
-- 草稿 key 按 sessionId
-- startOrResumePracticeSession 真正恢复 active Session
-- 刷新恢复固定题组
-- 返回 / 放弃 / 提交语义分离
-- 页面没有偷偷退回 source + libraryId 代表一次练习
-
-这项检查不阻塞 Python 学习。
+学习顺序保持连续：先把这套 React / TanStack Query Session 流程读懂，再进入 Python / FastAPI 实现同一套 API；后端完成后只替换 API 层，不重写页面。
 
 ## Next.js 状态
 
@@ -789,3 +787,21 @@ limit: int
 ### 下一步唯一入口
 
 ⏭ 从 Practice Session 的 Pydantic Schema 开始学习 Python / FastAPI。
+
+
+### 2026-09-24 追加｜sessionId 前端重构复核
+
+已复核 commit `70774f8c13ed5b4f102392cd56240e1babc9ea0e`。
+
+结论：
+
+- ✅ 前端 Practice Session 本地闭环设计正确。
+- ✅ `source + libraryId` 已退回到“题库身份”。
+- ✅ `sessionId` 已成为“一轮练习身份”。
+- ✅ `useStartPracticeSession` 使用 `useMutation` 创建 / 恢复会话后导航。
+- ✅ `PracticeSessionPage` 使用 `useQuery(["practiceSession", sessionId])` 获取固定会话。
+- ✅ submit / abandon 使用 `useMutation`。
+- ✅ 草稿和 Session 都按 sessionId 持久化。
+- 🟡 当前 API 层仍是本地适配层，不是真实 FastAPI 网络请求。
+
+下一步学习不跳到无关 Python 基础，而是先读懂这条 React Session 数据流；随后立即用 Python / FastAPI 实现同一 API 契约，完成真实接口闭环。
