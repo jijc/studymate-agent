@@ -590,3 +590,39 @@ Python 技术栈：
 > docs/07-practice-session-design.md
 
 后续实现前端路由、FastAPI、PostgreSQL、AI 评分时，必须优先读取该设计，不再引入会导致后续推翻的临时“题库即练习”模型。
+
+
+---
+
+# 十七、学习节奏与优先级调整（2026-09-24 新增）
+
+用户明确要求加快整体学习进度。
+
+后续教学不再对已经能读懂的 React 基础语法逐行展开。React / TypeScript 继续围绕真实项目学习，但采用以下优先级：
+
+- 简单 JSX、条件渲染、数组方法、已反复出现的基础语法：快速带过或按需复习。
+- React 核心数据流、Hook 边界、TanStack Query、路由、请求状态、关键工程设计：保留必要讲解。
+- 用户卡住或主动追问的 React 语法：再详细解释。
+- 不为了“把 React 全部学完”而阻塞 Python / FastAPI / AI / Agent 主线。
+
+从 2026-09-24 起，Python / FastAPI 提升为即时主线。用户 Python 基础接近零，因此 Python 代码必须继续小步、逐行、结合 StudyMate 真实后端学习。
+
+学习推进改为：
+
+~~~text
+前端 Practice Session 契约稳定
+↓
+直接进入 Python / FastAPI 实现 Practice Session
+↓
+PostgreSQL / SQLAlchemy 持久化
+↓
+整组提交 + useMutation
+↓
+LLM Structured Output 评分
+↓
+Weak Topics / Mastery
+↓
+尽快进入 Agent / LangGraph
+~~~
+
+React 后续知识按项目需要穿插补齐，不再作为进入 Python / Agent 前的完整前置课程。

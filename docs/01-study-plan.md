@@ -794,3 +794,39 @@ Docker 部署、有日志、有基本测试、有项目说明和架构图。
 6. 有真实 Bug 才补 05-mistakes
 
 换新对话时，不按照 Week 计划猜进度，只按照 02-progress 继续。
+
+
+---
+
+# 十六、2026-09-24 路线加速调整
+
+由于用户希望尽快把时间转向 Python、FastAPI、AI 与 Agent，学习路线调整如下：
+
+1. React 不再按“全部系统学完后再进入后端”的方式推进。
+2. 已经反复出现且能读懂的 React 基础语法快速略过；只有影响真实项目数据流的 Hook、Query、Router、状态边界继续重点学习。
+3. Python / FastAPI 从现在开始与前端闭环并行，且优先级高于继续扩展 React 理论。
+4. 下一条真实主线直接围绕 Practice Session 后端实现：
+   - Pydantic Schema
+   - FastAPI Router
+   - Service
+   - Session 生命周期
+   - PostgreSQL / SQLAlchemy
+   - 提交整组答案
+5. 前端只补齐调用这些 API 所必需的 React / TanStack Query 知识。
+6. 第一条真实 Session + 提交闭环完成后，立即进入 LLM Structured Output，不等待 React useMemo / useCallback / Fiber 等知识全部补完。
+7. Agent / LangGraph 仍建立在真实业务数据闭环之上，但目标是尽快进入，不做无关前置知识堆积。
+
+新的优先顺序：
+
+~~~text
+Practice Session 契约
+→ Python / FastAPI Session API
+→ PostgreSQL 持久化
+→ React useMutation 提交整轮
+→ LLM Structured Output 评分
+→ Weak Topics / Mastery
+→ Agent / LangGraph
+→ RAG / MCP
+~~~
+
+Next.js 继续保留在主路线中，但不允许它阻塞 Python / AI / Agent 核心链路。

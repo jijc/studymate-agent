@@ -1,7 +1,7 @@
 # StudyMate 每日学习进度与当前指针
 
 > 这是整个仓库最重要的动态学习文档。  
-> LAST UPDATED：2026-09-22  
+> LAST UPDATED：2026-09-24  
 > 更新规则：每个实际学习日结束前必须更新。  
 > 新聊天优先读本文件顶部，不要从旧 Day 重新开始。
 
@@ -11,80 +11,92 @@
 
 ## 当前阶段
 
-**阶段 1：React 数据流 + Axios + TanStack Query + FastAPI 真实闭环**
+**Practice Session 架构已确定；学习主线从 React 细节切换到 Python / FastAPI 真实实现。**
 
-## 当前正在学习
+## 当前已经完成 / 理解
 
-🟡 TanStack Query 服务端状态管理。
+- ✅ React / TypeScript 基础数据流已经足够支撑继续项目。
+- ✅ Axios + TanStack Query 的 query / mutation / cache 基础已经学过。
+- ✅ Practice GET 已经进入真实 FastAPI 接口实践。
+- ✅ 已理解 Server State 与 Client State 的基本边界。
+- ✅ 已学习 Record、可选链、空值合并、functional update、useEffect cleanup、sessionStorage 草稿等真实项目语法。
+- ✅ 已确定 Practice Session 最终架构，详见 docs/07-practice-session-design.md。
+- ✅ 题库身份与练习会话身份正式分离：source + libraryId 表示题库；sessionId 表示一次具体练习。
+- ✅ 每个用户 + 每个具体题库最多一个 active Practice Session；active 期间固定题组。
+- ✅ 提交 / 放弃 / 暂时离开的生命周期已经明确。
 
-已经讲到：
+## 学习节奏调整
 
-- ✅ QueryClient / QueryClientProvider
-- ✅ useQuery（查询服务端数据）
-- ✅ queryKey（查询键 / 缓存数据的身份证）
-- ✅ queryFn（查询函数）
-- ✅ useQuery 会随组件 render（重新渲染）运行，但 queryFn 不等于每次 render 都请求
-- ✅ TanStack Query 根据 queryKey / cache（缓存）/ stale（陈旧）状态决定是否请求
-- ✅ data 请求前为什么是 undefined
-- ✅ React state / query state 变化为什么会触发 re-render（重新渲染）
-- ✅ isPending（尚未拿到成功数据）
-- ✅ isLoading（首次加载状态）
-- ✅ isFetching（正在请求）
-- ✅ refetch（重新获取）
-- ✅ staleTime（数据保持“新鲜”的时间）
-- ✅ queryKey 带参数：所有会影响 queryFn 返回结果的参数通常都应进入 queryKey
-- ✅ useMutation（服务端修改操作）
-- ✅ mutate（真正触发修改操作）
-- ✅ mutationFn（修改操作函数）
-- ✅ onSuccess（成功回调）
-- ✅ onError（失败回调）
-- ✅ onSettled（无论成功失败都会执行的收尾回调）
-- ✅ AI 长耗时请求与 Axios timeout（超时）的关系
-- ✅ invalidateQueries（使查询缓存失效 / 宣告缓存不再可靠）
+从 2026-09-24 起：
+
+> React 简单语法快速略过；Python / FastAPI 成为即时主线。
+
+React 后续只重点补：
+
+- 真正影响数据流的 Hook
+- TanStack Query
+- Router
+- API 调用
+- 用户卡住的语法
+
+不再因为 useMemo / useCallback / Fiber 等尚未系统学习而阻塞 Python、AI、Agent。
+
+Python 基础接近零，因此 Python 继续使用“小步、逐行、真实项目落地”的方式学习。
 
 ## 下一步唯一入口
 
-⏭ **停止继续堆 TanStack Query 理论，进入 StudyMate 真实项目实践。**
+⏭ **围绕 Practice Session 开始 Python / FastAPI 后端实现。**
 
-严格按：
+顺序：
 
 ~~~text
-先梳理 PracticeSession 当前静态题目模型
+先定义 Practice Session 的 Pydantic Schema
 ↓
-对照 FastAPI 当前 /questions/today 返回结构
+理解 Python class / 类型标注 / Literal / list 等基础
 ↓
-确定第一版真实题目 API 契约
+写 start-or-resume Session Service
 ↓
-先接真实 GET + useQuery
+写 FastAPI Router
 ↓
-页面跑通 Loading / Error / Data
+先用内存数据跑通 Session 生命周期
 ↓
-再接 POST /attempts + useMutation
+再进入 PostgreSQL / SQLAlchemy
 ↓
-接 AI 评分 Pending / Success / Error
+前端接 Session API + 整组 useMutation
 ↓
-最后用 invalidateQueries 更新受影响缓存
+LLM Structured Output 评分
 ↓
-完成第一条真实前后端闭环
+Weak Topics / Mastery
+↓
+尽快进入 Agent / LangGraph
 ~~~
 
-在这条闭环完成前，不因为 Next / Agent 新知识而跳走。
+## 前端代码检查状态
+
+2026-09-24 Codex 已报告完成 sessionId 前端重构，但当前 GitHub main 连接中尚未看到对应新文件 / 新提交，仍显示旧的：
+
+~~~text
+/practice/session/:source/:libraryId
+~~~
+
+因此在远端提交可见后需要再做一次代码审查，重点确认：
+
+- PracticeSessionPage 只按 sessionId 加载
+- 草稿 key 按 sessionId
+- startOrResumePracticeSession 真正恢复 active Session
+- 刷新恢复固定题组
+- 返回 / 放弃 / 提交语义分离
+- 页面没有偷偷退回 source + libraryId 代表一次练习
+
+这项检查不阻塞 Python 学习。
 
 ## Next.js 状态
 
-🧪 已完成技术路线决策，还没有正式学习。
-
-决策：
-
-> StudyMate 未来使用 Next.js + App Router。
-
-开始条件：
-
-> 第一条 React + FastAPI 真实查询 / 提交闭环跑通后进入。
+🧪 已加入主路线，但不再作为 Python / AI / Agent 的前置阻塞项。
 
 ## Agent 状态
 
-🧪 已重新整理完整技能地图，还没有进入 LangGraph / RAG / MCP 主学习阶段。
+🧪 尚未开始正式 LangGraph / RAG / MCP 学习。目标是在 Session + 数据库 + LLM 评分闭环后尽快进入。
 
 ---
 
@@ -743,3 +755,37 @@ limit: int
 - 🧪 practice Schema / API / Service 正在本地实现。
 - ✅ 已开始理解 API（接口层）→ Service（业务层）→ Schema（数据结构层）的职责分离。
 - ⏭ 下一步：建立前端 `src/api/practice.ts`，把真实练习 GET 接口接入 Axios 层，再进入 useQuery 实战。
+
+
+## 2026-09-24｜Practice Session 架构确定 + 学习路线加速
+
+状态：✅ 架构确定 / 🟡 后端即将开始
+
+### 今天真正学懂
+
+- Practice Session 与 Question Library 是不同实体。
+- 每个用户、每个具体题库最多一个 active Session。
+- active Session 创建时固定题组，刷新与重新进入不能重新随机。
+- sessionId 才代表“一次具体练习”。
+- source + libraryId 只代表“练哪个题库”。
+- 暂时离开、放弃、提交是三个不同生命周期动作。
+- 草稿应绑定 sessionId，而不是题库 ID。
+- 历史记录必须使用题目快照。
+
+### 项目发生变化
+
+- 新增 docs/07-practice-session-design.md。
+- docs/00-context.md 固化 Practice Session 长期架构。
+- Codex 报告已完成前端 sessionId 重构；远端 GitHub main 当前尚未看到该提交，等待可见后复核。
+
+### 学习优先级变化
+
+- React 简单语法不再逐行展开。
+- Python / FastAPI 从现在开始成为即时主线。
+- Python 仍按零基础方式逐步讲解。
+- 前端只在真实 API 接入时补必要知识。
+- 目标是在真实数据库与 LLM 评分闭环后尽快进入 Agent / LangGraph。
+
+### 下一步唯一入口
+
+⏭ 从 Practice Session 的 Pydantic Schema 开始学习 Python / FastAPI。
