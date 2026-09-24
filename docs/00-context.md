@@ -626,3 +626,29 @@ Weak Topics / Mastery
 ~~~
 
 React 后续知识按项目需要穿插补齐，不再作为进入 Python / Agent 前的完整前置课程。
+
+
+---
+
+# 十八、生产模拟数据强制清理规则（2026-09-24 新增）
+
+用户明确要求：
+
+> 任何为了前端闭环而使用的 localStorage / sessionStorage / demo / mock / static data 都不能靠“以后记得再删”。必须建立可追踪清单，并在对应真实 FastAPI / PostgreSQL 能力完成后主动替换或清理。
+
+生产发布前必须执行模拟数据审计。核心业务历史数据不能无限累积在浏览器本地存储中。
+
+完整清单见：
+
+> docs/08-production-replacement-checklist.md
+
+以后 Codex 新增静态页面或本地模拟业务时，也要同步登记到该清单；每完成一个真实后端模块，要回头更新对应条目状态。
+
+尤其注意当前：
+
+- Practice Session 仍由 frontend/src/data/practiceSessionStore.ts + localStorage 模拟。
+- Practice Records / Review 仍由 localStorage + staticRecords 模拟。
+- Practice Draft 当前按 sessionId 保存，submit / abandon 会清理，但仍需最终生产化策略。
+- AI 题库、Mock Interview、Reports、Notifications 等仍有静态或本地模拟数据。
+
+这些不允许在生产阶段被遗忘。
