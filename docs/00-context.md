@@ -652,3 +652,26 @@ React 后续知识按项目需要穿插补齐，不再作为进入 Python / Agen
 - AI 题库、Mock Interview、Reports、Notifications 等仍有静态或本地模拟数据。
 
 这些不允许在生产阶段被遗忘。
+
+
+---
+
+# 十九、禁止临时业务架构与登录权限前置规则（2026-09-24 新增）
+
+用户再次明确：
+
+> StudyMate 不接受“为了先跑起来”而长期引入临时业务架构、假登录、无限增长的 localStorage 业务数据、假验证码、假权限等做法。学习可以小步实现，但架构必须朝正式上线模型推进，并随着学习过程逐步把已有模拟能力替换为真实后端，不把生产化集中拖到项目最后。
+
+因此后续开发遵循：
+
+1. 新增核心业务功能时，优先直接设计正式的数据模型、API、用户归属和权限边界。
+2. 已存在的本地模拟能力要随对应真实后端模块完成而立即退出核心链路，不留到项目最后。
+3. 不新增会无限增长的 localStorage / sessionStorage 业务历史存储。
+4. 外部能力尚未接入时（如短信验证码），宁可明确“未开放”，也不做看似可用的假业务。
+5. 登录、用户身份、资源归属、越权保护必须从 Practice Session 数据库阶段开始进入真实架构，不允许后补。
+6. URL 参数永远不作为权限依据；所有私有资源由 FastAPI 根据 current_user + resource ownership 校验。
+7. 前端 Protected Route / RequireAuth 只负责体验，后端 Authorization 才是安全边界。
+
+完整设计见：
+
+> docs/09-auth-and-access-control-design.md
