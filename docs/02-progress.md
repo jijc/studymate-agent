@@ -1,7 +1,7 @@
 # StudyMate 每日学习进度与当前指针
 
 > 这是整个仓库最重要的动态学习文档。  
-> LAST UPDATED：2026-09-24  
+> LAST UPDATED: 2026-09-24
 > 更新规则：每个实际学习日结束前必须更新。  
 > 新聊天优先读本文件顶部，不要从旧 Day 重新开始。
 
@@ -805,3 +805,69 @@ limit: int
 - 🟡 当前 API 层仍是本地适配层，不是真实 FastAPI 网络请求。
 
 下一步学习不跳到无关 Python 基础，而是先读懂这条 React Session 数据流；随后立即用 Python / FastAPI 实现同一 API 契约，完成真实接口闭环。
+
+
+## 2026-09-24 晚间学习收尾
+
+### React Practice Session 主链已完成理解
+
+用户已经理解并确认：
+
+- Hook 不是所有函数；React Hook / 第三方 Hook / 自定义 Hook 的区别。
+- `useStartPracticeSession` 是 custom Hook（自定义 Hook）。
+- `useMutation` 返回 mutation 对象；`mutation.mutate` 是触发 `mutationFn` 的函数。
+- `queryKey` 主要标识 Query Cache；Mutation 可有 mutationKey，但用途不同。
+- `queryClient.setQueryData` 是直接更新指定 queryKey 的缓存，不发网络请求。
+- `invalidateQueries` 是把缓存标记为失效 / 陈旧，通常触发重新获取。
+- sessionId 在进入答题页前由 start/resume 流程得到，再进入 `/practice/session/:sessionId`。
+- Skill / Question Library / Practice Session 三者已经区分清楚。
+- sessionId 是 opaque ID（不透明 ID），业务归属通过 user_id / source / library_id / status 判断。
+- 同一用户可同时拥有多个不同题库的 active Session；同一用户 + 同一题库最多一个 active Session。
+- `key={sessionId}` 用于让不同 Session 使用不同组件身份，避免复用旧 state。
+- URL 参数可以被用户修改，真正安全依赖 FastAPI 的 current_user + resource ownership 校验，而不是前端隐藏 URL。
+
+### 新的长期工程约束
+
+用户再次明确：
+
+- 不接受“先用临时业务架构，最后再统一清理”的路线。
+- 学习可以小步，但每一步都要朝正式上线结构推进。
+- 已存在的 localStorage / sessionStorage / demo / mock 要随着对应真实模块完成而立即退出主链路。
+- 登录、权限、资源归属必须前置进入真实架构。
+- 要主动考虑日志、异常、配置、迁移、测试、健康检查、限流、超时等真实项目基础能力，但禁止为了周到而过度设计。
+
+相关文档：
+
+- `docs/08-production-replacement-checklist.md`
+- `docs/09-auth-and-access-control-design.md`
+- `docs/10-production-engineering-baseline.md`
+
+### 下一步唯一入口
+
+React Practice Session 主数据流已收尾。
+
+下一步进入 Python / FastAPI，但继续围绕 StudyMate 的真实闭环学习，不开无关语法支线。
+
+建议顺序：
+
+~~~text
+FastAPI 正式工程地基（小步学习）
+↓
+配置管理 / logging / 统一异常的最小基线
+↓
+PostgreSQL + SQLAlchemy + Alembic
+↓
+users / auth_sessions + current_user
+↓
+PracticeSession(user_id) 真正持久化
+↓
+start/resume/get/submit/abandon 真实 API
+↓
+React api/practice.ts 改 Axios
+↓
+移除 practiceSessionStore 与本地历史模拟
+↓
+LLM Structured Output
+~~~
+
+新聊天恢复时，先读 `docs/00-context.md` 与本文件，再按“下一步唯一入口”继续。
