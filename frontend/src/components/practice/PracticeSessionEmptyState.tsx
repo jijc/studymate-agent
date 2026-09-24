@@ -3,7 +3,7 @@ import {Link} from "react-router"
 
 import {Button} from "@/components/ui/button"
 
-function PracticeSessionEmptyState({reason}: {reason: "missing" | "empty"}) {
+function PracticeSessionEmptyState({reason}: {reason: "missing" | "empty" | "ended"}) {
     const missing = reason === "missing"
 
     return (
@@ -13,12 +13,14 @@ function PracticeSessionEmptyState({reason}: {reason: "missing" | "empty"}) {
                     <BookOpenCheck className="size-8"/>
                 </span>
                 <h1 className="mt-5 text-xl font-semibold tracking-tight sm:text-2xl">
-                    {missing ? "没有找到这个练习题库" : "这个题库还没有练习题"}
+                    {missing ? "没有找到这轮练习" : reason === "ended" ? "这轮练习已结束" : "这个题库还没有练习题"}
                 </h1>
                 <p className="mx-auto mt-2 max-w-md text-balance text-sm leading-6 text-muted-foreground">
                     {missing
-                        ? "题库可能已被删除，或访问链接有误。请选择其他题库继续练习。"
-                        : "这套题库暂时无法开始练习。可以先选择其他题库，稍后再回来看看。"}
+                        ? "练习链接可能已失效。请选择题库开始或继续练习。"
+                        : reason === "ended"
+                            ? "这轮练习已放弃或过期。返回练习页可以重新开始。"
+                            : "这套题库暂时无法开始练习。可以先选择其他题库，稍后再回来看看。"}
                 </p>
                 <Button render={<Link to="/practice"/>} nativeButton={false} className="mt-6">
                     <ArrowLeft aria-hidden="true" className="size-4"/>返回练习页

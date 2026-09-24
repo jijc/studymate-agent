@@ -2,8 +2,10 @@ import {ArrowLeft, ArrowRight, BriefcaseBusiness, FileText} from "lucide-react"
 import {Link} from "react-router"
 
 import type {AiLibraryDetail} from "@/data/aiLibraryDetails"
+import {useStartPracticeSession} from "@/hooks/useStartPracticeSession"
 
 function AiLibraryDetailHeader({library}: {library: AiLibraryDetail}) {
+    const {startPracticeSession, isStarting, startError} = useStartPracticeSession()
     const Icon = library.source === "resume" ? FileText : BriefcaseBusiness
     const sourceLabel = library.source === "resume" ? "简历题库" : "JD 题库"
 
@@ -30,13 +32,15 @@ function AiLibraryDetailHeader({library}: {library: AiLibraryDetail}) {
                         <span>更新于 {library.updatedAt}</span>
                     </div>
                 </div>
-                <Link
-                    to={`/practice/session/${library.source}/${library.id}`}
-                    state={{returnTo: `/questions/ai/${library.source}/${library.id}`}}
-                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover"
+                {startError && <p role="alert" className="text-sm text-destructive">{startError.message}</p>}
+                <button
+                    type="button"
+                    disabled={isStarting}
+                    onClick={() => startPracticeSession({source: library.source, libraryId: library.id})}
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary-hover disabled:opacity-60"
                 >
-                    练习这套题库<ArrowRight aria-hidden="true" className="size-4"/>
-                </Link>
+                    {isStarting ? "正在进入..." : "练习这套题库"}<ArrowRight aria-hidden="true" className="size-4"/>
+                </button>
             </div>
         </header>
     )

@@ -2,7 +2,7 @@ import "@testing-library/jest-dom/vitest"
 
 import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react"
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
-import {createMemoryRouter, MemoryRouter, RouterProvider} from "react-router"
+import {createMemoryRouter, RouterProvider} from "react-router"
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest"
 
 import App from "./App"
@@ -10,6 +10,8 @@ import {SmartPracticeCard} from "./components/practice/SmartPracticeCard"
 import {recentPractice} from "./data/reportOverview"
 import {questionLibraries} from "./data/questionLibraries"
 import {getInterviewResult, saveInterviewResult} from "./data/mockInterview"
+import {startOrResumeStoredPracticeSession} from "./data/practiceSessionStore"
+import type {PracticeSource} from "./api/practice"
 
 beforeEach(() => {
     vi.spyOn(window, "scrollTo").mockImplementation(() => {})
@@ -27,8 +29,8 @@ describe("AI 题库详情静态流程", () => {
             .toHaveAttribute("href", "/questions/ai/jd/byte-frontend-jd")
     })
 
-    it("预览 AI 独立题目并能从目录切换，只保留详情练习入口", () => {
-        renderApp(["/questions/ai/resume/frontend-resume"])
+    it("预览 AI 独立题目并能从目录切换，只保留详情练习入口", async () => {
+        const {router} = renderApp(["/questions/ai/resume/frontend-resume"])
 
         expect(screen.getByRole("heading", {level: 1, name: "高级前端工程师"})).toBeInTheDocument()
         expect(screen.getByText(/示例预览 5 题.*题库共 42 题/)).toBeInTheDocument()
@@ -37,7 +39,9 @@ describe("AI 题库详情静态流程", () => {
         expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("你在项目中如何拆分 React 组件")
         fireEvent.click(within(directory).getByRole("button", {name: /讲一次你用 TypeScript/}))
         expect(screen.getByRole("region", {name: "AI 题目预览"})).toHaveTextContent("讲一次你用 TypeScript")
-        expect(screen.getByRole("link", {name: "练习这套题库"})).toHaveAttribute("href", "/practice/session/resume/frontend-resume")
+        fireEvent.click(screen.getByRole("button", {name: "练习这套题库"}))
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(router.state.location.pathname).toMatch(/^\/practice\/session\/ps_/)
         expect(screen.queryByRole("link", {name: "模拟面试"})).not.toBeInTheDocument()
     })
 
@@ -178,6 +182,7 @@ afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()
     sessionStorage.clear()
+    localStorage.clear()
     Object.defineProperty(window, "scrollY", {configurable: true, value: 0})
 })
 
@@ -197,6 +202,11 @@ function renderApp(initialEntries = ["/"]) {
         ),
         router,
     }
+}
+
+function renderPracticeSession(source: PracticeSource, libraryId: string) {
+    const session = startOrResumeStoredPracticeSession({source, libraryId})
+    return {...renderApp([`/practice/session/${session.sessionId}`]), session}
 }
 
 describe("StudyMate home page", () => {
@@ -521,7 +531,7 @@ describe("StudyMate home page", () => {
         expect(screen.getByRole("banner")).toHaveTextContent("你好，学习者")
     })
 
-    it("activates start only after selecting a basic library", () => {
+    it("activates start only after selecting a basic library", async () => {
         const {router} = renderApp(["/practice"])
 
         const basicPractice = screen.getByRole("region", {name: "基础题库练习"})
@@ -530,7 +540,8 @@ describe("StudyMate home page", () => {
         expect(within(basicPractice).getByRole("button", {name: "开始练习"})).toBeEnabled()
         fireEvent.click(within(basicPractice).getByRole("button", {name: "开始练习"}))
 
-        expect(router.state.location.pathname).toBe("/practice/session/basic/react")
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(router.state.location.pathname).toMatch(/^\/practice\/session\/ps_/)
     })
 
     it("pins a basic library when favorited without selecting it, and shares the favorite with the knowledge page", async () => {
@@ -631,18 +642,19 @@ describe("StudyMate home page", () => {
         }
     })
 
-    it("shows a direct start action when a personal AI library is ready", () => {
-        render(
-            <MemoryRouter>
-                <SmartPracticeCard state={{status: "ready", href: "/practice/session/smart/personal"}}/>
-            </MemoryRouter>,
-        )
+    it("shows a direct start action when a personal AI library is ready", async () => {
+        const router = createMemoryRouter([
+            {path: "/", element: <SmartPracticeCard state={{status: "ready", source: "resume", libraryId: "frontend-resume"}}/>},
+            {path: "/practice/session/:sessionId", element: <p>已进入本轮练习</p>},
+        ])
+        render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router}/></QueryClientProvider>)
 
         const smartPractice = screen.getByRole("region", {name: "专属 AI 练习"})
         expect(smartPractice).not.toHaveAttribute("aria-disabled", "true")
-        expect(within(smartPractice).getByRole("button", {name: "开始练习"}))
-            .toHaveAttribute("href", "/practice/session/smart/personal")
         expect(within(smartPractice).queryByRole("button", {name: "尚未开启"})).not.toBeInTheDocument()
+        fireEvent.click(within(smartPractice).getByRole("button", {name: "开始练习"}))
+        expect(await screen.findByText("已进入本轮练习")).toBeInTheDocument()
+        expect(router.state.location.pathname).toMatch(/^\/practice\/session\/ps_/)
     })
 
     it("AI 题库卡片只进入目录，不重复放开始练习", () => {
@@ -686,7 +698,7 @@ describe("StudyMate home page", () => {
     })
 
     it("答题时不显示逐题反馈，AI 提示默认收起", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         expect(screen.queryByRole("region", {name: "实时反馈"})).not.toBeInTheDocument()
@@ -698,7 +710,7 @@ describe("StudyMate home page", () => {
     })
 
     it("switches between text and a clearly unavailable voice answer without losing typed work", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
@@ -718,7 +730,7 @@ describe("StudyMate home page", () => {
     })
 
     it("does not treat the voice placeholder as a submitted answer", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.click(screen.getByRole("button", {name: "语音回答"}))
@@ -727,7 +739,7 @@ describe("StudyMate home page", () => {
     })
 
     it("用演示题目展示高级前端工程师简历练习", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
 
         expect(await screen.findByRole("heading", {name: "高级前端工程师"})).toBeInTheDocument()
         expect(screen.getByRole("heading", {name: "你在项目中如何拆分 React 组件，避免页面状态相互影响？"})).toBeInTheDocument()
@@ -735,7 +747,7 @@ describe("StudyMate home page", () => {
     })
 
     it("题库名称和专项标签放在同一个标题区域，不重复专项名称", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
 
         const title = await screen.findByRole("heading", {level: 1, name: "高级前端工程师"})
         expect(title.parentElement).toHaveTextContent("简历专项")
@@ -743,12 +755,12 @@ describe("StudyMate home page", () => {
     })
 
     it("练习中说明整轮评估与本地草稿，不重复展示通用答题提示", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("heading", {level: 1, name: "高级前端工程师"})
 
         expect(screen.getByRole("region", {name: "本轮评估"})).toHaveTextContent("每轮 10 道题")
         expect(screen.getByRole("region", {name: "本轮评估"})).toHaveTextContent("复盘页")
-        expect(screen.getByText(/草稿仅保存在当前标签页，刷新可恢复/)).toBeInTheDocument()
+        expect(screen.getByText(/草稿保存在当前浏览器/)).toBeInTheDocument()
         expect(screen.queryByText(/先说明核心概念，再结合具体场景组织回答/)).not.toBeInTheDocument()
         expect(screen.queryByText(/复盘评分为演示数据/)).not.toBeInTheDocument()
         expect(screen.queryByText(/回答会自动保存为草稿/)).not.toBeInTheDocument()
@@ -756,7 +768,7 @@ describe("StudyMate home page", () => {
     })
 
     it("纵向题目目录展示标题，并可切换题目", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
 
         const directory = await screen.findByRole("navigation", {name: "本轮题目目录"})
         expect(within(directory).getAllByRole("button")).toHaveLength(10)
@@ -766,7 +778,7 @@ describe("StudyMate home page", () => {
     })
 
     it("切题和重新进入时保留未提交的回答", async () => {
-        const firstView = renderApp(["/practice/session/resume/frontend-resume"])
+        const firstView = renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "按业务边界拆分组件"}})
@@ -774,14 +786,29 @@ describe("StudyMate home page", () => {
         expect(screen.getByRole("button", {name: /第 1 题，已作答/})).toBeInTheDocument()
         firstView.unmount()
 
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
         expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("按业务边界拆分组件")
         expect(screen.getByRole("button", {name: "提交本轮并查看评估"})).toBeDisabled()
     })
 
+    it("仅凭 sessionId 路由即可在刷新后恢复固定题组和草稿", async () => {
+        const session = startOrResumeStoredPracticeSession({source: "basic", libraryId: "react"})
+        const path = `/practice/session/${session.sessionId}`
+        const firstView = renderApp([path])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(screen.getByRole("heading", {name: session.questions[0].promptSnapshot})).toBeInTheDocument()
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "刷新后继续"}})
+        firstView.unmount()
+
+        renderApp([path])
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(screen.getByRole("heading", {name: session.questions[0].promptSnapshot})).toBeInTheDocument()
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("刷新后继续")
+    })
+
     it("10 题全部作答后才能提交本轮，最后一题不显示完成本组", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        const {router, session} = renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
         const submit = screen.getByRole("button", {name: "提交本轮并查看评估"})
         expect(submit).toBeDisabled()
@@ -802,13 +829,18 @@ describe("StudyMate home page", () => {
         expect(await screen.findByRole("heading", {name: /高级前端工程师.*练习复盘/})).toBeInTheDocument()
         expect(screen.getByRole("heading", {name: "如果重新设计你简历中的核心项目，你会保留和改进哪些技术决策？"})).toBeInTheDocument()
         expect(screen.getByText("第 10 题的回答")).toBeInTheDocument()
+        expect(localStorage.getItem(`studymate-practice-draft:${session.sessionId}`)).toBeNull()
+        fireEvent.click(screen.getByRole("button", {name: "再练一组"}))
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(router.state.location.pathname).toMatch(/^\/practice\/session\/ps_/)
+        expect(router.state.location.pathname).not.toBe(`/practice/session/${session.sessionId}`)
     })
 
-    it("题库不存在时展示图文空状态和返回入口", () => {
-        renderApp(["/practice/session/basic/missing"])
+    it("会话不存在时展示图文空状态和返回入口", async () => {
+        renderApp(["/practice/session/ps_missing"])
 
-        expect(screen.getByRole("heading", {name: "没有找到这个练习题库"})).toBeInTheDocument()
-        expect(screen.getByText("题库可能已被删除，或访问链接有误。请选择其他题库继续练习。"))
+        expect(await screen.findByRole("heading", {name: "没有找到这轮练习"})).toBeInTheDocument()
+        expect(screen.getByText("练习链接可能已失效。请选择题库开始或继续练习。"))
             .toBeInTheDocument()
         const emptyState = screen.getByRole("status", {name: "题库不可用"})
         expect(emptyState).toBeInTheDocument()
@@ -818,29 +850,61 @@ describe("StudyMate home page", () => {
     })
 
     it("退出前说明草稿会保存，取消后留在当前题", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
-        expect(screen.getByRole("dialog", {name: "确定退出练习？"}))
-            .toHaveTextContent("草稿仅保存在当前标签页")
+        expect(screen.getByRole("dialog", {name: "暂时离开练习？"}))
+            .toHaveTextContent("草稿保存在当前浏览器")
         fireEvent.click(screen.getByRole("button", {name: "继续练习"}))
-        expect(screen.queryByRole("dialog", {name: "确定退出练习？"})).not.toBeInTheDocument()
+        expect(screen.queryByRole("dialog", {name: "暂时离开练习？"})).not.toBeInTheDocument()
     })
 
     it("未完成一轮时只保存草稿，不生成练习记录", async () => {
-        renderApp(["/practice/session/resume/frontend-resume"])
+        const {session} = renderPracticeSession("resume", "frontend-resume")
         await screen.findByRole("navigation", {name: "本轮题目目录"})
 
         fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {
             target: {value: "按职责拆分 React 组件"},
         })
         fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
-        fireEvent.click(screen.getByRole("button", {name: "保存草稿并返回"}))
+        fireEvent.click(screen.getByRole("button", {name: "暂时离开"}))
 
         expect(screen.getByRole("heading", {name: "今天想练什么？"})).toBeInTheDocument()
-        expect(sessionStorage.getItem("studymate-practice-draft:resume:frontend-resume")).toContain("按职责拆分 React 组件")
-        expect(sessionStorage.getItem("studymate-practice-records")).toBeNull()
+        expect(localStorage.getItem(`studymate-practice-draft:${session.sessionId}`)).toContain("按职责拆分 React 组件")
+        expect(localStorage.getItem("studymate-practice-records")).toBeNull()
+    })
+
+    it("暂时离开后从同一题库继续原 session 和草稿", async () => {
+        const {router, session} = renderPracticeSession("resume", "frontend-resume")
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "需要继续的回答"}})
+        fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
+        fireEvent.click(screen.getByRole("button", {name: "暂时离开"}))
+
+        const resumePractice = screen.getByRole("region", {name: "简历专练"})
+        fireEvent.click(within(resumePractice).getByRole("radio", {name: "选择 高级前端工程师 题库"}))
+        fireEvent.click(within(resumePractice).getByRole("button", {name: "开始练习"}))
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(router.state.location.pathname).toBe(`/practice/session/${session.sessionId}`)
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("需要继续的回答")
+    })
+
+    it("明确放弃本轮后清除草稿，重进题库生成新 session", async () => {
+        const {router, session} = renderPracticeSession("resume", "frontend-resume")
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        fireEvent.change(screen.getByRole("textbox", {name: "我的回答"}), {target: {value: "将被清除的草稿"}})
+        fireEvent.click(screen.getByRole("button", {name: "返回练习页"}))
+        fireEvent.click(screen.getByRole("button", {name: "放弃本轮"}))
+        expect(await screen.findByRole("heading", {name: "今天想练什么？"})).toBeInTheDocument()
+        expect(localStorage.getItem(`studymate-practice-draft:${session.sessionId}`)).toBeNull()
+
+        const resumePractice = screen.getByRole("region", {name: "简历专练"})
+        fireEvent.click(within(resumePractice).getByRole("radio", {name: "选择 高级前端工程师 题库"}))
+        fireEvent.click(within(resumePractice).getByRole("button", {name: "开始练习"}))
+        await screen.findByRole("navigation", {name: "本轮题目目录"})
+        expect(router.state.location.pathname).not.toBe(`/practice/session/${session.sessionId}`)
+        expect(screen.getByRole("textbox", {name: "我的回答"})).toHaveValue("")
     })
 
     it("filters knowledge libraries through the single search field", () => {

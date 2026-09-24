@@ -1,12 +1,12 @@
 const draftPrefix = "studymate-practice-draft"
 
-function draftKey(source: string, libraryId: string) {
-    return `${draftPrefix}:${source}:${libraryId}`
+function draftKey(sessionId: string) {
+    return `${draftPrefix}:${sessionId}`
 }
 
-function getPracticeDraft(source: string, libraryId: string): Record<string, string> {
+function getPracticeDraft(sessionId: string): Record<string, string> {
     try {
-        const value: unknown = JSON.parse(sessionStorage.getItem(draftKey(source, libraryId)) ?? "{}")
+        const value: unknown = JSON.parse(localStorage.getItem(draftKey(sessionId)) ?? "{}")
         if (!value || typeof value !== "object" || Array.isArray(value)) return {}
         return Object.fromEntries(Object.entries(value).filter(([, answer]) => typeof answer === "string"))
     } catch {
@@ -14,12 +14,12 @@ function getPracticeDraft(source: string, libraryId: string): Record<string, str
     }
 }
 
-function savePracticeDraft(source: string, libraryId: string, answers: Record<string, string>) {
-    sessionStorage.setItem(draftKey(source, libraryId), JSON.stringify(answers))
+function savePracticeDraft(sessionId: string, answers: Record<string, string>) {
+    localStorage.setItem(draftKey(sessionId), JSON.stringify(answers))
 }
 
-function clearPracticeDraft(source: string, libraryId: string) {
-    sessionStorage.removeItem(draftKey(source, libraryId))
+function clearPracticeDraft(sessionId: string) {
+    localStorage.removeItem(draftKey(sessionId))
 }
 
 export {clearPracticeDraft, getPracticeDraft, savePracticeDraft}

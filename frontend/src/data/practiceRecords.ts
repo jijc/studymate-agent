@@ -9,6 +9,7 @@ const storageKey = "studymate-practice-records"
 
 export type PracticeAnswerReview = PracticeQuestion & {answer: string}
 export type PracticeRecordDetail = PracticeRecord & {
+    sessionId?: string
     answers: PracticeAnswerReview[]
 }
 
@@ -22,7 +23,7 @@ const staticRecords: PracticeRecordDetail[] = practiceRecords.map((record) => ({
 
 function getSavedRecords(): PracticeRecordDetail[] {
     try {
-        const parsed: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? "[]")
+        const parsed: unknown = JSON.parse(localStorage.getItem(storageKey) ?? "[]")
         if (!Array.isArray(parsed)) return []
         return parsed.filter((record): record is PracticeRecordDetail =>
             typeof record === "object" && record !== null &&
@@ -42,17 +43,20 @@ export function getPracticeRecord(id: string): PracticeRecordDetail | null {
 }
 
 export function savePracticeRecord(record: PracticeRecordDetail): void {
-    sessionStorage.setItem(storageKey, JSON.stringify([record, ...getSavedRecords()]))
+    localStorage.setItem(storageKey, JSON.stringify([record, ...getSavedRecords()]))
 }
 
 export function buildSubmittedRecord(input: {
     source: PracticeSource
     libraryId: string
+    libraryTitle?: string
+    sessionId?: string
     answers: string[]
     questions?: Array<Pick<PracticeQuestion, "id" | "prompt" | "topic">>
 }): PracticeRecordDetail {
     const library = resolvePracticeLibrary(input.source, input.libraryId)
-    if (!library) throw new Error("练习题库不存在")
+    const libraryTitle = input.libraryTitle ?? library?.title
+    if (!libraryTitle) throw new Error("练习题库不存在")
 
     const questions = input.questions ?? getPracticeQuestions(input.source, input.libraryId)
     const answers = questions.map((question, index) => ({
@@ -67,9 +71,10 @@ export function buildSubmittedRecord(input: {
 
     return {
         id: `demo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        sessionId: input.sessionId,
         source: input.source,
         libraryId: input.libraryId,
-        title: input.source === "basic" ? `${library.title} 基础练习` : library.title,
+        title: input.source === "basic" ? `${libraryTitle} 基础练习` : libraryTitle,
         type,
         completed,
         score: Math.round((completed / questions.length) * 78),

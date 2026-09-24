@@ -1,14 +1,15 @@
 import {ArrowRight, LockKeyhole, Sparkles} from "lucide-react"
-import {Link} from "react-router"
-
 import {Button} from "@/components/ui/button"
 import {practiceEntryIconClassName} from "@/components/practice/practiceStyles"
+import type {PracticeSource} from "@/api/practice"
+import {useStartPracticeSession} from "@/hooks/useStartPracticeSession"
 
 type SmartPracticeState =
     | {status: "locked"}
-    | {status: "ready"; href: string}
+    | {status: "ready"; source: PracticeSource; libraryId: string}
 
 function SmartPracticeCard({state}: {state: SmartPracticeState}) {
+    const {startPracticeSession, isStarting, startError} = useStartPracticeSession()
     return (
         <section aria-label="专属 AI 练习" aria-disabled={state.status === "locked" || undefined} className="rounded-2xl border border-primary/20 bg-[linear-gradient(120deg,rgba(255,253,249,0.96),rgba(255,237,222,0.72))] px-5 py-5 sm:px-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -34,12 +35,13 @@ function SmartPracticeCard({state}: {state: SmartPracticeState}) {
                             <Button type="button" disabled variant="secondary" className="h-10 px-4"><LockKeyhole aria-hidden="true" className="size-4"/>尚未开启</Button>
                         </>
                     ) : (
-                        <Button render={<Link to={state.href}/>} nativeButton={false} className="h-10 px-4">
-                            开始练习<ArrowRight aria-hidden="true"/>
+                        <Button type="button" disabled={isStarting} onClick={() => startPracticeSession({source: state.source, libraryId: state.libraryId})} className="h-10 px-4">
+                            {isStarting ? "正在进入..." : "开始练习"}<ArrowRight aria-hidden="true"/>
                         </Button>
                     )}
                 </div>
             </div>
+            {startError && <p role="alert" className="mt-3 text-sm text-destructive">{startError.message}</p>}
         </section>
     )
 }

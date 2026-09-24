@@ -1,12 +1,11 @@
 /**
- * 文件作用：练习答题主页面；负责加载练习题、草稿、已提交状态、计时、切题、完成练习等交互。
- * 说明：题目已经改为通过 FastAPI + TanStack Query 获取；练习记录暂时仍保留本地逻辑。
+ * 文件作用：按 sessionId 恢复固定题组、草稿及答题交互。
  */
 
 import {useEffect, useState} from "react"
 import {ArrowLeft, ArrowRight} from "lucide-react"
-import {useNavigate, useParams} from "react-router"
-import {useQuery} from "@tanstack/react-query"
+import {Navigate, useNavigate, useParams} from "react-router"
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
 
 import {PracticeAnswerInput} from "@/components/practice/PracticeAnswerInput"
 import {PracticeQuestionHint} from "@/components/practice/PracticeQuestionHint"
@@ -15,57 +14,49 @@ import {PracticeSessionAside, type QuestionStatus} from "@/components/practice/P
 import {Button} from "@/components/ui/button"
 import {DialogClose, DialogContent, DialogDescription, DialogRoot, DialogTitle} from "@/components/ui/dialog"
 
-import {fetchPracticeQuestions, type PracticeSource} from "@/api/practice"
-import {clearPracticeDraft, getPracticeDraft, savePracticeDraft} from "@/data/practiceDrafts"
-import {buildSubmittedRecord, savePracticeRecord} from "@/data/practiceRecords"
-import {resolvePracticeLibrary} from "@/data/practiceSession"
+import {abandonPracticeSession, getPracticeSession, submitPracticeSession} from "@/api/practice"
+import {getPracticeDraft, savePracticeDraft} from "@/data/practiceDrafts"
 
 function PracticeSessionPage() {
-    // 1. 路由：拿跳转方法和当前地址中的 source / libraryId。
+    const {sessionId = ""} = useParams()
+    return <PracticeSessionContent key={sessionId} sessionId={sessionId}/>
+}
+
+function PracticeSessionContent({sessionId}: {sessionId: string}) {
     const navigate = useNavigate()
-    const {source = "", libraryId = ""} = useParams()
+    const queryClient = useQueryClient()
 
-    // 2. 普通配置：本次练习最多请求 10 道题。
-    const limit = 10
-
-    // 3. 服务端数据：由 TanStack Query 负责请求、缓存和请求状态。
+    // 1. 只按 sessionId 读取本轮固定题组；以后由 API 层替换为 FastAPI。
     const {
-        data: response,
+        data: session,
         isPending,
         isError,
         error,
     } = useQuery({
-        queryKey: [
-            "practiceQuestions",
-            source,
-            libraryId,
-            limit,
-        ],
-        queryFn: () =>
-            fetchPracticeQuestions({
-                source: source as PracticeSource,
-                libraryId,
-                limit,
-            }),
+        queryKey: ["practiceSession", sessionId],
+        queryFn: () => getPracticeSession(sessionId),
     })
 
-    // 4. 根据已有数据得到当前题目列表和题库基本信息。
-    const questions = response?.data ?? []
-    const library = resolvePracticeLibrary(source, libraryId)
+    // 2. Session 的题目快照不再从题库重新获取。
+    const questions = session?.questions.map((item) => ({
+        id: item.questionId,
+        prompt: item.promptSnapshot,
+        topic: item.topicSnapshot,
+    })) ?? []
 
-    // 5. 页面自己的状态。
+    // 3. 页面自己的状态。
     const [currentIndex, setCurrentIndex] = useState(0)
-    const [answers, setAnswers] = useState<Record<string, string>>(() => getPracticeDraft(source, libraryId))
+    const [answers, setAnswers] = useState<Record<string, string>>(() => getPracticeDraft(sessionId))
     const [elapsedSeconds, setElapsedSeconds] = useState<Record<string, number>>({})
     const [exitOpen, setExitOpen] = useState(false)
 
-    // 6. 根据当前题目 id 找到对应的客户端答题状态。
+    // 4. 根据当前题目 id 找到对应的客户端答题状态。
     const currentQuestionId = questions[currentIndex]?.id ?? ""
 
-    // 7. 草稿自动保存；当前题目每秒累加一次用时。
+    // 5. 草稿按 sessionId 保存；当前题目每秒累加一次用时。
     useEffect(() => {
-        savePracticeDraft(source, libraryId, answers)
-    }, [answers, source, libraryId])
+        if (session?.status === "active") savePracticeDraft(sessionId, answers)
+    }, [answers, session?.status, sessionId])
 
     useEffect(() => {
         if (!currentQuestionId) return
@@ -80,15 +71,26 @@ function PracticeSessionPage() {
         return () => window.clearInterval(timer)
     }, [currentQuestionId])
 
-    // 8. 特殊页面状态：加载、失败、无题库。
-    if (!library) {
-        return <PracticeSessionEmptyState reason="missing" />
-    }
+    const submitMutation = useMutation({
+        mutationFn: () => submitPracticeSession(sessionId, answers),
+        onSuccess: (submitted) => {
+            queryClient.setQueryData(["practiceSession", sessionId], submitted)
+            navigate(`/practice/records/${submitted.recordId}`)
+        },
+    })
+    const abandonMutation = useMutation({
+        mutationFn: () => abandonPracticeSession(sessionId),
+        onSuccess: (abandoned) => {
+            queryClient.setQueryData(["practiceSession", sessionId], abandoned)
+            navigate("/practice")
+        },
+    })
 
+    // 6. 特殊页面状态：加载、失败、无会话或已结束。
     if (isPending) {
         return (
             <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
-                正在加载练习题...
+                正在加载本轮练习...
             </main>
         )
     }
@@ -96,16 +98,22 @@ function PracticeSessionPage() {
     if (isError) {
         return (
             <main className="flex min-h-[calc(100vh-66px)] items-center justify-center">
-                加载练习题失败：{error instanceof Error ? error.message : "未知错误"}
+                加载练习失败：{error instanceof Error ? error.message : "未知错误"}
             </main>
         )
     }
+
+    if (!session) return <PracticeSessionEmptyState reason="missing" />
+    if (session.status === "submitted" && session.recordId) {
+        return <Navigate to={`/practice/records/${session.recordId}`} replace/>
+    }
+    if (session.status !== "active") return <PracticeSessionEmptyState reason="ended" />
 
     if (questions.length === 0) {
         return <PracticeSessionEmptyState reason="empty" />
     }
 
-    // 9. 到这里服务端题目已经准备好，可以安全读取当前题目和它对应的客户端状态。
+    // 7. 到这里固定题组已经准备好，可以读取当前题目和客户端状态。
     const question = questions[currentIndex]
     const answer = answers[question.id] ?? ""
 
@@ -114,9 +122,9 @@ function PracticeSessionPage() {
     })
 
     const answeredCount = statuses.filter((status) => status === "已作答").length
-    const modeLabel = source === "basic" ? "基础练习" : source === "resume" ? "简历专项" : "JD 专项"
+    const modeLabel = session.source === "basic" ? "基础练习" : session.source === "resume" ? "简历专项" : "JD 专项"
 
-    // 10. 页面操作函数。
+    // 8. 页面操作函数。
     function updateAnswer(value: string) {
         setAnswers((previous) => ({...previous, [question.id]: value}))
     }
@@ -124,18 +132,10 @@ function PracticeSessionPage() {
     function completePractice() {
         if (answeredCount !== questions.length) return
 
-        const record = buildSubmittedRecord({
-            source: source as PracticeSource,
-            libraryId,
-            answers: questions.map((item) => answers[item.id] ?? ""),
-            questions,
-        })
-        savePracticeRecord(record)
-        clearPracticeDraft(source, libraryId)
-        navigate(`/practice/records/${record.id}`)
+        submitMutation.mutate()
     }
 
-    // 11. 最后渲染页面 UI。
+    // 9. 渲染原有答题 UI。
     return (
         <main
             className="min-h-[calc(100vh-66px)] bg-[linear-gradient(145deg,rgba(255,246,238,0.8),rgba(255,255,255,0.95)_34%)] px-4 py-6 sm:px-6 lg:h-[calc(100dvh-66px)] lg:min-h-0 lg:overflow-hidden lg:py-5">
@@ -158,7 +158,7 @@ function PracticeSessionPage() {
                     <section aria-label="当前题目"
                              className="min-w-0 rounded-2xl border border-border/70 bg-card/95 p-5 sm:p-6 lg:min-h-0 lg:overflow-y-auto">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h1 className="text-lg font-semibold">{library.title}</h1>
+                            <h1 className="text-lg font-semibold">{session.libraryTitle}</h1>
                             <span
                                 className="rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary">{modeLabel}</span>
                         </div>
@@ -182,7 +182,7 @@ function PracticeSessionPage() {
                                 <ArrowLeft aria-hidden="true" className="size-4"/><span>上一题</span>
                             </Button>
                             <Button type="button" className="order-3 col-span-2 h-11 px-2 sm:order-2 sm:col-span-1 sm:px-4"
-                                    disabled={answeredCount !== questions.length} onClick={completePractice}>
+                                    disabled={answeredCount !== questions.length || submitMutation.isPending} onClick={completePractice}>
                                 提交本轮并查看评估
                             </Button>
                             <Button type="button" variant="outline" className="order-2 h-11 px-2 sm:order-3 sm:px-4"
@@ -192,19 +192,22 @@ function PracticeSessionPage() {
                                 <ArrowRight aria-hidden="true" className="size-4"/>
                             </Button>
                         </div>
+                        {submitMutation.error && <p role="alert" className="mt-3 text-sm text-destructive">{submitMutation.error.message}</p>}
                     </section>
                 </div>
             </div>
 
             <DialogRoot open={exitOpen} onOpenChange={setExitOpen}>
                 <DialogContent className="max-w-md">
-                    <DialogTitle className="text-xl font-semibold">确定退出练习？</DialogTitle>
+                    <DialogTitle className="text-xl font-semibold">暂时离开练习？</DialogTitle>
                     <DialogDescription
-                        className="mt-2 text-sm leading-6 text-muted-foreground">当前已作答 {answeredCount} / {questions.length} 题。草稿仅保存在当前标签页，刷新可恢复；未提交的回答不会计入练习记录或评估。</DialogDescription>
+                        className="mt-2 text-sm leading-6 text-muted-foreground">当前已作答 {answeredCount} / {questions.length} 题。暂时离开不会结束本轮，草稿保存在当前浏览器，下次选择同一题库可以继续；只有明确放弃才会清除草稿。</DialogDescription>
                     <div className="mt-6 flex flex-wrap justify-end gap-2">
                         <DialogClose render={<Button type="button" variant="outline"/>}>继续练习</DialogClose>
-                        <Button type="button" onClick={() => navigate("/practice")}>保存草稿并返回</Button>
+                        <Button type="button" variant="outline" disabled={abandonMutation.isPending} onClick={() => abandonMutation.mutate()}>放弃本轮</Button>
+                        <Button type="button" onClick={() => navigate("/practice")}>暂时离开</Button>
                     </div>
+                    {abandonMutation.error && <p role="alert" className="mt-3 text-sm text-destructive">{abandonMutation.error.message}</p>}
                 </DialogContent>
             </DialogRoot>
         </main>

@@ -5,6 +5,7 @@ import {getPracticeQuestions, resolvePracticeLibrary} from "./practiceSession"
 
 afterEach(() => {
     sessionStorage.clear()
+    localStorage.clear()
 })
 
 describe("practice data flow", () => {
@@ -74,7 +75,7 @@ describe("practice data flow", () => {
     })
 
     it("falls back to static records when local storage is corrupt", () => {
-        sessionStorage.setItem("studymate-practice-records", "not-json")
+        localStorage.setItem("studymate-practice-records", "not-json")
 
         expect(getAllPracticeRecords()).toHaveLength(3)
         expect(getPracticeRecord("practice-react-basic")?.title).toBe("React 基础练习")

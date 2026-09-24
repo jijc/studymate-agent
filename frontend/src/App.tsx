@@ -35,7 +35,7 @@ function App() {
 
                     <Route path="/practice/records" element={<PracticeRecordsPage/>}/>
                     <Route path="/practice/records/:recordId" element={<PracticeReviewPage/>}/>
-                    <Route path="/practice/session/:source/:libraryId" element={<PracticeSessionPage/>}/>
+                    <Route path="/practice/session/:sessionId" element={<PracticeSessionPage/>}/>
                     <Route path="/interview/session/:source/:libraryId" element={<InterviewSessionPage/>}/>
                     <Route path="/interview/result/:sessionId" element={<InterviewResultPage/>}/>
                     <Route path="/notifications" element={<NotificationsPage/>}/>

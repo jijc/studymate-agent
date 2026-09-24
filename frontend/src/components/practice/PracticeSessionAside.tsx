@@ -89,7 +89,7 @@ function PracticeSessionAside({currentIndex, questions, statuses, elapsedSeconds
                         ))}
                     </div>
                 </nav>
-                <p className="mt-3 hidden text-xs text-muted-foreground lg:block">点击题目切换，草稿保存在当前标签页。</p>
+                <p className="mt-3 hidden text-xs text-muted-foreground lg:block">点击题目切换，草稿保存在当前浏览器。</p>
             </section>
         </aside>
     )

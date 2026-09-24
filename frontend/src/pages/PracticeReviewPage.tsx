@@ -3,8 +3,10 @@ import {Link, useParams} from "react-router"
 
 import {Button} from "@/components/ui/button"
 import {getPracticeRecord} from "@/data/practiceRecords"
+import {useStartPracticeSession} from "@/hooks/useStartPracticeSession"
 
 function PracticeReviewPage() {
+    const {startPracticeSession, isStarting, startError} = useStartPracticeSession()
     const {recordId} = useParams()
     const record = recordId ? getPracticeRecord(recordId) : null
 
@@ -43,13 +45,15 @@ function PracticeReviewPage() {
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-3 border-t border-border/60 pt-5">
-                        <Button render={<Link to={`/practice/session/${record.source}/${record.libraryId}`}/>} nativeButton={false} size="sm">
-                            <RotateCcw aria-hidden="true"/>再练一组
+                        <Button type="button" size="sm" disabled={isStarting}
+                                onClick={() => startPracticeSession({source: record.source, libraryId: record.libraryId})}>
+                            <RotateCcw aria-hidden="true"/>{isStarting ? "正在进入..." : "再练一组"}
                         </Button>
                         <Button render={<Link to="/reports"/>} nativeButton={false} variant="outline" size="sm">
                             查看报告<ArrowRight aria-hidden="true"/>
                         </Button>
                     </div>
+                    {startError && <p role="alert" className="mt-3 text-sm text-destructive">{startError.message}</p>}
                 </section>
 
                 <section className="mt-6 rounded-2xl border border-border/70 bg-card/85 p-6 sm:p-7" aria-label="本次薄弱点">

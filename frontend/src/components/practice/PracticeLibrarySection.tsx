@@ -1,6 +1,6 @@
 import {useState} from "react"
 import {ArrowRight, BookOpenCheck, BriefcaseBusiness, Check, FileText} from "lucide-react"
-import {Link, useNavigate} from "react-router"
+import {Link} from "react-router"
 
 import {Button} from "@/components/ui/button"
 import {BasicPracticeLibraryOption} from "@/components/practice/BasicPracticeLibraryOption"
@@ -9,6 +9,7 @@ import {useQuestionLibraryFavorites} from "@/components/questions/QuestionLibrar
 import {jdLibraries, resumeLibraries} from "@/data/aiLibraries"
 import {questionLibraries} from "@/data/questionLibraries"
 import type {PracticeSource} from "@/data/practiceSession"
+import {useStartPracticeSession} from "@/hooks/useStartPracticeSession"
 import {cn} from "@/lib/utils"
 
 const sectionContent = {
@@ -23,7 +24,7 @@ function getLibraries(source: Exclude<PracticeSource, "basic">) {
 }
 
 function PracticeLibrarySection({source}: {source: PracticeSource}) {
-    const navigate = useNavigate()
+    const {startPracticeSession, isStarting, startError} = useStartPracticeSession()
     const {favoriteIds, toggleFavorite} = useQuestionLibraryFavorites()
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const basicLibraries = [
@@ -101,8 +102,9 @@ function PracticeLibrarySection({source}: {source: PracticeSource}) {
                     </p>
                     {source !== "basic" && <Link to="/questions/ai" className="mt-1 inline-block text-xs font-medium text-primary hover:underline">还没有合适的题库？去新建</Link>}
                 </div>
-                <Button type="button" disabled={!selected} onClick={() => {if (selected) navigate(`/practice/session/${source}/${selected.id}`)}} className="h-10 px-5">
-                    开始练习<ArrowRight aria-hidden="true" className="size-4"/>
+                {startError && <p role="alert" className="text-sm text-destructive">{startError.message}</p>}
+                <Button type="button" disabled={!selected || isStarting} onClick={() => {if (selected) startPracticeSession({source, libraryId: selected.id})}} className="h-10 px-5">
+                    {isStarting ? "正在进入..." : "开始练习"}<ArrowRight aria-hidden="true" className="size-4"/>
                 </Button>
             </div>
         </section>

@@ -6,13 +6,11 @@
 import {jdLibraries, resumeLibraries} from "@/data/aiLibraries"
 import {getPracticeDemoQuestions} from "@/data/practiceDemoQuestions"
 import {questionLibraries} from "@/data/questionLibraries"
+import type {PracticeQuestion as ApiPracticeQuestion, PracticeSource as ApiPracticeSource} from "@/api/practice"
 
-export type PracticeSource = "basic" | "resume" | "jd"
+export type PracticeSource = ApiPracticeSource
 
-export type PracticeQuestion = {
-    id: string
-    prompt: string
-    topic: string
+export type PracticeQuestion = ApiPracticeQuestion & {
     feedback: string
 }
 
