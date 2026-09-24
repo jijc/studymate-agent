@@ -675,3 +675,31 @@ React 后续知识按项目需要穿插补齐，不再作为进入 Python / Agen
 完整设计见：
 
 > docs/09-auth-and-access-control-design.md
+
+---
+
+# 二十、生产工程基线与不过度设计原则（2026-09-24 新增）
+
+用户明确要求：除了其主动提出的功能，还要主动考虑真实项目通常必须具备的工程能力，例如日志、异常、配置、数据库迁移、权限、安全、健康检查、测试、监控和部署；但不能因为追求“周到”而过度设计。
+
+长期原则：
+
+> 采用“生产级最小基线”：该有的基础能力在合适阶段加入，避免后补返工；不提前引入当前规模不需要的微服务、Kafka、Kubernetes、完整 ELK 等复杂基础设施。
+
+当前 StudyMate 默认采用：
+
+~~~text
+React / Next.js
+↓
+FastAPI 单体
+↓
+PostgreSQL
+↓
+LLM / Agent
+~~~
+
+按真实需要再引入 Redis、后台任务、Tracing 等。
+
+详细基线见：
+
+> docs/10-production-engineering-baseline.md
